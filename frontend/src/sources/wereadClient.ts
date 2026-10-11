@@ -1,7 +1,8 @@
+import { assertSourceCurrent, commitSourceCache, sourceGeneration } from '../utils/sourceLifecycle'
 import type { DiscoveryItem } from '../types/DiscoveryItem'
 
 export const WEREAD_GATEWAY = 'https://i.weread.qq.com/api/agent/gateway'
-export const WEREAD_SKILL_VERSION = '1.0.4'
+export const WEREAD_SKILL_VERSION = '1.0.5'
 const BATCH_SIZE = 30
 const STATE_TTL = 24 * 60 * 60 * 1000
 
@@ -15,14 +16,14 @@ export interface WeReadNote {
   thought: string
   createdAt?: number
 }
-interface Book { bookId: string; title: string; author: string }
+interface Book { bookId: string; title: string; author: string; readerLink?: string; deepLink?: string }
 interface State {
-  version: 1
+  version: 2
   updatedAt: number
   books: Book[]
   lastSort?: number
   hasMore: boolean
-  pending?: { book: Book; synckey: number }
+  pending?: { book: Book; synckey: number; marks: Json }
   queue: DiscoveryItem[]
 }
 
@@ -55,16 +56,20 @@ export async function requestWeRead(api: string, params: Json, token: string, si
   if (response.status === 429) throw new Error('WeRead is receiving too many requests. Please try again later.')
   if (!response.ok) throw new Error(`WeRead is unavailable (HTTP ${response.status}).`)
   const data = object(await response.json())
-  if (data.upgrade_info) throw new Error('WeRead requires a newer integration. Please update Wikinote.')
+  if (data.upgrade_info) throw new Error('WeRead requires a newer integration. Please update Glimmer.')
   if (data.errcode !== undefined && Number(data.errcode) !== 0) throw new Error('WeRead could not read your notes. Check your API Key and try again.')
   return data
+}
+
+function matchingMark(review: Json, marks: Json[]): Json | undefined {
+  return marks.find(mark => String(mark.chapterUid) === String(review.chapterUid) && text(mark.range) && text(mark.range) === text(review.range))
 }
 
 /** Normalize only personal content; keep the author's words separate from the user's thoughts. */
 export function normalizeWeReadNotes(book: Book, bookmarks: Json, reviews: Json, account: string): DiscoveryItem[] {
   const chapters = new Map(rows(bookmarks.chapters).map(chapter => [String(chapter.chapterUid), text(chapter.title)]))
   const marks = rows(bookmarks.updated).filter(mark => mark.type !== 0 && text(mark.markText) && text(mark.bookmarkId))
-  const thoughts = rows(reviews.reviews).map(row => object(row.review)).filter(review => text(review.reviewId) && text(review.content))
+  const thoughts = rows(reviews.reviews).map(row => ({ ...row, ...object(row.review) })).filter(review => text(review.reviewId) && text(review.content))
   const paired = new Set<string>()
   const result: DiscoveryItem[] = []
   const item = (id: string, quote: string, thought: string, raw: Json): DiscoveryItem => {
@@ -76,12 +81,12 @@ export function normalizeWeReadNotes(book: Book, bookmarks: Json, reviews: Json,
     }
     return {
       id: `weread-${account}-${book.bookId}-${id}`, source: 'weread', title: quote || thought,
-      url: safeWeReadLink(raw.deepLink) || safeWeReadLink(object(bookmarks.book).deepLink), raw: note,
+      url: safeWeReadLink(raw.readerLink) || safeWeReadLink(object(bookmarks.book).readerLink) || safeWeReadLink(book.readerLink) || safeWeReadLink(raw.deepLink) || safeWeReadLink(object(bookmarks.book).deepLink) || safeWeReadLink(book.deepLink), raw: note,
     }
   }
   for (const review of thoughts) {
     const quote = text(review.abstract)
-    const matching = marks.find(mark => String(mark.chapterUid) === String(review.chapterUid) && text(mark.range) && text(mark.range) === text(review.range))
+    const matching = matchingMark(review, marks)
     if (matching) paired.add(text(matching.bookmarkId))
     result.push(item(`review-${text(review.reviewId)}`, quote || text(matching?.markText), text(review.content), review))
   }
@@ -108,17 +113,18 @@ export async function weReadAccountKey(token: string): Promise<string> {
 function readState(key: string): State {
   try {
     const state = JSON.parse(localStorage.getItem(key) ?? 'null') as State | null
-    if (state?.version === 1 && Date.now() - state.updatedAt < STATE_TTL && Array.isArray(state.books) &&
+    if (state?.version === 2 && Date.now() - state.updatedAt < STATE_TTL && Array.isArray(state.books) &&
       state.books.every(book => typeof book.bookId === 'string' && typeof book.title === 'string' && typeof book.author === 'string') &&
       Array.isArray(state.queue) && state.queue.every(item => item?.source === 'weread' && typeof item.id === 'string' && item.raw) &&
-      (!state.pending || (typeof state.pending.book?.bookId === 'string' && typeof state.pending.synckey === 'number'))) return state
+      (!state.pending || (typeof state.pending.book?.bookId === 'string' && typeof state.pending.synckey === 'number' && Array.isArray(state.pending.marks?.updated)))) return state
   } catch { /* An unavailable cache must not prevent a fresh read. */ }
-  return { version: 1, updatedAt: Date.now(), books: [], hasMore: true, queue: [] }
+  return { version: 2, updatedAt: Date.now(), books: [], hasMore: true, queue: [] }
 }
 
 /** Walk randomized notebook pages incrementally, rather than downloading a whole library on every new tab. */
 export async function fetchWeReadNotes(token: string, signal?: AbortSignal): Promise<DiscoveryItem[]> {
   if (!token.trim()) return []
+  const generation = sourceGeneration('weread')
   const account = await weReadAccountKey(token)
   const key = `wikinote-weread-v1-${account}`
   const run = async (): Promise<DiscoveryItem[]> => {
@@ -137,25 +143,33 @@ export async function fetchWeReadNotes(token: string, signal?: AbortSignal): Pro
         state.lastSort = typeof lastSort === 'number' ? lastSort : undefined
         state.books = shuffle(books.filter(row => text(row.bookId)).map(row => ({
           bookId: text(row.bookId), title: text(object(row.book).title) || 'Untitled book', author: text(object(row.book).author),
+          readerLink: safeWeReadLink(object(row.book).readerLink) || safeWeReadLink(row.readerLink),
+          deepLink: safeWeReadLink(object(row.book).deepLink) || safeWeReadLink(row.deepLink),
         })))
         if (state.books.length === 0) break
       }
       const pending = state.pending
       const book = pending?.book ?? state.books.shift()!
       const [marks, reviews] = await Promise.all([
-        pending ? Promise.resolve<Json>({}) : requestWeRead('/book/bookmarklist', { bookId: book.bookId }, token, signal),
+        pending ? Promise.resolve<Json>(pending.marks) : requestWeRead('/book/bookmarklist', { bookId: book.bookId }, token, signal),
         requestWeRead('/review/list/mine', { bookid: book.bookId, count: 20, synckey: pending?.synckey ?? 0 }, token, signal),
       ])
       if (!Array.isArray(reviews.reviews) || (!pending && !Array.isArray(marks.updated))) throw new Error('WeRead returned an unexpected notes response.')
+      const normalized = normalizeWeReadNotes(book, marks, reviews, account)
       if (Number(reviews.hasMore) === 1) {
         if (typeof reviews.synckey !== 'number' || reviews.synckey === (pending?.synckey ?? 0)) throw new Error('WeRead could not advance the thoughts page. Please try again later.')
-        state.pending = { book, synckey: reviews.synckey }
+        const paired = new Set(rows(reviews.reviews).map(row => matchingMark(object(row.review), rows(marks.updated))?.bookmarkId))
+        state.pending = { book, synckey: reviews.synckey, marks: { ...marks, updated: rows(marks.updated).filter(mark => !paired.has(mark.bookmarkId)) } }
       } else state.pending = undefined
-      state.queue = shuffle(normalizeWeReadNotes(book, marks, reviews, account))
+      // Defer unpaired highlights until all thought pages have been checked.
+      state.queue = shuffle(state.pending ? normalized.filter(item => item.id.startsWith(`weread-${account}-${book.bookId}-review-`)) : normalized)
     }
     signal?.throwIfAborted()
+    assertSourceCurrent('weread', generation)
     const batch = state.queue.splice(0, BATCH_SIZE)
-    try { localStorage.setItem(key, JSON.stringify(state)) } catch { /* Storage can be full or disabled. */ }
+    await commitSourceCache('weread', generation, async () => {
+      try { localStorage.setItem(key, JSON.stringify(state)) } catch { /* Storage can be full or disabled. */ }
+    })
     return batch
   }
   // New-tab pages can fetch at the same time. Serialize this one account's cursor when supported.

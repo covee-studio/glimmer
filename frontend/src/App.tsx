@@ -12,6 +12,8 @@ import { feedCache, CACHE_TTL_MS } from "./utils/feedCache"
 
 type ItemsBySource = Partial<Record<SourceId, DiscoveryItem[]>>
 
+import { assertSourceConfigured, assertSourceCurrent, commitSourceCache, sourceGeneration, sourceSignal } from "./utils/sourceLifecycle"
+
 function interleaveN(arrays: DiscoveryItem[][]): DiscoveryItem[] {
   const result: DiscoveryItem[] = []
   const queues = arrays.map((a) => (Array.isArray(a) ? [...a] : []))
@@ -111,12 +113,18 @@ function App() {
       return {
         queryKey: ["articles", adapter.id, langId, configStr],
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
+          assertSourceConfigured(adapter.id, config.__cacheId)
+          const generation = sourceGeneration(adapter.id)
+          signal = AbortSignal.any([signal, sourceSignal(adapter.id)])
           try {
             const items = await adapter.fetch({ language: currentLanguage, sourceConfig: config, signal })
             signal.throwIfAborted()
-            if (items.length > 0) void feedCache.set(cacheKey, items)
+            assertSourceCurrent(adapter.id, generation)
+            if (items.length > 0) await commitSourceCache(adapter.id, generation, () => feedCache.set(cacheKey, items))
             return items
           } catch (error) {
+            signal.throwIfAborted()
+            assertSourceCurrent(adapter.id, generation)
             if (adapter.fallbackToCachedDataOnError && cached?.items?.length) {
               return cached.items
             }
@@ -139,7 +147,7 @@ function App() {
 
   const articles = dedup(
     interleaveN(
-      activeAdapters.map((adapter, i) => [
+      activeAdapters.map((adapter, i) => queryResults[i]?.isError && adapter.id === 'weread' ? [] : [
         ...(Array.isArray(queryResults[i]?.data) ? (queryResults[i].data as DiscoveryItem[]) : []),
         ...(extraItemsFeedKey.current === activeSourceKey ? extraItemsBySource[adapter.id] ?? [] : []),
       ])
@@ -207,12 +215,17 @@ function App() {
     try {
       const results = await Promise.allSettled(
         activeAdapters.map(async (adapter) => {
+          assertSourceConfigured(adapter.id, settledConfigs[adapter.id]?.__cacheId)
+          const generation = sourceGeneration(adapter.id)
+          const signal = AbortSignal.any([controller.signal, sourceSignal(adapter.id)])
           const items = await adapter.fetch({
             language: currentLanguage,
             sourceConfig: settledConfigs[adapter.id] ?? getSourceConfig(adapter.id),
             fetchMode: "more",
-            signal: controller.signal,
+            signal,
           })
+          signal.throwIfAborted()
+          assertSourceCurrent(adapter.id, generation)
           return [adapter.id, items] as const
         })
       )

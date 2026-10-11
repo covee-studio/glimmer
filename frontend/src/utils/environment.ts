@@ -3,7 +3,7 @@
 // Global declarations
 type ChromeStorageArea = {
   get: (
-    keys: string[],
+    keys: string[] | null,
     cb: (result: Record<string, unknown>) => void
   ) => void
   set: (
@@ -50,65 +50,81 @@ export const isExtension = typeof __IS_EXTENSION__ !== 'undefined' && __IS_EXTEN
 // Chrome Storage API adapter
 export class StorageAdapter {
   static async get<T = unknown>(key: string): Promise<T | null> {
-    if (isExtension && typeof chrome !== 'undefined') {
-      return new Promise((resolve) => {
-        chrome!.storage!.local.get([key], (result: Record<string, unknown>) => {
-          const value = result[key] as T | undefined;
-          if (typeof value === 'undefined' || value === null) {
-            // Fallback to localStorage mirror if any
-            const mirrored = localStorage.getItem(key);
-            if (mirrored == null) {
-              resolve(null);
-            } else {
-              try {
-                resolve(JSON.parse(mirrored) as T);
-              } catch {
-                resolve(mirrored as unknown as T);
-              }
-            }
-          } else {
-            resolve(value ?? null);
-          }
-        });
-      });
-    } else {
-      const item = localStorage.getItem(key);
-      if (item == null) return null;
-      // Be tolerant to legacy plain-string values (e.g. 'en') that aren't JSON
-      try {
-        return JSON.parse(item) as unknown as T;
-      } catch {
-        return item as unknown as T;
-      }
+    if (isExtension && typeof chrome !== 'undefined' && chrome.storage?.local) {
+      return new Promise((resolve, reject) => {
+        chrome!.storage!.local.get([key], result => {
+          const message = chrome?.runtime?.lastError?.message
+          if (message) { reject(new Error(message)); return }
+          if (result[key] !== undefined) { resolve(result[key] as T); return }
+          resolve(StorageAdapter.mirrorGet<T>(key))
+        })
+      })
     }
+    return StorageAdapter.mirrorGet<T>(key)
+  }
+
+  private static mirrorGet<T>(key: string): T | null {
+    const item = localStorage.getItem(key)
+    if (item === null) return null
+    try { return JSON.parse(item) as T } catch { return item as T }
   }
 
   static async set<T = unknown>(key: string, value: T): Promise<void> {
-    if (isExtension && typeof chrome !== 'undefined') {
-      return new Promise((resolve) => {
-        chrome!.storage!.local.set({ [key]: value as unknown }, () => {
-          try {
-            localStorage.setItem(key, JSON.stringify(value));
-          } catch (err) {
-            console.warn('Failed to mirror to localStorage', err);
-          }
-          resolve();
-        });
-      });
-    } else {
-      localStorage.setItem(key, JSON.stringify(value));
+    if (isExtension && typeof chrome !== 'undefined' && chrome.storage?.local) {
+      await new Promise<void>((resolve, reject) => {
+        chrome!.storage!.local.set({ [key]: value }, () => {
+          const message = chrome?.runtime?.lastError?.message
+          if (message) reject(new Error(message)); else resolve()
+        })
+      })
     }
+    localStorage.setItem(key, JSON.stringify(value))
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('glimmer-local-storage', { detail: key }))
   }
 
   static async remove(key: string): Promise<void> {
-    // Remove the mirror too, otherwise get() resurrects it after Chrome removal.
-    localStorage.removeItem(key);
-    if (isExtension && typeof chrome !== 'undefined') {
-      return new Promise((resolve) => {
-        chrome!.storage!.local.remove([key], resolve);
-      });
-    } else {
-      localStorage.removeItem(key);
+    if (isExtension && typeof chrome !== 'undefined' && chrome.storage?.local) {
+      await new Promise<void>((resolve, reject) => {
+        chrome!.storage!.local.remove([key], () => {
+          const message = chrome?.runtime?.lastError?.message
+          if (message) reject(new Error(message)); else resolve()
+        })
+      })
+    }
+    localStorage.removeItem(key)
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('glimmer-local-storage', { detail: key }))
+  }
+
+  static async localKeys(): Promise<string[]> {
+    const keys = Object.keys(localStorage)
+    if (!isExtension || typeof chrome === 'undefined' || !chrome.storage?.local) return keys
+    const stored = await new Promise<Record<string, unknown>>((resolve, reject) => {
+      chrome!.storage!.local.get(null, result => {
+        const message = chrome?.runtime?.lastError?.message
+        if (message) reject(new Error(message)); else resolve(result)
+      })
+    })
+    return [...new Set([...keys, ...Object.keys(stored)])]
+  }
+
+  static onLocalChange(listener: (keys: string[]) => void): () => void {
+    const events = isExtension && typeof chrome !== 'undefined' ? chrome.storage?.onChanged : undefined
+    const handler = (changes: Record<string, ChromeStorageChange>, area: string) => {
+      if (area === 'local') listener(Object.keys(changes))
+    }
+    const storageHandler = (event: StorageEvent) => listener(event.key ? [event.key] : [])
+    const localHandler = (event: Event) => listener([(event as CustomEvent<string>).detail])
+    events?.addListener(handler)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', storageHandler)
+      window.addEventListener('glimmer-local-storage', localHandler)
+    }
+    return () => {
+      events?.removeListener(handler)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', storageHandler)
+        window.removeEventListener('glimmer-local-storage', localHandler)
+      }
     }
   }
 

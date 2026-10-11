@@ -356,7 +356,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                     >
                       {saving ? 'Connecting…' : 'Save & connect'}
                     </button>
-                    {settingsAdapter && Object.keys(getSourceConfig(settingsAdapter.id)).length > 0 && <button type="button" disabled={saving} onClick={() => { disconnectSource(settingsAdapter.id); setSettingsDraft({}); setView('sources') }} className="text-sm text-slate-500 underline underline-offset-4">Disconnect & remove key</button>}
+                    {settingsAdapter && Object.keys(getSourceConfig(settingsAdapter.id)).length > 0 && <button type="button" disabled={saving} onClick={() => { void disconnectSource(settingsAdapter.id).catch(() => showToast('Disconnected, but some cached data could not be cleared. Try again.')); setSettingsDraft({}); setView('sources') }} className="text-sm text-slate-500 underline underline-offset-4">Disconnect & remove key</button>}
                     {settingsAdapter?.id === 'weread' && <p className="text-center text-[11px] leading-relaxed text-slate-500">Your saved highlights stay on this device and are not included in Chrome Sync. Disconnecting keeps your saved collection.</p>}
                   </form>
                 </motion.div>

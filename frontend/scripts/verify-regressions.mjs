@@ -166,7 +166,7 @@ if (!/font-serif-editorial/.test(about) || !/font-sans/.test(about) || !/font-se
 
 // Memos must not advance its cursor until the window request succeeds.
 const responseCheck = memos.indexOf("if (!resp.ok) throw")
-const cursorWrite = memos.indexOf("writeCursor(cursorKeyToWrite, nextCursor)")
+const cursorWrite = memos.indexOf("writeCursor(key, cursor)")
 if (responseCheck === -1 || cursorWrite === -1 || cursorWrite < responseCheck) {
   throw new Error("Memos cursor can advance before a successful response")
 }

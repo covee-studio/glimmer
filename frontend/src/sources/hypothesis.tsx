@@ -1,3 +1,4 @@
+import { commitSourceCache, sourceGeneration } from '../utils/sourceLifecycle'
 import { Calendar, Highlighter, Tag } from "lucide-react"
 import { HypothesisCard } from "../components/HypothesisCard"
 import type { DiscoveryItem } from "../types/DiscoveryItem"
@@ -125,6 +126,7 @@ async function fetchAnnotations(config: FetchConfig): Promise<DiscoveryItem[]> {
   const username = normalizeUsername(config.sourceConfig?.username?.trim() ?? "")
   if (!token) return []
 
+  const generation = sourceGeneration('hypothesis')
   const key = configKey(token, username)
   const headers = {
     Accept: "application/json",
@@ -136,7 +138,7 @@ async function fetchAnnotations(config: FetchConfig): Promise<DiscoveryItem[]> {
     return `${API_URL}?${params.toString()}`
   }
   const requestPage = async (limit: number, offset: number): Promise<HypothesisSearchResponse> => {
-    const response = await fetch(buildUrl(limit, offset), { headers })
+    const response = await fetch(buildUrl(limit, offset), { headers, signal: config.signal })
     if (!response.ok) throw new Error(`Hypothesis API error: ${response.status}`)
     return response.json() as Promise<HypothesisSearchResponse>
   }
@@ -184,7 +186,8 @@ async function fetchAnnotations(config: FetchConfig): Promise<DiscoveryItem[]> {
     }
   // Advance only after the page has returned successfully. A failed request
   // therefore retries the same randomized page instead of skipping it.
-  writeCursor(key, nextCursor)
+  config.signal?.throwIfAborted()
+  await commitSourceCache('hypothesis', generation, async () => { writeCursor(key, nextCursor) })
 
   return rows
     .filter((annotation) => typeof annotation.id === "string" && typeof annotation.uri === "string")

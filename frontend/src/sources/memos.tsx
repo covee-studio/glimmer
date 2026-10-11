@@ -1,3 +1,4 @@
+import { commitSourceCache, sourceGeneration } from '../utils/sourceLifecycle'
 import type { DiscoveryItem } from "../types/DiscoveryItem"
 import type { CardRenderProps, FetchConfig, LikePreview, SourceAdapter, ZenContentData } from "./adapter"
 import { MemoCard } from "../components/MemoCard"
@@ -125,7 +126,8 @@ function isValidCursor(cursor: MemosCursor | null, totalWindows: number, totalSi
   return unique.size === totalWindows && cursor.windowOrder.every((index) => Number.isInteger(index) && index >= 0 && index < totalWindows)
 }
 
-async function fetchMemos(endpoint: string, token: string): Promise<DiscoveryItem[]> {
+async function fetchMemos(endpoint: string, token: string, signal?: AbortSignal): Promise<DiscoveryItem[]> {
+  const generation = sourceGeneration('memos')
   const base = normalizeUrl(endpoint).replace(/\/$/, "")
   const headers = { Authorization: `Bearer ${token}` }
   const PAGE_SIZE = 30
@@ -133,7 +135,7 @@ async function fetchMemos(endpoint: string, token: string): Promise<DiscoveryIte
   // ── Step 1: probe for total note count ──────────────────────────────────
   let totalSize = 0
   try {
-    const probeResp = await fetch(`${base}/api/v1/memos?pageSize=1`, { headers })
+    const probeResp = await fetch(`${base}/api/v1/memos?pageSize=1`, { headers, signal })
     if (probeResp.ok) {
       const probeData = await probeResp.json()
       totalSize = typeof probeData.totalSize === "number" ? probeData.totalSize : 0
@@ -181,7 +183,7 @@ async function fetchMemos(endpoint: string, token: string): Promise<DiscoveryIte
 
   // ── Step 3: fetch the window ─────────────────────────────────────────────
   const url = `${base}/api/v1/memos?pageSize=${PAGE_SIZE}&offset=${offset}`
-  const resp = await fetch(url, { headers })
+  const resp = await fetch(url, { headers, signal })
   if (!resp.ok) throw new Error(`Memos API error: ${resp.status}`)
 
   const data = await resp.json()
@@ -189,7 +191,11 @@ async function fetchMemos(endpoint: string, token: string): Promise<DiscoveryIte
   // API shape: { memos: MemosApiMemo[] }  (some older versions return a plain array)
   const memoList: MemosApiMemo[] = Array.isArray(data) ? data : (data.memos ?? [])
 
-  if (cursorKeyToWrite && nextCursor) writeCursor(cursorKeyToWrite, nextCursor)
+  signal?.throwIfAborted()
+  if (cursorKeyToWrite && nextCursor) {
+    const key = cursorKeyToWrite, cursor = nextCursor
+    await commitSourceCache('memos', generation, async () => { writeCursor(key, cursor) })
+  }
 
   const items = memoList
     .filter((m) => m.content?.trim())
@@ -284,7 +290,7 @@ export const memosAdapter: SourceAdapter = {
     const token = config?.sourceConfig?.token?.trim()
     // Gracefully return empty when not configured — no error shown
     if (!endpoint || !token) return []
-    return fetchMemos(endpoint, token)
+    return fetchMemos(endpoint, token, config?.signal)
   },
 
   renderCard(item: DiscoveryItem, props: CardRenderProps) {

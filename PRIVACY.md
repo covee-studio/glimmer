@@ -82,7 +82,7 @@ You can:
 
 Glimmer keeps source credentials in local browser storage and excludes them from Chrome Sync. You are responsible for choosing a trusted Memos endpoint, protecting your API tokens, and using HTTPS for self-hosted services.
 
-Local storage is not an encrypted password vault. Protect access to your browser profile and revoke a key with its source service if it has been exposed. Close other Glimmer tabs before disconnecting a source; already-open tabs do not yet receive source-setting changes in real time.
+Local storage is not an encrypted password vault. Protect access to your browser profile and revoke a key with its source service if it has been exposed. Source-setting changes are shared across open Glimmer tabs. Disconnecting cancels obsolete fetches and clears source fetch caches; it does not revoke the key at its source service.
 
 ## Changes to this policy
 

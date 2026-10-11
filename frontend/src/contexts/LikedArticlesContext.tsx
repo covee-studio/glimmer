@@ -11,6 +11,7 @@ import {
   writeFavoriteSyncRecords,
 } from "../utils/favoriteSync"
 import type { FavoriteSyncStatus, LikeRecord } from "../utils/favoriteSync"
+import { LOCAL_RECORDS_KEY, RECENT_RECORDS_KEY, mergeLocalRecords, validRecords, updateLocalFavorites, updateLocalRecent } from '../utils/localCollection'
 import "../assets/heartAnimation.css"
 
 // ─── Backward-compatible migration ───────────────────────────
@@ -71,9 +72,7 @@ export interface RecentArticle {
 
 const LikedArticlesContext = createContext<LikedArticlesContextType | undefined>(undefined)
 
-const LOCAL_RECORDS_KEY = "wikinote-liked-records-v1"
 const SYNC_ENABLED_KEY = "wikinote-favorites-sync-enabled"
-const RECENT_RECORDS_KEY = "wikinote-recent-articles-v1"
 const MAX_RECENT_ARTICLES = 30
 
 function visibleItems(records: Map<string, LikeRecord>): DiscoveryItem[] {
@@ -87,15 +86,6 @@ function recordsFromItems(items: DiscoveryItem[]): Map<string, LikeRecord> {
   return new Map(items.map((item) => [item.id, { id: item.id, item, updatedAt: 0 }]))
 }
 
-function validLocalRecords(value: unknown): LikeRecord[] {
-  if (!Array.isArray(value)) return []
-  return value.filter((record): record is LikeRecord => {
-    if (!record || typeof record !== "object") return false
-    const candidate = record as Partial<LikeRecord>
-    return typeof candidate.id === "string" && typeof candidate.updatedAt === "number"
-  })
-}
-
 function validRecentArticles(value: unknown): RecentArticle[] {
   if (!Array.isArray(value)) return []
   return value.filter((record): record is RecentArticle => {
@@ -103,17 +93,6 @@ function validRecentArticles(value: unknown): RecentArticle[] {
     const candidate = record as Partial<RecentArticle>
     return typeof candidate.seenAt === "number" && Boolean(migrateStoredItem(candidate.item))
   }).map((record) => ({ item: migrateStoredItem(record.item)!, seenAt: record.seenAt }))
-}
-
-function mergeRecords(local: Map<string, LikeRecord>, remote: LikeRecord[]): Map<string, LikeRecord> {
-  const merged = new Map(local)
-  for (const candidate of remote) {
-    const current = merged.get(candidate.id)
-    if (!current || candidate.updatedAt > current.updatedAt) {
-      merged.set(candidate.id, candidate)
-    }
-  }
-  return merged
 }
 
 function sameRecordVersions(a: Map<string, LikeRecord>, b: Map<string, LikeRecord>): boolean {
@@ -138,32 +117,26 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
   const syncEnabledRef = useRef(false)
   const syncWriteChain = useRef(Promise.resolve())
 
-  const persistLocal = (records: Map<string, LikeRecord>) => {
-    const items = visibleItems(records)
+  const applyLocal = useCallback((records: Map<string, LikeRecord>) => {
     recordsRef.current = records
-    setLikedArticles(items)
-    void Promise.all([
-      StorageAdapter.set("likedArticles", items),
-      StorageAdapter.set(LOCAL_RECORDS_KEY, [...records.values()]),
-    ])
-  }
-
-  const persistRecent = useCallback((records: RecentArticle[]) => {
-    const next = records
-      .sort((a, b) => b.seenAt - a.seenAt)
-      .slice(0, MAX_RECENT_ARTICLES)
-    recentArticlesRef.current = next
-    setRecentArticles(next)
-    void StorageAdapter.set(RECENT_RECORDS_KEY, next)
+    setLikedArticles(visibleItems(records))
   }, [])
+  const persistLocal = useCallback(async (records: Map<string, LikeRecord>) => {
+    const next = await updateLocalFavorites(stored => mergeLocalRecords(stored, [...records.values()]), recordsRef.current)
+    applyLocal(next)
+    return next
+  }, [applyLocal])
+  const applyRecent = (records: RecentArticle[]) => {
+    recentArticlesRef.current = records
+    setRecentArticles(records)
+  }
 
   const queueSyncWrite = () => {
     if (!syncEnabledRef.current || !syncAvailable) return
     syncWriteChain.current = syncWriteChain.current.then(async () => {
       setSyncStatus("syncing")
       const remote = await readFavoriteSyncRecords()
-      const merged = mergeRecords(recordsRef.current, remote.records)
-      if (!sameRecordVersions(merged, recordsRef.current)) persistLocal(merged)
+      const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
       await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
       setSyncStatus("synced")
     }).catch(async () => {
@@ -185,8 +158,8 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
       const migrated = Array.isArray(saved)
         ? saved.map(migrateStoredItem).filter(Boolean) as DiscoveryItem[]
         : []
-      const records = validLocalRecords(savedRecords).length > 0
-        ? validLocalRecords(savedRecords)
+      const records = savedRecords !== null
+        ? validRecords(savedRecords)
         : [...recordsFromItems(migrated).values()]
       recordsRef.current = new Map(records.map((record) => [record.id, record]))
       setLikedArticles(visibleItems(recordsRef.current))
@@ -208,51 +181,76 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
       setSyncStatus("syncing")
       try {
         const remote = await readFavoriteSyncRecords()
-        const merged = mergeRecords(recordsRef.current, remote.records)
-        persistLocal(merged)
+        const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
         await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
         if (!cancelled) setSyncStatus("synced")
       } catch {
         if (!cancelled) setSyncStatus("error")
       }
     }
-    void hydrate()
+    void hydrate().catch(() => {
+      if (!cancelled) setSyncStatus("error")
+    })
     return () => { cancelled = true }
-  }, [syncAvailable])
+  }, [syncAvailable, persistLocal])
 
   const toggleLike = (item: DiscoveryItem) => {
     if (!hydrated) return
-    const next = new Map(recordsRef.current)
-    const existing = next.get(item.id)
-    const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1)
-    if (existing && !existing.deleted) {
-      next.set(item.id, { id: item.id, updatedAt, deleted: true })
-    } else {
-      setShowHeart(true)
-      setTimeout(() => setShowHeart(false), 800)
-      next.set(item.id, { id: item.id, item, updatedAt })
-    }
-    persistLocal(next)
-    queueSyncWrite()
+    void updateLocalFavorites(records => {
+      const existing = records.get(item.id)
+      const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1)
+      const next = new Map(records)
+      if (existing && !existing.deleted) next.set(item.id, { id: item.id, updatedAt, deleted: true })
+      else {
+        setShowHeart(true)
+        setTimeout(() => setShowHeart(false), 800)
+        next.set(item.id, { id: item.id, item, updatedAt })
+      }
+      return next
+    }, recordsRef.current).then(records => {
+      applyLocal(records)
+      queueSyncWrite()
+    }).catch(() => setSyncStatus('error'))
   }
 
-  const isLiked = (item: DiscoveryItem): boolean =>
-    likedArticles.some((a) => a.id === item.id)
-
+  const isLiked = (item: DiscoveryItem): boolean => likedArticles.some(article => article.id === item.id)
   const rememberRecent = useCallback((item: DiscoveryItem) => {
     if (!hydrated) return
     const seenAt = Date.now()
-    persistRecent([
-      { item, seenAt },
-      ...recentArticlesRef.current.filter((record) => record.item.id !== item.id),
-    ])
-  }, [hydrated, persistRecent])
+    void updateLocalRecent(records => [{ item, seenAt }, ...records.filter(record => record.item.id !== item.id)])
+      .then(records => {
+        recentArticlesRef.current = records
+        setRecentArticles(records)
+      }).catch(() => setSyncStatus('error'))
+  }, [hydrated])
 
   const clearRecent = () => {
-    recentArticlesRef.current = []
-    setRecentArticles([])
-    void StorageAdapter.remove(RECENT_RECORDS_KEY)
+    void updateLocalRecent(() => []).then(applyRecent).catch(() => setSyncStatus('error'))
   }
+
+  useEffect(() => {
+    if (!hydrated) return
+    let cancelled = false
+    const unsubscribe = StorageAdapter.onLocalChange(keys => {
+      if (!keys.length || keys.includes(LOCAL_RECORDS_KEY)) {
+        void StorageAdapter.get(LOCAL_RECORDS_KEY).then(value => {
+          if (cancelled) return
+          const records = validRecords(value)
+          recordsRef.current = new Map(records.map(record => [record.id, record]))
+          setLikedArticles(visibleItems(recordsRef.current))
+        }).catch(() => setSyncStatus('error'))
+      }
+      if (!keys.length || keys.includes(RECENT_RECORDS_KEY)) {
+        void StorageAdapter.get(RECENT_RECORDS_KEY).then(value => {
+          if (cancelled) return
+          const records = validRecentArticles(value)
+          recentArticlesRef.current = records
+          setRecentArticles(records)
+        }).catch(() => setSyncStatus('error'))
+      }
+    })
+    return () => { cancelled = true; unsubscribe() }
+  }, [hydrated])
 
   const setSyncEnabled = (enabled: boolean) => {
     if (!syncAvailable || !hydrated) return
@@ -264,8 +262,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
         if (!syncEnabledRef.current) return
         try {
           const remote = await readFavoriteSyncRecords()
-          const merged = mergeRecords(recordsRef.current, remote.records)
-          persistLocal(merged)
+          const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
           await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
           await StorageAdapter.set(SYNC_ENABLED_KEY, true)
           setSyncStatus("synced")
@@ -302,8 +299,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
         setSyncStatus("syncing")
         const remote = await readFavoriteSyncRecords()
         if (cancelled) return
-        const merged = mergeRecords(recordsRef.current, remote.records)
-        if (!sameRecordVersions(merged, recordsRef.current)) persistLocal(merged)
+        const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
         if (!sameRecordVersions(merged, new Map(remote.records.map((record) => [record.id, record])))) {
           await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
         }
@@ -317,7 +313,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
       cancelled = true
       unsubscribe()
     }
-  }, [hydrated, syncEnabled, syncAvailable])
+  }, [hydrated, syncEnabled, syncAvailable, persistLocal])
 
   return (
     <LikedArticlesContext.Provider value={{ likedArticles, recentArticles, toggleLike, isLiked, rememberRecent, clearRecent, syncAvailable, syncEnabled, syncStatus, setSyncEnabled }}>

@@ -4,6 +4,7 @@
 // new tab can immediately show the cached cards while a background refresh runs.
 
 import type { DiscoveryItem } from "../types/DiscoveryItem"
+import { clearSourceCaches } from "./sourceLifecycle"
 import { StorageAdapter } from "./environment"
 
 export const CACHE_TTL_MS = 30 * 60 * 1000   // 30 min — if younger, skip refetch
@@ -17,10 +18,7 @@ interface CacheEntry {
 export const feedCache = {
   /** Disconnect removes fetch caches, but never intentionally saved favorites. */
   async clearSource(sourceId: string): Promise<void> {
-    const prefixes = [`wikinote-feed-v1-${sourceId}-`, `wikinote-feed-v2-${sourceId}-`, `wikinote-${sourceId}-cursor-`]
-    if (sourceId === 'weread') prefixes.push('wikinote-weread-v1-')
-    const keys = Object.keys(localStorage).filter(key => prefixes.some(prefix => key.startsWith(prefix)))
-    await Promise.all(keys.map(key => StorageAdapter.remove(key).catch(() => undefined)))
+    await clearSourceCaches(sourceId)
   },
   /** Synchronous read from localStorage mirror — used as react-query initialData */
   getSync(key: string): CacheEntry | null {

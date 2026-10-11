@@ -17,17 +17,17 @@
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
-| Unreleased | 2026-10-11 | Rename Wikinote to Glimmer; retain logo, extension identity, and stored data compatibility | Draft |
+| 2.2.0 | 2026-10-11 | Rename to Glimmer, add WeRead, improve source lifecycle and local collections | Draft |
 
 
 This guide describes the local Glimmer Chrome extension build; it does not confirm a published release. Keep it aligned with `frontend/configs/extension/manifest.json`, `README.md`, and the root [`PRIVACY.md`](PRIVACY.md).
 
 ## Current release
 
-- Extension version: `2.1.0`
+- Extension version: `2.2.0`
 - Manifest: `frontend/configs/extension/manifest.json`
 - Build output: `dist/extension/`
-- Submission package: `dist/glimmer-extension-v2.1.0.zip`
+- Submission package: `dist/glimmer-extension-v2.2.0.zip`
 - Privacy policy source: [`PRIVACY.md`](PRIVACY.md)
 - Public privacy policy URL after it is pushed to `main`:
   `https://github.com/covee-studio/wikinote/blob/main/PRIVACY.md`
@@ -43,7 +43,7 @@ Glimmer replaces the Chrome new tab page with a calm reading space that presents
 ### Short description
 
 ```text
-A quiet new tab for discovering Wikipedia, Hacker News, notes, and annotations.
+A quiet new tab to discover articles and revisit notes, annotations, and book highlights.
 ```
 
 ### Detailed description
@@ -57,6 +57,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 • Hacker News stories
 • Your own notes from a self-hosted Memos instance
 • Your Hypothesis annotations
+• Your WeRead (微信读书) book highlights and reading thoughts, using your personal API Key
 
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
@@ -96,6 +97,12 @@ Glimmer uses the public Hacker News Firebase API to retrieve story titles, links
 Glimmer uses the Hypothesis API to retrieve annotations for the Hypothesis account identified by the personal API token entered by the user. This access is required to display the user's selected quotations, annotation text, document metadata, and links in the new-tab reading experience. The token is stored locally and is sent only to Hypothesis. The extension does not inject scripts into Hypothesis pages or monitor browsing activity.
 ```
 
+### Optional host permission: `https://i.weread.qq.com/*`
+
+```text
+Glimmer requests this host only when the user connects WeRead. It sends the locally entered personal API Key to Tencent’s official Agent Gateway to retrieve notebook metadata, personal book highlights, and reading thoughts. It does not retrieve full books, use login cookies, or monitor browsing activity. The Key and WeRead favorites remain local and are excluded from Chrome Sync.
+```
+
 ### Optional host permissions: user-configured Memos endpoint
 
 ```text
@@ -129,10 +136,10 @@ Do not use the repository homepage as a substitute for the privacy policy.
 Select the categories that exist in the current dashboard and accurately describe the extension:
 
 - Personally identifiable information — source usernames may be supplied for Hypothesis.
-- Authentication information — Memos and Hypothesis API tokens are entered by the user and stored locally.
-- Website content — Wikipedia, Hacker News, Memos, and Hypothesis content is retrieved or displayed by the extension.
+- Authentication information — Memos and Hypothesis API tokens and WeRead API Keys are entered by the user and stored locally.
+- Website content — Wikipedia, Hacker News, Memos, Hypothesis, and WeRead content is retrieved or displayed by the extension.
 
-If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes and Hypothesis quotations/annotation text may contain user-generated content.
+If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes, Hypothesis quotations/annotation text, and WeRead highlights/thoughts may contain user-generated content.
 
 Do not select health information, financial or payment information, personal communications, location, web history, or user activity unless the product behavior changes.
 
@@ -166,4 +173,4 @@ Before uploading, verify that the package contains the current version in `manif
 6. Review the package, permissions, and data disclosures.
 7. Click **Submit for review** only after the final local installation test passes.
 
-The Glimmer rebrand introduces no new permissions or data practices. Upload it as an update to the existing store item, preserving extension ID `lnoknbamomadbldpkjkbaibinkaibenk`. Before submission, choose a version higher than the live store version and align the package, lockfile, manifest, and changelog.
+Version 2.2.0 adds an optional WeRead connection and its private reading data. WeRead favorites are local-only; update the authentication and website-content disclosures. Upload it as an update to the existing store item, preserving extension ID `lnoknbamomadbldpkjkbaibinkaibenk`. Before submission, choose a version higher than the live store version and align the package, lockfile, manifest, and changelog.

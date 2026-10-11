@@ -3,12 +3,13 @@
 // Source definitions (label, color, fetch, render) live in the adapter registry —
 // this context handles only enabled/disabled state + user config + localStorage.
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useSyncExternalStore } from "react"
 import type { ReactNode } from "react"
 import type { SourceId } from "../types/DiscoveryItem"
 import { ADAPTER_LIST } from "../sources/registry"
 import { requestOptionalHostPermission } from "../utils/environment"
 import { feedCache } from '../utils/feedCache'
+import { invalidateSource } from '../utils/sourceLifecycle'
 
 function urlFieldKeys(id: SourceId): string[] {
   const adapter = ADAPTER_LIST.find((a) => a.id === id)
@@ -26,7 +27,7 @@ interface SourcesContextType {
   sourceConfigs: SourceConfigs
   updateSourceConfig: (id: SourceId, key: string, value: string) => void
   getSourceConfig: (id: SourceId) => Record<string, string>
-  disconnectSource: (id: SourceId) => void
+  disconnectSource: (id: SourceId) => Promise<void>
   /** Requests the Chrome extension host permission needed to fetch this
    *  source's configured URL field(s), if any. Safe to call repeatedly —
    *  no-ops once granted or outside the extension context. Call this from
@@ -77,78 +78,80 @@ function loadConfigs(): SourceConfigs {
         const value = parsed[id]
         if (!value || typeof value !== 'object' || Array.isArray(value)) return []
         const config = Object.fromEntries(Object.entries(value).filter(([, entry]) => typeof entry === 'string'))
-        return [[id, { ...config, __cacheId: config.__cacheId || crypto.randomUUID() }]]
+        return [[id, { ...config, __cacheId: config.__cacheId || 'legacy' }]]
       })) as SourceConfigs
     }
   } catch { /* ignore */ }
   return {}
 }
 
-// ─── Provider ─────────────────────────────────────────────────
+// Source configuration lives in shared storage, not per-tab snapshots. Mutations
+// read the latest value synchronously, so a stale tab cannot restore old keys.
+const CHANGE_EVENT = 'glimmer-source-settings'
+let snapshotRaw = ''
+let snapshot: { enabledSources: Set<SourceId>; sourceConfigs: SourceConfigs }
+function getSnapshot() {
+  const raw = `${localStorage.getItem(ENABLED_KEY)}|${localStorage.getItem(CONFIGS_KEY)}`
+  if (!snapshot || raw !== snapshotRaw) {
+    snapshotRaw = raw
+    snapshot = { enabledSources: loadEnabled(), sourceConfigs: loadConfigs() }
+  }
+  return snapshot
+}
+function subscribe(listener: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (!event.key || event.key === ENABLED_KEY || event.key === CONFIGS_KEY) listener()
+  }
+  window.addEventListener('storage', onStorage)
+  window.addEventListener(CHANGE_EVENT, listener)
+  return () => {
+    window.removeEventListener('storage', onStorage)
+    window.removeEventListener(CHANGE_EVENT, listener)
+  }
+}
+function publish(enabled: Set<SourceId>, configs: SourceConfigs) {
+  localStorage.setItem(CONFIGS_KEY, JSON.stringify(configs))
+  localStorage.setItem(ENABLED_KEY, JSON.stringify([...enabled]))
+  window.dispatchEvent(new Event(CHANGE_EVENT))
+}
+
 export function SourcesProvider({ children }: { children: ReactNode }) {
-  const [enabledSources, setEnabledSources] = useState<Set<SourceId>>(loadEnabled)
-  const [sourceConfigs, setSourceConfigs] = useState<SourceConfigs>(loadConfigs)
-
-  useEffect(() => {
-    localStorage.setItem(ENABLED_KEY, JSON.stringify([...enabledSources]))
-  }, [enabledSources])
-
-  useEffect(() => {
-    localStorage.setItem(CONFIGS_KEY, JSON.stringify(sourceConfigs))
-  }, [sourceConfigs])
+  const { enabledSources, sourceConfigs } = useSyncExternalStore(subscribe, getSnapshot)
 
   const toggleSource = (id: SourceId, configOverride?: Record<string, string>): boolean => {
-    const adapter = ADAPTER_LIST.find((a) => a.id === id)
-    const currentlyEnabled = enabledSources.has(id)
-    const config = configOverride ?? sourceConfigs[id] ?? {}
-
-    // Configuration-backed sources must be complete before they can enter the
-    // active feed. This keeps the invariant at the state boundary instead of
-    // relying only on the Sources UI to prevent an invalid activation.
-    if (!currentlyEnabled && adapter?.requiresConfig && !isFullyConfigured(id, config)) {
-      return false
-    }
-
-    setEnabledSources((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        if (next.size === 1) return prev // always keep ≥1 active
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
-
-    // The setup UI awaits host permission before activating a configured source.
+    const current = getSnapshot()
+    const enabled = new Set(current.enabledSources)
+    if (!enabled.has(id) && !isFullyConfigured(id, configOverride ?? current.sourceConfigs[id] ?? {})) return false
+    if (enabled.has(id)) {
+      if (enabled.size === 1) return false
+      enabled.delete(id)
+      invalidateSource(id)
+    } else enabled.add(id)
+    publish(enabled, current.sourceConfigs)
     return true
   }
 
   const isEnabled = (id: SourceId) => enabledSources.has(id)
-
   const updateSourceConfig = (id: SourceId, key: string, value: string) => {
-    setSourceConfigs((prev) => ({
-      ...prev,
-      [id]: { ...(prev[id] ?? {}), [key]: value, __cacheId: crypto.randomUUID() },
-    }))
+    const current = getSnapshot()
+    invalidateSource(id)
+    publish(current.enabledSources, {
+      ...current.sourceConfigs,
+      [id]: { ...(current.sourceConfigs[id] ?? {}), [key]: value, __cacheId: crypto.randomUUID() },
+    })
   }
+  const getSourceConfig = (id: SourceId): Record<string, string> => sourceConfigs[id] ?? {}
 
-  const getSourceConfig = (id: SourceId): Record<string, string> =>
-    sourceConfigs[id] ?? {}
-
-  const disconnectSource = (id: SourceId) => {
-    setSourceConfigs(previous => {
-      const next = { ...previous }
-      delete next[id]
-      return next
-    })
-    setEnabledSources(previous => {
-      const next = new Set(previous)
-      next.delete(id)
-      if (!next.size) next.add(DEFAULT_SOURCE_IDS[0])
-      return next
-    })
-    void feedCache.clearSource(id)
+  const disconnectSource = async (id: SourceId): Promise<void> => {
+    const current = getSnapshot()
+    const configs = { ...current.sourceConfigs }
+    const enabled = new Set(current.enabledSources)
+    invalidateSource(id)
+    delete configs[id]
+    enabled.delete(id)
+    if (!enabled.size) enabled.add(DEFAULT_SOURCE_IDS[0])
+    publish(enabled, configs)
+    await feedCache.clearSource(id)
   }
 
   // Save requests permission for the draft endpoint before persisting it,

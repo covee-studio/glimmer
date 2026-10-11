@@ -150,3 +150,45 @@ describe('incremental, account-isolated discovery', () => {
     await expect(fetchWeReadNotes('wrk-invalid')).rejects.toThrow('unexpected notebook')
   })
 })
+
+it('pairs a second-page thought with its original highlight and chapter, without an earlier duplicate', async () => {
+  api.mockImplementation(async (_url, options) => {
+    const body = JSON.parse(String(options.body))
+    if (body.api_name === '/user/notebooks') return Response.json({ books: [{ bookId: book.bookId, book }], hasMore: 0 })
+    if (body.api_name === '/book/bookmarklist') return Response.json({ updated: [highlight], chapters: [{ chapterUid: 1, title: '第一章' }] })
+    if (body.synckey === 0) return Response.json({ reviews: [{ review: { reviewId: 'r1', content: 'Unrelated first page thought' } }], hasMore: 1, synckey: 22 })
+    return Response.json({ reviews: [{ review: { reviewId: 'r2', content: 'Second page thought', chapterUid: 1, range: '0-12' } }], hasMore: 0 })
+  })
+  const first = await fetchWeReadNotes('wrk-fixture')
+  expect(first).toHaveLength(1)
+  expect(first[0].raw.quote).toBe('')
+  const second = await fetchWeReadNotes('wrk-fixture')
+  expect(second).toHaveLength(1)
+  expect(second[0].raw).toMatchObject({ quote:highlight.markText, thought:'Second page thought', chapter:'第一章' })
+})
+it('prefers an official readerLink over a book details link', () => {
+  const result = normalizeWeReadNotes(book, { updated:[{...highlight, readerLink:'https://weread.qq.com/web/reader/fixture', deepLink:'https://weread.qq.com/web/bookDetail/fixture'}] }, {}, 'account')
+  expect(result[0].url).toBe('https://weread.qq.com/web/reader/fixture')
+})
+it('rejects an in-flight result after another tab invalidates the source', async () => {
+  const { sourceGeneration } = await import('../src/utils/sourceLifecycle')
+  const old = sourceGeneration('weread')
+  api.mockImplementation(async () => {
+    storage.set('wikinote-source-generation-weread', 'revoked-in-other-tab')
+    return Response.json({ books:[],hasMore:0 })
+  })
+  await expect(fetchWeReadNotes('wrk-fixture')).rejects.toMatchObject({name:'AbortError'})
+  expect(sourceGeneration('weread')).not.toBe(old)
+  expect([...storage.keys()].some(key=>key.startsWith('wikinote-weread-v1-'))).toBe(false)
+})
+
+it('preserves the official notebook-only reading link through discovery', async () => {
+  api.mockImplementation(async (_url: string, options: RequestInit) => {
+    const body = JSON.parse(String(options.body))
+    if (body.api_name === '/user/notebooks') return Response.json({ books: [{ bookId: book.bookId, book: { ...book, readerLink: 'https://weread.qq.com/web/reader/official' }, sort: 10 }], hasMore: 0 })
+    if (body.api_name === '/book/bookmarklist') return Response.json({ updated: [highlight] })
+    return Response.json({ reviews: [], hasMore: 0 })
+  })
+  const result = await fetchWeReadNotes('wrk-test')
+  expect(result[0].url).toBe('https://weread.qq.com/web/reader/official')
+})

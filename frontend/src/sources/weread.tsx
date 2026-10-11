@@ -14,6 +14,7 @@ export const wereadAdapter: SourceAdapter = {
   setupHint: 'Revisit your own highlights and reading thoughts. Your API Key stays on this device. Use the Chrome extension for the best connection.',
   configSchema: [{ key: 'token', label: 'API Key', placeholder: 'wrk-…', secret: true }],
   cacheTtlMs: 0,
+  showCachedWhileRefetching: false,
   fallbackToCachedDataOnError: false,
   fetch: config => fetchWeReadNotes(config?.sourceConfig?.token ?? '', config?.signal),
   renderCard(item: DiscoveryItem) {

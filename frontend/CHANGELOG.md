@@ -1,9 +1,14 @@
 # Changelog
 
-## Unreleased
+## 2.2.0 (2026-10-11)
 
 * Rename Wikinote to Glimmer across the interface, web and extension metadata, documentation, and release artifacts.
 * Preserve existing storage keys and the store listing identity so existing settings and collections remain accessible.
+* Add optional WeRead personal highlights and thoughts via Tencent’s official gateway; keep credentials and WeRead favorites local.
+* Retain highlights and chapter metadata across thought pages and preserve official reading links.
+* Cancel obsolete source requests and synchronize source settings across open tabs; disconnect clears fetch caches.
+* Serialize local favorites and recent-history changes across tabs to avoid lost updates.
+* Integrate DEV appearance, feed lifecycle, and cache improvements.
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 

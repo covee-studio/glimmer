@@ -89,7 +89,7 @@ Run `npm test`, `npm run lint`, both production builds, then `npm run pack:exten
 
 Memos requires a self-hosted instance URL and API token, while Hypothesis requires a personal API token and optionally a username. These credentials are stored locally and are sent only to the configured service. Wikipedia and Hacker News work immediately with no setup.
 
-New sources should support direct client access through public APIs or user-provided credentials, without requiring a Wikinote backend proxy.
+New sources should support direct client access through public APIs or user-provided credentials, without requiring a Glimmer backend proxy.
 
 See the [September 2026 product and code audit](docs/audit-2026-09-05.md) for the implementation decisions, remaining risks, and release verification checklist.
 
