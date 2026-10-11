@@ -24,7 +24,7 @@ Using Node 24.21.0:
 - Packaging and regression checks passed.
 - ZIP root manifest verified: Glimmer, 2.2.0; 30 packaged files.
 - Package: `frontend/dist/glimmer-extension-v2.2.0.zip`.
-- SHA-256: `264ff4d0d9db2587e3e99cea85482f92ddbcfcbef9f4d18df0907bd9c7cef6ae`.
+- SHA-256: `3662a50b16f5cf124c4602a9104fe7da5a10b7189beb7dac359d2a0e0cd82ab6`.
 - Independent static review found no remaining confirmed code blocker.
 
 ## Required before submission
@@ -49,3 +49,10 @@ Using Node 24.21.0:
 - Fixed modal re-creation when ZenMode switches between loading and reading branches by assigning consistent sibling keys to all three modals.
 - Reloaded the unpacked extension. Toggled Wikipedia, Hacker News and WeRead through the native Chrome UI: the dialog remained open, its controls persisted and focus remained on the selected switch. Restored the original source selection. No frame-level recording was captured.
 - After the modal fix: ESLint, TypeScript/extension build, packaging and regression checks passed.
+
+## Source hint and WeRead presentation
+
+- Render source hints as fixed body portals so they cannot enlarge the scrolling dialog. Position within viewport bounds; support pointer and keyboard focus; dismiss stale positions on scroll/resize.
+- Use the English integration name WeRead from Tencent’s official skill documentation and bundle the unmodified application icon linked by the official homepage. Icon provenance is recorded under `frontend/public/source-icons/README.md`.
+- Native Chrome screenshot with the WeRead hint visible showed the official icon and no dialog scrollbar. The unpacked test extension was reloaded.
+- ESLint, TypeScript, both production builds, packaging and regression checks passed.

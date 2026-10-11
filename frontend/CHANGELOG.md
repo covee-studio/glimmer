@@ -10,6 +10,7 @@
 * Serialize local favorites and recent-history changes across tabs to avoid lost updates.
 * Integrate DEV appearance, feed lifecycle, and cache improvements.
 * Keep settings dialogs mounted when changing sources transitions the reading view through loading.
+* Prevent source description hints from creating dialog scrollbars; use WeRead’s English name and official icon.
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 

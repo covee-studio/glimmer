@@ -1,5 +1,6 @@
 import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Languages, Layers, Settings, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
 import { useSources } from "../contexts/SourcesContext"
 import { useFocusTrap } from "../hooks/useFocusTrap"
@@ -22,24 +23,58 @@ type SourcesView = "sources" | SourceId
 
 function SourceHint({ sourceId, sourceLabel, description }: { sourceId: string; sourceLabel: string; description: string }) {
   const tooltipId = `source-description-${sourceId}`
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [position, setPosition] = useState<{ left: number; top?: number; bottom?: number; width: number } | null>(null)
+  const hovered = useRef(false)
+  const focused = useRef(false)
+
+  const open = () => {
+    const rect = buttonRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const width = Math.min(224, window.innerWidth - 24)
+    const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12))
+    setPosition(window.innerHeight - rect.bottom >= 88
+      ? { left, top: rect.bottom + 8, width }
+      : { left, bottom: window.innerHeight - rect.top + 8, width })
+  }
+  const close = () => {
+    if (!hovered.current && !focused.current) setPosition(null)
+  }
+  useEffect(() => {
+    const dismiss = () => setPosition(null)
+    window.addEventListener('resize', dismiss)
+    window.addEventListener('scroll', dismiss, true)
+    return () => {
+      window.removeEventListener('resize', dismiss)
+      window.removeEventListener('scroll', dismiss, true)
+    }
+  }, [])
 
   return (
-    <span className="source-tooltip-trigger group relative inline-flex">
+    <span className="source-tooltip-trigger inline-flex">
       <button
+        ref={buttonRef}
         type="button"
         aria-label={`About ${sourceLabel}`}
-        aria-describedby={tooltipId}
+        aria-describedby={position ? tooltipId : undefined}
+        onMouseEnter={() => { hovered.current = true; open() }}
+        onMouseLeave={() => { hovered.current = false; close() }}
+        onFocus={() => { focused.current = true; open() }}
+        onBlur={() => { focused.current = false; close() }}
         className="inline-flex h-5 w-5 items-center justify-center rounded-full text-slate-300 transition-colors hover:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
       >
         <Info className="h-3.5 w-3.5" strokeWidth={2} />
       </button>
-      <span
-        id={tooltipId}
-        role="tooltip"
-        className="source-tooltip pointer-events-none invisible absolute left-0 top-full z-50 mt-2 w-56 rounded-xl bg-slate-800 px-3 py-2 text-[11px] font-normal leading-snug text-white shadow-lg group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
-      >
-        {description}
-      </span>
+      {position && createPortal(
+        <span
+          id={tooltipId}
+          role="tooltip"
+          className="source-tooltip source-tooltip-open pointer-events-none fixed z-[300] rounded-xl bg-slate-800 px-3 py-2 text-[11px] font-normal leading-snug text-white shadow-lg"
+          style={position}
+        >
+          {description}
+        </span>, document.body,
+      )}
     </span>
   )
 }

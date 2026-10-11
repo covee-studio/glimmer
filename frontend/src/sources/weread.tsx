@@ -1,11 +1,11 @@
-import { BookOpen } from 'lucide-react'
 import type { DiscoveryItem } from '../types/DiscoveryItem'
 import type { SourceAdapter } from './adapter'
 import { fetchWeReadNotes } from './wereadClient'
 import type { WeReadNote } from './wereadClient'
 
 export const wereadAdapter: SourceAdapter = {
-  id: 'weread', label: '微信读书',
+  id: 'weread', label: 'WeRead',
+  logoSrc: '/source-icons/weread-official.png',
   description: 'Rediscover your own book highlights and reading thoughts.',
   color: '#517b70', requiresConfig: true,
   permissionOrigin: 'https://i.weread.qq.com',
@@ -24,7 +24,7 @@ export const wereadAdapter: SourceAdapter = {
   getLikePreview(item) {
     const raw = item.raw as WeReadNote
     return {
-      thumbnailNode: <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><BookOpen className="h-6 w-6" strokeWidth={1.5} /></div>,
+      thumbnailNode: <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><img src="/source-icons/weread-official.png" alt="" className="h-full w-full rounded-lg object-contain" /></div>,
       descriptionText: [raw.bookTitle, raw.author, raw.thought].filter(Boolean).join(' · '),
       titleHoverClass: 'hover:text-emerald-800',
     }
@@ -35,10 +35,10 @@ export const wereadAdapter: SourceAdapter = {
       primary: raw.quote || raw.thought,
       primaryKind: raw.quote ? 'highlight' : 'note',
       secondary: raw.quote ? raw.thought : undefined,
-      secondaryLabel: raw.quote && raw.thought ? '我的想法' : undefined,
+      secondaryLabel: raw.quote && raw.thought ? 'My thoughts' : undefined,
       contentKind: 'body',
       metaNode: <span className="inline-flex max-w-full flex-col items-center gap-1.5"><span className="font-serif-editorial text-[14px]">《{raw.bookTitle}》{raw.author && ` · ${raw.author}`}</span>{raw.chapter && <span className="text-[11px]">{raw.chapter}</span>}</span>,
-      accent: '#638779', accentText: '#486a5e', sourceLabel: '微信读书', noLink: !item.url,
+      accent: '#638779', accentText: '#486a5e', sourceLabel: 'WeRead', noLink: !item.url,
     }
   },
   getSearchText(item) {

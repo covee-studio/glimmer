@@ -89,8 +89,7 @@ html, body {
     visibility 0s linear var(--tooltip-visibility-delay);
 }
 
-.source-tooltip-trigger:hover .source-tooltip,
-.source-tooltip-trigger:focus-within .source-tooltip {
+.source-tooltip-open {
   --tooltip-motion-delay: 80ms;
   --tooltip-visibility-delay: 0ms;
   opacity: 1;
