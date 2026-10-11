@@ -24,9 +24,9 @@ Date: 2026-10-11
 - Keep extension ID `lnoknbamomadbldpkjkbaibinkaibenk`.
 - Keep all `wikinote-*` storage/cache keys and internal event names. A cosmetic rename must not orphan settings, credentials, favorites, recent history or open-tab messages.
 - Historical audit documents, evidence file paths and references to the previous brand remain unchanged.
-- Active physical checkout remains `/Users/charles/Developer/wikinote`.
-- Glimmer access alias: `/Users/charles/Developer/glimmer` → `/Users/charles/Developer/wikinote`. The initial physical move with an old-path symlink was reversed after Codex rejected a symlinked writable workspace root. Normal sandboxed operations were verified again after reversal. Do not load the same checkout under a new unpacked path merely to rename it: that can change the local extension ID and separate its saved settings.
-- Codex's saved project label/path is independent of Git and filesystem names. The supported tools cannot edit it, and native automation of Codex is prohibited. Completing the physical directory rename requires rebinding the saved Codex project to the new real directory outside the active session. Until then, the existing workspace remains a real directory.
+- Physical checkout: `/Users/charles/Developer/glimmer`.
+- Old-path compatibility link: `/Users/charles/Developer/wikinote` → `/Users/charles/Developer/glimmer`. The original unpacked Chrome extension path remains available. Do not load the same checkout as a second unpacked extension under its new path merely to rename it: Chrome can assign a different local extension ID and separate its saved settings.
+- Codex's saved project label/path is independent of Git and filesystem names. The current chat remains attached to the old path and cannot use ordinary sandboxed file operations while that workspace root is a symlink. The user must add or reopen the real Glimmer directory as a Codex project. The supported tools cannot edit the saved Codex project, and native automation of Codex is prohibited.
 - Other computers: update origin to the canonical URL; rename their checkout only after checking their editor, local servers and unpacked-extension paths. Keep a compatibility path where needed.
 
 ## Verification
@@ -38,4 +38,4 @@ Date: 2026-10-11
 
 ## Reversal
 
-The local move was already reversed; only the new-name alias was added. To complete a later physical move, close the active project, remove only the verified Glimmer alias, move the same checkout to Glimmer and reopen that real directory as the saved project. Preserve the unpacked extension path/identity and settings before changing its registration. GitHub can be renamed back through repository settings and origin updated accordingly; do not create a replacement repository under either name. Source changes are a normal commit and can be reverted without deleting user data.
+The physical move can be reversed by removing only the verified old-path symlink and renaming the same checkout back to `/Users/charles/Developer/wikinote`. Preserve the unpacked extension path/identity and settings before changing its registration. GitHub can be renamed back through repository settings and origin updated accordingly; do not create a replacement repository under either name. Source changes are a normal commit and can be reverted without deleting user data.
