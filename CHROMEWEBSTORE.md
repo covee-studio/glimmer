@@ -8,8 +8,8 @@
 - Short name: **Glimmer**
 - Chinese brand: **栖言**
 - Existing sunrise logo is retained.
-- Status: local rename prepared; store metadata, public policy, and screenshots still need updating before publication.
-- Replace Wikinote labels in screenshots and promotional images. Recapture screenshots from the renamed build.
+- Status: 2.2.0 submitted for review on 2026-10-11; automatic publication after approval enabled.
+- Five existing screenshots retained. Two optional promotional tiles still show Wikinote and were retained at the user’s explicit request.
 - Keep existing repository/support URLs until the GitHub repository has actually been renamed.
 - Publisher, contact email, category, and distribution: retain the existing dashboard values; verify them before submission.
 
@@ -17,10 +17,10 @@
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
-| 2.2.0 | 2026-10-11 | Rename to Glimmer, add WeRead, improve source lifecycle and local collections | Draft |
+| 2.2.0 | 2026-10-11 | Rename to Glimmer, add WeRead, improve source lifecycle and local collections | Pending review |
 
 
-This guide describes the local Glimmer Chrome extension build; it does not confirm a published release. Keep it aligned with `frontend/configs/extension/manifest.json`, `README.md`, and the root [`PRIVACY.md`](PRIVACY.md).
+This guide describes Glimmer 2.2.0 submitted for review; it does not confirm publication. Keep it aligned with `frontend/configs/extension/manifest.json`, `README.md`, and the root [`PRIVACY.md`](PRIVACY.md).
 
 ## Current release
 
@@ -37,7 +37,7 @@ This guide describes the local Glimmer Chrome extension build; it does not confi
 ### Single purpose description
 
 ```text
-Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, and Hypothesis annotations. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing activity.
+Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing activity.
 ```
 
 ### Short description

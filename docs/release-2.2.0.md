@@ -1,7 +1,7 @@
 # Glimmer 2.2.0 release readiness
 
 Date: 2026-10-11
-Status: release candidate; not submitted or published
+Status: submitted to Chrome Web Store; pending review; automatic publication enabled
 
 ## Source and scope
 
@@ -27,7 +27,7 @@ Using Node 24.21.0:
 - SHA-256: `3662a50b16f5cf124c4602a9104fe7da5a10b7189beb7dac359d2a0e0cd82ab6`.
 - Independent static review found no remaining confirmed code blocker.
 
-## Required before submission
+## Original submission checklist (see acceptance and store progress below)
 
 - Install this package in Chrome and verify the user-facing reading flow.
 - User supplies their Key locally: test WeRead host permission, personal notes, more pages, replacement Key, and disconnect across two tabs. Never store the real Key in Git, logs, or this document.
@@ -56,3 +56,13 @@ Using Node 24.21.0:
 - Use the English integration name WeRead from Tencent’s official skill documentation and bundle the unmodified application icon linked by the official homepage. Icon provenance is recorded under `frontend/public/source-icons/README.md`.
 - Native Chrome screenshot with the WeRead hint visible showed the official icon and no dialog scrollbar. The unpacked test extension was reloaded.
 - ESLint, TypeScript, both production builds, packaging and regression checks passed.
+
+## Store upload progress
+
+- Source main pushed and remote verified at `9ac8ede93c92cd8b8cadf9a3524f36c6606a484e`.
+- Public privacy policy fetched anonymously and matched local `PRIVACY.md`.
+- Uploaded the versioned ZIP above to the existing item. Dashboard visibly confirmed draft 2.2.0 and live 2.1.0.
+- Updated and saved the Glimmer description, including WeRead and local-only WeRead favorites.
+- Five existing screenshots showed no old brand labels in the dashboard preview; both optional promotional tiles still say Wikinote. User explicitly chose to retain both promotional tiles.
+- Updated and saved permission justifications including optional WeRead access; existing data categories and policy URL verified.
+- Final submission confirmation displayed “已将您的扩展程序提交送审”; subsequent dashboard status was “待审核”. Automatic publication after approval was checked. Live release is still 2.1.0 until approval.
