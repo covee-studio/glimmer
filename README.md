@@ -1,4 +1,8 @@
-# Wikinote
+# Glimmer
+
+Glimmer (栖言), formerly Wikinote, is a quiet new tab for curious minds.
+
+The product name is Glimmer. Existing repository URLs and `wikinote-*` storage keys remain for compatibility with installed users. Store listing and rebrand publication steps are tracked in [CHROMEWEBSTORE.md](CHROMEWEBSTORE.md).
 
 A new tab that puts one thing in front of you — a single article, quietly chosen at random.
 
@@ -75,11 +79,11 @@ Memos requires a self-hosted instance URL and API token, while Hypothesis requir
 
 New sources should use a fully public API — no OAuth, no backend proxy. This keeps the app deployable without a server.
 
-See the [Wikinote Privacy Policy](PRIVACY.md) for details about local storage, source credentials, source content, and optional Chrome Sync.
+See the [Glimmer Privacy Policy](PRIVACY.md) for details about local storage, source credentials, source content, and optional Chrome Sync.
 
 ## Support
 
-If you enjoy Wikinote, consider buying me a coffee:
+If you enjoy Glimmer, consider buying me a coffee:
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/exploreryer)
 

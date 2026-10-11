@@ -64,7 +64,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
             <div className="font-serif-editorial flex flex-col gap-2.5 text-[15px] text-slate-600 leading-[1.75]">
               <p>A new tab is usually just a moment between things.</p>
               <p>
-                Wikinote puts something there — one article, quietly chosen at random.
+                Glimmer puts something there — one article, quietly chosen at random.
                 Wikipedia, Hacker News, or your own notes.
               </p>
               <p>You can skip it. Or you can stay a while.</p>

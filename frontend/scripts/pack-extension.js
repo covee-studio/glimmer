@@ -7,7 +7,7 @@ import { existsSync, mkdirSync } from 'fs';
 function pack() {
   const distDir = resolve(process.cwd(), 'dist');
   const extDir = resolve(distDir, 'extension');
-  const zipPath = resolve(distDir, 'wikinote-extension.zip');
+  const zipPath = resolve(distDir, 'glimmer-extension.zip');
 
   if (!existsSync(extDir)) {
     console.error('❌ Extension directory not found. Build it first: npm run build:extension');

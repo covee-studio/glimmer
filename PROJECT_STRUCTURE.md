@@ -1,4 +1,4 @@
-# Wikinote Project Structure
+# Glimmer Project Structure
 
 This document describes the repository layout, build targets, and key conventions used in the project.
 
@@ -47,7 +47,7 @@ frontend/
 │   ├── build-web.js          # Build Web target
 │   ├── build-extension.js    # Build Extension target + icon ensure/generation
 │   ├── build-all.js          # Build both targets in sequence
-│   ├── pack-extension.js     # Zip dist/extension → dist/wikinote-extension.zip
+│   ├── pack-extension.js     # Zip dist/extension → dist/glimmer-extension.zip
 │   ├── install-extension.js  # Helper to open chrome://extensions/
 │   ├── generate-logos-sharp.js # Optional icon generation helpers
 │   └── generate-svg.js       # Optional SVG favicon helper
@@ -89,7 +89,7 @@ frontend/
 - `npm run build:web` — Build Web production to `dist/web`.
 - `npm run build:extension` — Build Extension to `dist/extension`.
 - `npm run build:all` — Build both targets.
-- `npm run pack:extension` — Zip `dist/extension` to `dist/wikinote-extension.zip` for store submission.
+- `npm run pack:extension` — Zip `dist/extension` to `dist/glimmer-extension.zip` for store submission.
 
 ## Chrome Extension specifics
 

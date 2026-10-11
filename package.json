@@ -1,5 +1,6 @@
 {
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1"
-  }
+  },
+  "name": "glimmer-workspace"
 }

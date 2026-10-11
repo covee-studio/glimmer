@@ -83,7 +83,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
     const data = likedArticles.map((item) => getAdapter(item.source).getExportData(item))
     const dataStr = JSON.stringify(data, null, 2)
     const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr)
-    const filename = `wikinote-favorites-${new Date().toISOString().split("T")[0]}.json`
+    const filename = `glimmer-favorites-${new Date().toISOString().split("T")[0]}.json`
     const link = document.createElement("a")
     link.setAttribute("href", dataUri)
     link.setAttribute("download", filename)

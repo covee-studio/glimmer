@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* Rename Wikinote to Glimmer across the interface, web and extension metadata, documentation, and release artifacts.
+* Preserve existing storage keys and the store listing identity so existing settings and collections remain accessible.
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## [2.1.0](https://github.com/covee-studio/wikinote/compare/v2.0.8...v2.1.0) (2026-08-23)

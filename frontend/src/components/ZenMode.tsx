@@ -365,7 +365,7 @@ function TopToolbar({
             onCloseTheme()
             Analytics.track('extension_cta_clicked', { placement: 'toolbar' })
           }}
-          aria-label="Make Wikinote my new tab — opens Chrome Web Store"
+          aria-label="Make Glimmer my new tab — opens Chrome Web Store"
           className={`mr-2 hidden h-9 items-center gap-2 rounded-full border px-3.5 text-[12px] font-medium tracking-[-0.01em] backdrop-blur-md transition-[background-color,border-color,color,transform] duration-200 md:inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
             dark
               ? 'border-white/20 bg-white/8 text-slate-200 hover:-translate-y-px hover:border-white/30 hover:bg-white/14 hover:text-white focus-visible:ring-white/40 focus-visible:ring-offset-slate-900'
@@ -558,7 +558,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         <Backdrop />
         <div className="absolute top-0 left-0 px-8 pt-6 z-20">
           <span className={`text-[15px] font-bold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-700'} opacity-40`}>
-            Wikinote
+            Glimmer
           </span>
         </div>
         {/* Keep the complete toolbar available while the first source request is pending. */}
@@ -647,7 +647,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         className="absolute top-0 left-0 px-8 pt-6 z-20 flex items-center gap-4"
       >
         <span className={`text-[15px] font-bold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-700'}`}>
-          Wikinote
+          Glimmer
         </span>
       </motion.div>
 

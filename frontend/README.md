@@ -1,4 +1,4 @@
-# Wikinote - Dual Build (Web + Extension)
+# Glimmer - Dual Build (Web + Extension)
 
 Build Web and Chrome Extension from a single codebase.
 

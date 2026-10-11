@@ -211,7 +211,7 @@ if (loadMoreToastCount !== 1) {
   throw new Error(`Expected one load-more failure toast, found ${loadMoreToastCount}`)
 }
 
-const zipPath = resolve(root, "dist/wikinote-extension.zip")
+const zipPath = resolve(root, "dist/glimmer-extension.zip")
 if (existsSync(zipPath)) {
   const entries = execFileSync("unzip", ["-Z1", zipPath], { encoding: "utf8" })
   if (!entries.split("\n").includes("manifest.json") || entries.includes("extension/manifest.json")) {

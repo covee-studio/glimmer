@@ -1,4 +1,4 @@
-# Wikinote Dual Build Guide
+# Glimmer Dual Build Guide
 
 Build both Web and Chrome Extension from a single React + TypeScript codebase.
 

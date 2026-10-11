@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Wikinote – A New Tab for Discovery",
-  "short_name": "Wikinote",
+  "name": "Glimmer – A New Tab for Discovery",
+  "short_name": "Glimmer",
   "version": "2.1.0",
   "description": "Discover one article, story, note, or annotation from Wikipedia, Hacker News, Memos, or Hypothesis in every new tab.",
   "permissions": [
@@ -27,7 +27,7 @@
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_title": "Wikinote",
+    "default_title": "Glimmer",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",

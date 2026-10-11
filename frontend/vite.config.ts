@@ -12,8 +12,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
         manifest: {
-        name: "Wikinote",
-        short_name: "Wikinote",
+        name: "Glimmer",
+        short_name: "Glimmer",
         icons: [
           {
               src: "/favicon.svg",

@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Source icon path
-const sourceIcon = resolve(__dirname, '../assets/logo/wikinote-logo 512.png');
+const sourceIcon = resolve(__dirname, '../public/web-app-manifest-512x512.png');
 const outputSVG = resolve(__dirname, '../public/favicon.svg');
 
 async function generateSVG() {

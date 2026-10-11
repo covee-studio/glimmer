@@ -1,12 +1,12 @@
 {
   "app": {
-    "title": "Wikinote",
+    "title": "Glimmer",
     "about": "About",
     "likes": "Likes",
     "language": "Language"
   },
   "about": {
-    "title": "About Wikinote",
+    "title": "About Glimmer",
     "buyMeCoffee": "Buy me a coffee"
   },
   "likes": {

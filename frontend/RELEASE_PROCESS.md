@@ -12,7 +12,7 @@ published artifacts always describe the same source tree.
   and lockfile versions match, then publishes a GitHub Release with:
   - Title: `vX.Y.Z`
   - Body: the latest `frontend/CHANGELOG.md` entry
-  - Asset: `frontend/dist/wikinote-extension-vX.Y.Z.zip`
+  - Asset: `frontend/dist/glimmer-extension-vX.Y.Z.zip`
 
 ## How to release
 1. Update the same version in `frontend/package.json`,

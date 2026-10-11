@@ -1,4 +1,4 @@
-// Safe Mode content filter for Wikinote
+// Safe Mode content filter for Glimmer
 //
 // Strategy: rely on Wikipedia's own editorial category system rather than
 // maintaining a keyword blocklist. Wikipedia editors already tag explicit and
