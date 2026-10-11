@@ -24,7 +24,7 @@ Using Node 24.21.0:
 - Packaging and regression checks passed.
 - ZIP root manifest verified: Glimmer, 2.2.0; 30 packaged files.
 - Package: `frontend/dist/glimmer-extension-v2.2.0.zip`.
-- SHA-256: `28871b7eb579640b0e79af783de832840302bc3bbdd861d83f556d5460aeafce`.
+- SHA-256: `264ff4d0d9db2587e3e99cea85482f92ddbcfcbef9f4d18df0907bd9c7cef6ae`.
 - Independent static review found no remaining confirmed code blocker.
 
 ## Required before submission
@@ -41,3 +41,11 @@ Using Node 24.21.0:
 - Cross-device Chrome Sync chunk-write races are preexisting and were not resolved by local collection locks. WeRead favorites remain excluded from Sync.
 - Local `dev` and `codex/pre-reconcile-20260812` are entirely ancestors of main and can be deleted without losing commits.
 - Keep remote `DEV` until acceptance and integration into main are complete.
+
+## Local Chrome acceptance update
+
+- User connected a real WeRead account in unpacked 2.2.0 and reported that their test worked. This is a user-reported acceptance result; key replacement, multiple pages and multi-tab disconnect were not independently live-tested.
+- Observed the real source rendering a book/chapter and official reading link, without reading or retaining credentials.
+- Fixed modal re-creation when ZenMode switches between loading and reading branches by assigning consistent sibling keys to all three modals.
+- Reloaded the unpacked extension. Toggled Wikipedia, Hacker News and WeRead through the native Chrome UI: the dialog remained open, its controls persisted and focus remained on the selected switch. Restored the original source selection. No frame-level recording was captured.
+- After the modal fix: ESLint, TypeScript/extension build, packaging and regression checks passed.

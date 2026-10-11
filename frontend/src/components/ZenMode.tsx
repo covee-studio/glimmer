@@ -619,9 +619,9 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
             </div>
           )}
         </div>
-        <AboutModal isOpen={modal === 'about'} onClose={() => setModal(null)} />
-        <SourcesModal isOpen={modal === 'sources'} sourceErrors={sourceErrors} onClose={() => setModal(null)} />
-        <LikesModal isOpen={modal === 'likes'} onClose={() => setModal(null)} />
+        <AboutModal key="about-modal" isOpen={modal === 'about'} onClose={() => setModal(null)} />
+        <SourcesModal key="sources-modal" isOpen={modal === 'sources'} sourceErrors={sourceErrors} onClose={() => setModal(null)} />
+        <LikesModal key="likes-modal" isOpen={modal === 'likes'} onClose={() => setModal(null)} />
       </div>
     )
   }
@@ -776,9 +776,9 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         </div>
       </motion.div>
 
-      <AboutModal isOpen={modal === 'about'} onClose={() => setModal(null)} />
-      <SourcesModal isOpen={modal === 'sources'} sourceErrors={sourceErrors} onClose={() => setModal(null)} />
-      <LikesModal isOpen={modal === 'likes'} onClose={() => setModal(null)} />
+      <AboutModal key="about-modal" isOpen={modal === 'about'} onClose={() => setModal(null)} />
+      <SourcesModal key="sources-modal" isOpen={modal === 'sources'} sourceErrors={sourceErrors} onClose={() => setModal(null)} />
+      <LikesModal key="likes-modal" isOpen={modal === 'likes'} onClose={() => setModal(null)} />
     </div>
   )
 }
