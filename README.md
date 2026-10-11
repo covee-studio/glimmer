@@ -2,7 +2,7 @@
 
 Glimmer (栖言), formerly Wikinote, is a quiet new tab for curious minds.
 
-The product name is Glimmer. Existing repository URLs and `wikinote-*` storage keys remain for compatibility with installed users. Store listing and rebrand publication steps are tracked in [CHROMEWEBSTORE.md](CHROMEWEBSTORE.md).
+The product name is Glimmer. The repository is `covee-studio/glimmer`. Legacy `wikinote-*` storage keys and internal events remain for compatibility with installed users and open tabs. Store listing and rebrand publication steps are tracked in [CHROMEWEBSTORE.md](CHROMEWEBSTORE.md).
 
 A new tab that puts one thing in front of you — a single article, quietly chosen at random.
 
@@ -107,4 +107,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Star History
 
-![Star History Chart](https://api.star-history.com/svg?repos=Exploreryer/wikinote&type=Date)
+![Star History Chart](https://api.star-history.com/svg?repos=covee-studio/glimmer&type=Date)

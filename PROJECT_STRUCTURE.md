@@ -5,7 +5,7 @@ This document describes the repository layout, build targets, and key convention
 ## Top-level layout
 
 ```
-wikinote/
+glimmer/
 ├── LICENSE
 ├── README.md                 # Root project readme
 ├── PRIVACY.md                # Public privacy policy for the Chrome extension
@@ -80,7 +80,7 @@ frontend/
   - Analytics only on Web
 - Strong TypeScript settings (strict), ESLint with `jsx-a11y`.
 - PWA (Web) via `vite-plugin-pwa`.
-- Chrome Web Store submission and privacy details are maintained in `frontend/CHROME_STORE_SUBMISSION.md` and `PRIVACY.md`.
+- Chrome Web Store submission and privacy details are maintained in root `CHROMEWEBSTORE.md` and `PRIVACY.md`.
 - Accessibility: ErrorBoundary, keyboard navigation, focus trap for modals, toast notifications.
 
 ## Build commands

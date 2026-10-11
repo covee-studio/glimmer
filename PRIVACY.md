@@ -92,6 +92,6 @@ This policy may be updated when Glimmer’s data practices or features change. T
 
 For privacy questions or requests, open an issue in the project repository:
 
-<https://github.com/covee-studio/wikinote/issues>
+<https://github.com/covee-studio/glimmer/issues>
 
 Source services have their own privacy policies and terms. Please review them when using those services, including [Wikimedia](https://foundation.wikimedia.org/wiki/Policy:Privacy_policy), [Hypothesis](https://web.hypothes.is/privacy/), and [Google Chrome](https://policies.google.com/privacy).

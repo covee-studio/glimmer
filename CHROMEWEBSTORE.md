@@ -10,27 +10,28 @@
 - Existing sunrise logo is retained.
 - Status: 2.2.0 submitted for review on 2026-10-11; automatic publication after approval enabled.
 - Five existing screenshots retained. Two optional promotional tiles still show Wikinote and were retained at the user’s explicit request.
-- Keep existing repository/support URLs until the GitHub repository has actually been renamed.
+- Repository renamed to `covee-studio/glimmer`; old GitHub URLs redirect. Store 2.2.0 remains pending review with its submitted URLs.
 - Publisher, contact email, category, and distribution: retain the existing dashboard values; verify them before submission.
 
 ## Version History
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
+| 2.2.1 | 2026-10-11 | Repository rename and canonical product links | Prepared; not submitted |
 | 2.2.0 | 2026-10-11 | Rename to Glimmer, add WeRead, improve source lifecycle and local collections | Pending review |
 
 
 This guide describes Glimmer 2.2.0 submitted for review; it does not confirm publication. Keep it aligned with `frontend/configs/extension/manifest.json`, `README.md`, and the root [`PRIVACY.md`](PRIVACY.md).
 
-## Current release
+## Current development build
 
-- Extension version: `2.2.0`
+- Extension version: `2.2.1` (not submitted)
 - Manifest: `frontend/configs/extension/manifest.json`
 - Build output: `dist/extension/`
-- Submission package: `dist/glimmer-extension-v2.2.0.zip`
+- Submission package: `dist/glimmer-extension-v2.2.1.zip`
 - Privacy policy source: [`PRIVACY.md`](PRIVACY.md)
 - Public privacy policy URL after it is pushed to `main`:
-  `https://github.com/covee-studio/wikinote/blob/main/PRIVACY.md`
+  `https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md`
 
 ## Store description
 
@@ -62,7 +63,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
 Glimmer is open source:
-https://github.com/covee-studio/wikinote
+https://github.com/covee-studio/glimmer
 ```
 
 ## Permissions
@@ -126,7 +127,7 @@ Glimmer fetches data from public and user-configured APIs, but all JavaScript sh
 After `PRIVACY.md` has been pushed to the public `main` branch, enter:
 
 ```text
-https://github.com/covee-studio/wikinote/blob/main/PRIVACY.md
+https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md
 ```
 
 Do not use the repository homepage as a substitute for the privacy policy.

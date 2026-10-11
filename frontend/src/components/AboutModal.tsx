@@ -105,7 +105,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
               <div className="font-sans pt-4 border-t border-slate-100 mt-1 flex items-center gap-4">
                 <a
-                  href="https://github.com/Exploreryer/wikinote"
+                  href="https://github.com/covee-studio/glimmer"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-slate-500 hover:text-slate-800 transition-colors font-medium"

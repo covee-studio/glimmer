@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.1 (2026-10-11)
+
+* Complete the GitHub repository rename to covee-studio/glimmer and update About, documentation and support links.
+* Use the stable extension ID without a legacy brand slug for Chrome Web Store links.
+* Preserve legacy storage identifiers and the existing extension identity.
+
 ## 2.2.0 (2026-10-11)
 
 * Rename Wikinote to Glimmer across the interface, web and extension metadata, documentation, and release artifacts.
@@ -14,14 +20,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.1.0](https://github.com/covee-studio/wikinote/compare/v2.0.8...v2.1.0) (2026-08-23)
+## [2.1.0](https://github.com/covee-studio/glimmer/compare/v2.0.8...v2.1.0) (2026-08-23)
 
 
 ### Features
 
-* add local recent collection ([6a9827d](https://github.com/covee-studio/wikinote/commit/6a9827de294dbff0257329246ce4ff22f5ea9e04))
-* add local recent collection ([12e9391](https://github.com/covee-studio/wikinote/commit/12e9391771a143adc75d3ad661bea0a732cdb3e2))
-* add web extension install entry ([cb6fe3c](https://github.com/covee-studio/wikinote/commit/cb6fe3c7d66e83bcd32fbe9efacae29b931f03f6))
+* add local recent collection ([6a9827d](https://github.com/covee-studio/glimmer/commit/6a9827de294dbff0257329246ce4ff22f5ea9e04))
+* add local recent collection ([12e9391](https://github.com/covee-studio/glimmer/commit/12e9391771a143adc75d3ad661bea0a732cdb3e2))
+* add web extension install entry ([cb6fe3c](https://github.com/covee-studio/glimmer/commit/cb6fe3c7d66e83bcd32fbe9efacae29b931f03f6))
 
 # Changelog
 
