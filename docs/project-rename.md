@@ -24,9 +24,9 @@ Date: 2026-10-11
 - Keep extension ID `lnoknbamomadbldpkjkbaibinkaibenk`.
 - Keep all `wikinote-*` storage/cache keys and internal event names. A cosmetic rename must not orphan settings, credentials, favorites, recent history or open-tab messages.
 - Historical audit documents, evidence file paths and references to the previous brand remain unchanged.
-- Canonical local checkout: `/Users/charles/Developer/glimmer`.
-- Compatibility symlink: `/Users/charles/Developer/wikinote` → `/Users/charles/Developer/glimmer`. Keep it while Codex and the unpacked Chrome extension reference the old path. Do not load the same checkout under a new unpacked path merely to rename it: that can change the local extension ID and separate its saved settings.
-- Codex's saved project label/path is independent of Git and filesystem names. The supported tools cannot edit it, and native automation of Codex is prohibited. The old path stays usable through the symlink.
+- Active physical checkout remains `/Users/charles/Developer/wikinote`.
+- Glimmer access alias: `/Users/charles/Developer/glimmer` → `/Users/charles/Developer/wikinote`. The initial physical move with an old-path symlink was reversed after Codex rejected a symlinked writable workspace root. Normal sandboxed operations were verified again after reversal. Do not load the same checkout under a new unpacked path merely to rename it: that can change the local extension ID and separate its saved settings.
+- Codex's saved project label/path is independent of Git and filesystem names. The supported tools cannot edit it, and native automation of Codex is prohibited. Completing the physical directory rename requires rebinding the saved Codex project to the new real directory outside the active session. Until then, the existing workspace remains a real directory.
 - Other computers: update origin to the canonical URL; rename their checkout only after checking their editor, local servers and unpacked-extension paths. Keep a compatibility path where needed.
 
 ## Verification
@@ -38,4 +38,4 @@ Date: 2026-10-11
 
 ## Reversal
 
-The local move is reversible: remove only the compatibility symlink after checking it is a symlink, then move the same checkout back to the old path and update editor/project paths. GitHub can be renamed back through repository settings and origin updated accordingly; do not create a replacement repository under either name. Source changes are a normal commit and can be reverted without deleting user data.
+The local move was already reversed; only the new-name alias was added. To complete a later physical move, close the active project, remove only the verified Glimmer alias, move the same checkout to Glimmer and reopen that real directory as the saved project. Preserve the unpacked extension path/identity and settings before changing its registration. GitHub can be renamed back through repository settings and origin updated accordingly; do not create a replacement repository under either name. Source changes are a normal commit and can be reverted without deleting user data.
