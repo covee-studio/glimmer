@@ -1,4 +1,4 @@
-import { Clock3, Cloud, Download, Heart, Search, X } from "lucide-react"
+import { Clock3, Cloud, CloudOff, Download, Heart, Search, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { useLikedArticles } from "../contexts/LikedArticlesContext"
@@ -17,7 +17,7 @@ interface LikesModalProps {
 function SourceBadge({ item }: { item: DiscoveryItem }) {
   const adapter = getAdapter(item.source)
   return (
-    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-slate-100 bg-white p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 p-1">
       {adapter.logoSrc ? (
         <img src={adapter.logoSrc} alt="" className="h-full w-full rounded-full object-contain" />
       ) : (
@@ -33,6 +33,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
     likedArticles,
     recentArticles,
     toggleLike,
+    isLiked,
     clearRecent,
     syncAvailable,
     syncEnabled,
@@ -42,9 +43,20 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
   const [activeTab, setActiveTab] = useState<"saved" | "recent">("saved")
   const [tabWasChosenByUser, setTabWasChosenByUser] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [syncOpen, setSyncOpen] = useState(false)
+  const syncRef = useRef<HTMLDivElement>(null)
+  const [removedItem, setRemovedItem] = useState<DiscoveryItem | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useKeyboardNavigation({ onEscape: onClose, enabled: isOpen })
+  useKeyboardNavigation({
+    onEscape: () => {
+      if (syncOpen) {
+        setSyncOpen(false)
+        syncRef.current?.querySelector<HTMLButtonElement>('button')?.focus()
+      } else onClose()
+    },
+    enabled: isOpen,
+  })
   useFocusTrap(isOpen, containerRef)
 
   // Saved is the natural entry point when the user has deliberately kept
@@ -54,12 +66,23 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
   useEffect(() => {
     if (!isOpen) {
       setTabWasChosenByUser(false)
+      setSyncOpen(false)
+      setRemovedItem(null)
       return
     }
     if (!tabWasChosenByUser) {
       setActiveTab(likedArticles.length > 0 ? "saved" : "recent")
     }
   }, [isOpen, likedArticles.length, tabWasChosenByUser])
+
+  useEffect(() => {
+    if (!syncOpen) return
+    const dismiss = (event: PointerEvent) => {
+      if (!syncRef.current?.contains(event.target as Node)) setSyncOpen(false)
+    }
+    document.addEventListener('pointerdown', dismiss)
+    return () => document.removeEventListener('pointerdown', dismiss)
+  }, [syncOpen])
 
   const articles: Array<{ item: DiscoveryItem; seenAt?: number }> = activeTab === "saved"
     ? likedArticles.map((item) => ({ item }))
@@ -109,47 +132,18 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             ref={containerRef}
-            className="reading-panel z-[41] p-7 rounded-2xl w-full max-w-2xl h-[80vh] flex flex-col relative"
+            className="reading-panel z-[41] p-5 sm:p-8 rounded-2xl w-full max-w-2xl h-[min(760px,88dvh)] flex flex-col relative"
             style={{
               boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)",
             }}
             role="document"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Heart className="w-5 h-5 text-white" fill="currentColor" />
-                </div>
-                <div>
-                  <h2 className="font-serif-editorial text-2xl font-medium text-slate-800">{t("likes.title")}</h2>
-                  <p className="text-sm text-slate-400">
-                    {t("likes.savedAndRecent")}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {activeTab === "saved" && likedArticles.length > 0 && (
-                  <button
-                    onClick={handleExport}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-200 rounded-lg text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all"
-                    title={t("likes.export")}
-                  >
-                    <Download className="w-4 h-4" />
-                    {t("likes.export")}
-                  </button>
-                )}
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-all"
-                  aria-label={t("common.close")}
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="mb-7 flex items-center justify-between gap-3">
+              <h2 className="font-serif-editorial text-2xl font-medium text-slate-800">{t("likes.title")}</h2>
+              <button onClick={onClose} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-slate-500" aria-label={t("common.close")}><X className="h-4 w-4" /></button>
             </div>
-
-            <div className="mb-4 flex border-b border-slate-100" role="tablist" aria-label="Collection views">
+            <div className="relative mb-4 flex items-start justify-between border-b border-slate-100">
+            <div className="flex" role="tablist" aria-label="Collection views">
               {(["saved", "recent"] as const).map((tab) => {
                 const selected = activeTab === tab
                 return (
@@ -161,11 +155,12 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                     onClick={() => {
                       setTabWasChosenByUser(true)
                       setActiveTab(tab)
+                      setSyncOpen(false)
                       setSearchQuery("")
                     }}
                     className={`relative px-4 pb-2.5 text-sm transition-colors ${selected ? "font-medium text-slate-800" : "text-slate-400 hover:text-slate-600"}`}
                   >
-                    {t(`likes.${tab}`)}
+                    {t(`likes.${tab}`)} <span className="ml-1.5 text-xs font-normal text-slate-400">{tab === "saved" ? likedArticles.length : recentArticles.length}</span>
                     {selected && <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-slate-800" />}
                   </button>
                 )
@@ -173,35 +168,37 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
             </div>
 
             {activeTab === "saved" && syncAvailable && (
-              <div
-                className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5 mb-4"
-                title="Only compact favorite previews are synced. API keys and tokens stay on this device."
-              >
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <Cloud className={`h-4 w-4 flex-shrink-0 ${syncStatus === "error" ? "text-rose-400" : "text-slate-400"}`} strokeWidth={1.8} />
-                  <div className="min-w-0">
-                    <p className="text-[13px] font-medium text-slate-700">Sync favorites</p>
-                    <p className={`truncate text-[11px] ${syncStatus === "error" ? "text-rose-500" : "text-slate-400"}`}>
-                      {syncStatus === "syncing"
-                        ? "Syncing with Chrome"
-                        : syncStatus === "synced"
-                          ? "Synced with Chrome"
-                          : syncStatus === "error"
-                            ? "Sync unavailable"
-                            : "Only on this device"}
+              <div ref={syncRef} className="relative">
+                <button
+                  type="button"
+                  aria-label={`Favorite sync: ${syncStatus === "error" ? "needs attention" : syncEnabled ? "enabled" : "off"}`}
+                  title={syncStatus === "error" ? "Sync needs attention" : syncEnabled ? "Favorite sync is on" : "Favorites stay on this device"}
+                  aria-expanded={syncOpen}
+                  aria-controls="favorite-sync-settings"
+                  onClick={() => setSyncOpen(!syncOpen)}
+                  className={`flex h-9 w-10 items-center justify-center rounded-lg transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-slate-500 ${syncStatus === "error" ? "text-amber-700" : "text-slate-400 hover:text-slate-600"}`}
+                >
+                  {syncStatus === "error" ? <CloudOff className="h-4 w-4" /> : <Cloud className="h-4 w-4" />}
+                  {syncStatus === "error" && <span className="sr-only">Sync needs attention</span>}
+                </button>
+                {syncOpen && (
+                  <div id="favorite-sync-settings" role="region" aria-label="Favorite sync settings" className="absolute right-0 top-11 z-20 w-[min(304px,calc(100vw-80px))] rounded-xl border border-slate-200/80 bg-white p-5 shadow-[0_8px_28px_rgba(15,23,42,0.10)]">
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-sm font-medium text-slate-800">Sync favorites</h3>
+                      <Toggle checked={syncEnabled} onChange={() => setSyncEnabled(!syncEnabled)} ariaLabel="Sync favorites across Chrome devices" />
+                    </div>
+                    <p role="status" className={`mt-2 text-xs ${syncStatus === "error" ? "text-amber-800" : "text-slate-500"}`}>
+                      {syncStatus === "syncing" ? "Syncing with Chrome…" : syncStatus === "synced" ? "Synced with Chrome" : syncStatus === "error" ? "Sync unavailable. Check Chrome Sync." : "Saved on this device"}
                     </p>
+                    <p className="mt-4 text-xs leading-relaxed text-slate-500">Only favorite previews sync across Chrome devices. API keys and WeRead favorites stay on this device.</p>
                   </div>
-                </div>
-                <Toggle
-                  checked={syncEnabled}
-                  onChange={() => setSyncEnabled(!syncEnabled)}
-                  ariaLabel="Sync favorites across Chrome devices"
-                />
+                )}
               </div>
             )}
+            </div>
 
             {/* Search */}
-            <div className="relative mb-4">
+            {articles.length > 0 && <div className="relative mb-3">
               <input
                 type="text"
                 value={searchQuery}
@@ -212,6 +209,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             </div>
 
+            }
             {/* List */}
             <div className="flex-1 overflow-y-auto min-h-0">
               {filteredArticles.length === 0 ? (
@@ -239,7 +237,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                         className="group px-2 py-4 transition-colors hover:bg-slate-50/80"
                       >
                         <div className="flex gap-4 items-start">
-                          {activeTab === "recent" ? <SourceBadge item={item} /> : preview.thumbnailNode}
+                          {activeTab === "recent" ? <SourceBadge item={item} /> : preview.thumbnailNode && <div className="shrink-0 [&>*]:h-10 [&>*]:w-10">{preview.thumbnailNode}</div>}
                           <div className="flex-1 min-w-0">
                             {activeTab === "recent" && (
                               <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-slate-400">
@@ -251,13 +249,13 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                                 href={item.url || undefined}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`font-semibold text-slate-800 transition-colors line-clamp-1 ${preview.titleHoverClass}`}
+                                className={`font-medium text-slate-800 transition-colors line-clamp-2 ${preview.titleHoverClass}`}
                               >
                                 {item.title}
                               </a>
                               {activeTab === "saved" ? (
                                 <button
-                                  onClick={() => toggleLike(item)}
+                                  onClick={() => { setTabWasChosenByUser(true); toggleLike(item); setRemovedItem(item) }}
                                   className="text-slate-400 hover:text-red-500 p-1 rounded-full opacity-60 group-hover:opacity-100 focus-visible:opacity-100 transition-colors"
                                   aria-label={t("likes.remove")}
                                   title={t("likes.remove")}
@@ -283,11 +281,25 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                 </div>
               )}
             </div>
-            {activeTab === "recent" && recentArticles.length > 0 && (
-              <div className="flex justify-end pt-3">
-                <button type="button" onClick={clearRecent} className="text-xs text-slate-400 transition-colors hover:text-slate-700">
-                  {t("likes.clearRecent")}
-                </button>
+            {removedItem && <div role="status" className="mt-3 flex items-center justify-between border-t border-slate-200/70 pt-3 text-xs text-slate-500"><span>Removed from favorites</span><button type="button" className="min-h-10 rounded-lg px-3 font-medium text-slate-800 hover:bg-slate-100" onClick={() => { if (!isLiked(removedItem)) toggleLike(removedItem); setRemovedItem(null) }}>Undo</button></div>}
+            {(articles.length > 0 || activeTab === "saved") && (
+              <div className="flex items-center justify-between border-t border-slate-100 pt-2">
+                {activeTab === "saved" && !syncAvailable ? (
+                  <span
+                    role="img"
+                    aria-label={syncAvailable && syncEnabled ? syncStatus === "synced" ? "Synced with Chrome" : syncStatus === "syncing" ? "Syncing…" : syncStatus === "error" ? "Sync needs attention" : "Sync enabled" : "On this device"}
+                    title={syncAvailable && syncEnabled ? syncStatus === "synced" ? "Synced with Chrome" : syncStatus === "syncing" ? "Syncing…" : syncStatus === "error" ? "Sync needs attention" : "Sync enabled" : "On this device — favorites are saved in this browser"}
+                    className={`inline-flex h-9 w-8 items-center justify-center rounded-lg ${syncStatus === "error" ? "text-amber-700" : "text-slate-400"}`}
+                  >
+                    {syncStatus === "error" ? <CloudOff className="h-3.5 w-3.5" /> : <Cloud className="h-3.5 w-3.5" />}
+                  </span>
+                ) : <span />}
+
+                {articles.length > 0 &&
+                <button type="button" onClick={activeTab === "saved" ? handleExport : clearRecent} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 text-xs text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-slate-500">
+                  {activeTab === "saved" && <Download className="h-3.5 w-3.5" />}
+                  {activeTab === "saved" ? t("likes.export") : t("likes.clearRecent")}
+                </button>}
               </div>
             )}
           </motion.div>

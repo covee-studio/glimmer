@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Chrome as ChromeIcon, Heart as HeartIcon, Share2 as Share2Icon, Layers as LayersIcon, Palette as PaletteIcon, Info as InfoIcon } from 'lucide-react'
+import { Shuffle, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Chrome as ChromeIcon, Heart as HeartIcon, Share2 as Share2Icon, Layers as LayersIcon, Palette as PaletteIcon, Info as InfoIcon } from 'lucide-react'
 import { useLikedArticles } from '../contexts/LikedArticlesContext'
 import { useToast } from '../contexts/ToastContext'
 import { useI18n } from '../hooks/useI18n'
@@ -244,12 +244,39 @@ type ModalKey = 'sources' | 'likes' | 'about' | null
 
 function AutoThemePreview() {
   return (
-    <div aria-hidden className="theme-scene theme-preview auto-theme-preview">
-      <svg viewBox="0 0 100 48" preserveAspectRatio="none">
-        <path className="auto-preview-sky" d="M-8 8 C18 -2 34 18 58 11 S89 0 108 12 V-4 H-8Z" />
-        <path className="auto-preview-sage" d="M-6 47 C14 28 34 39 49 27 S78 17 106 34 V52 H-6Z" />
-        <path className="auto-preview-light" d="M17 48 C25 28 43 12 69 -3 H92 C63 15 51 31 46 48Z" />
-      </svg>
+    <div aria-hidden className="absolute inset-0 flex items-center justify-center bg-[#f1f3ee] text-[#697e6d]">
+      <Shuffle className="h-5 w-5" strokeWidth={1.6} />
+    </div>
+  )
+}
+
+// Remove outgoing layers only after the newest dissolve actually completes.
+// Unique keys keep rapid A → B → A selections from reusing an exiting scene.
+function ThemeBackdrop({ themeId, paused }: { themeId: string; paused: boolean }) {
+  const reducedMotion = useReducedMotion()
+  const sequence = useRef(0)
+  const [layers, setLayers] = useState(() => [{ id: themeId, key: 0 }])
+  useLayoutEffect(() => {
+    setLayers(current => current[current.length - 1].id === themeId ? current
+      : [...current, { id: themeId, key: ++sequence.current }])
+  }, [themeId])
+  return (
+    <div className="theme-backdrop" data-paused={paused} aria-hidden="true">
+      {layers.map(layer => {
+        const theme = ZEN_THEMES.find(candidate => candidate.id === layer.id) ?? ZEN_THEMES[0]
+        const Scene = theme.Backdrop
+        return (
+          <motion.div key={layer.key} className="absolute inset-0"
+            style={{ background: theme.surface, zIndex: layer.key }}
+            initial={{ opacity: layer.key === 0 || reducedMotion ? 1 : 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: reducedMotion ? 0 : 0.8, ease: [0.4, 0, 0.2, 1] }}
+            onAnimationComplete={() => setLayers(current =>
+              current[current.length - 1].key === layer.key && current.length > 1 ? [layer] : current,
+            )}
+          ><Scene /></motion.div>
+        )
+      })}
     </div>
   )
 }
@@ -270,13 +297,19 @@ function ThemePicker({
   onSelect: (id: string) => void
 }) {
   const pickerRef = useRef<HTMLDivElement>(null)
+  const pendingSelection = useRef<string | null>(null)
   useFocusTrap(themeOpen, pickerRef)
   return (
     <div className="relative">
       <ChromeButton label="Appearance" active={themeOpen} onClick={onToggle} dark={dark}>
         <PaletteIcon className="w-[18px] h-[18px]" strokeWidth={2} />
       </ChromeButton>
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => {
+        // Finish dismissing the current palette before changing its colors.
+        const selected = pendingSelection.current
+        pendingSelection.current = null
+        if (selected) onSelect(selected)
+      }}>
         {themeOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={onClose} aria-hidden />
@@ -295,7 +328,7 @@ function ThemePicker({
                 {[
                   {
                     id: 'random',
-                    name: 'Auto',
+                    name: 'Random',
                     swatch: undefined,
                     Preview: AutoThemePreview,
                   },
@@ -307,13 +340,16 @@ function ThemePicker({
                     <button
                       key={th.id}
                       type="button"
-                      onClick={() => onSelect(th.id)}
-                      className="group flex flex-col items-center gap-1.5"
+                      onClick={() => {
+                        pendingSelection.current = th.id
+                        onClose()
+                      }}
+                      className="theme-option group flex flex-col items-center gap-1.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-400"
                       aria-pressed={selected}
                       aria-label={`${th.name} theme`}
                     >
                       <span
-                        className="appearance-swatch relative w-full h-10 rounded-[10px] overflow-hidden border transition-[transform,box-shadow,border-color] duration-200 group-hover:-translate-y-px"
+                        className="appearance-swatch relative w-full h-10 rounded-[10px] overflow-hidden border transition-[transform,box-shadow,border-color,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:brightness-[1.025]"
                         style={{
                           background: Preview ? undefined : th.swatch,
                           borderColor: selected ? (dark ? '#c7d8cf' : '#71857b') : (dark ? '#475569' : 'rgba(211,220,216,0.82)'),
@@ -454,7 +490,6 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   const { t } = useI18n()
 
   const theme = ZEN_THEMES.find((th) => th.id === resolvedThemeId) ?? ZEN_THEMES[0]
-  const Backdrop = theme.Backdrop
   const isDark = !!theme.dark
 
   // Preserve an anchor during same-feed refreshes only. An account/source
@@ -561,9 +596,9 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   // still valid, which used to force a jarring flash to this screen.
   if (!item) {
     return (
-      <div className="reading-room fixed inset-0 z-[200]" data-dark={isDark} style={{ background: theme.surface }}
+      <div className="reading-room fixed inset-0 z-[200]" data-dark={isDark} style={{ background: '#faf8f3' }}
         aria-label="Zen mode loading">
-        <div className="theme-backdrop" data-paused={!pageVisible}><Backdrop /></div>
+        <ThemeBackdrop themeId={resolvedThemeId} paused={!pageVisible} />
         <div className="absolute top-0 left-0 px-8 pt-6 z-20">
           <span className={`text-[15px] font-bold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-700'} opacity-40`}>
             Glimmer
@@ -647,14 +682,14 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
       ref={containerRef}
       className="reading-room fixed inset-0 z-[200] overflow-hidden"
       data-dark={isDark}
-      style={{ background: theme.surface }}
+      style={{ background: '#faf8f3' }}
       aria-label="Zen mode"
       onMouseMove={wakeUp}
       onFocusCapture={wakeUp}
       onKeyDownCapture={wakeUp}
       onTouchStart={wakeUp}
     >
-      <div className="theme-backdrop" data-paused={!pageVisible}><Backdrop /></div>
+      <ThemeBackdrop themeId={resolvedThemeId} paused={!pageVisible} />
       {Object.keys(sourceErrors ?? {}).length > 0 && <button type="button" onClick={() => setModal('sources')} className="source-notice absolute bottom-8 left-8 z-30 max-w-[150px] rounded-full px-3 py-2 text-left text-[11px]" aria-label="Review source connection status">A source needs attention</button>}
 
       {/* Top-left: brand */}

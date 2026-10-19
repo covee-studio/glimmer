@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Languages, Layers, Settings, X } from "lucide-react"
+import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Settings, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
@@ -89,6 +89,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
   const [saving, setSaving] = useState(false)
   const [settingsError, setSettingsError] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
+  const lastOpenedSource = useRef<string | null>(null)
   const settingsAdapter = view === "sources" ? undefined : ADAPTER_LIST.find((adapter) => adapter.id === view)
 
   useKeyboardNavigation({ onEscape: onClose, enabled: isOpen })
@@ -103,11 +104,21 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
   }, [isOpen])
 
   const openSourceSettings = (adapter: SourceAdapter) => {
+    lastOpenedSource.current = adapter.id
     setSettingsDraft({ ...getSourceConfig(adapter.id) })
     setShowToken(false)
     setSettingsError('')
     setView(adapter.id)
   }
+
+  useEffect(() => {
+    if (!isOpen) return
+    const frame = requestAnimationFrame(() => {
+      const selector = view === "sources" ? `[data-source-settings="${lastOpenedSource.current}"]` : '[data-source-back]'
+      containerRef.current?.querySelector<HTMLButtonElement>(selector)?.focus()
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [isOpen, view])
 
   const saveSourceSettings = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -171,22 +182,16 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             ref={containerRef}
-            className="reading-panel relative z-[41] flex max-h-[92vh] min-h-[min(600px,92vh)] w-full max-w-md flex-col overflow-y-auto overscroll-y-contain rounded-2xl p-5 sm:p-7"
+            className="reading-panel relative z-[41] flex max-h-[92vh] w-full max-w-md flex-col overflow-y-auto overscroll-y-contain rounded-2xl p-5 sm:p-7"
             style={{
               boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)",
             }}
             role="document"
           >
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-7 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-800">
-                  <Layers className="h-5 w-5 text-white" />
-                </div>
                 <div>
                   <h2 className="font-serif-editorial text-[22px] sm:text-2xl font-medium text-slate-800">Your reading room</h2>
-                  <p className="text-sm text-slate-400">
-                    Sources · {enabledSources.size} of {ADAPTER_LIST.length} active
-                  </p>
                 </div>
               </div>
               <button
@@ -208,10 +213,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ duration: 0.16, ease: "easeOut" }}
                 >
-                  <div className="mb-5 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                    <div className="hidden sm:flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-500 ring-1 ring-slate-100">
-                      <Languages className="h-5 w-5" strokeWidth={1.8} />
-                    </div>
+                  <div className="mb-4 flex items-center gap-3 border-b border-slate-200/70 pb-5">
                     <div className="flex min-w-0 flex-1 items-center gap-1">
                       <label htmlFor="article-language-select" className="block text-sm font-semibold text-slate-700">
                         Language
@@ -239,21 +241,20 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col divide-y divide-slate-200/60">
                     {ADAPTER_LIST.map((adapter) => {
                       const active = enabledSources.has(adapter.id)
                       const hasSettings = Boolean(adapter.configSchema?.length)
+                      const configured = hasSettings && adapter.configSchema!.every(field => field.required === false || Boolean(getSourceConfig(adapter.id)[field.key]?.trim()))
 
                       return (
                         <div
                           key={adapter.id}
-                          className={`source-row relative flex min-h-[72px] items-center rounded-xl border border-slate-100 px-4 py-3 transition-colors duration-200 hover:z-30 ${
-                            active ? "bg-white/60" : "bg-white/20"
-                          }`}
+                          className="source-row relative flex min-h-[80px] items-center px-1 py-4 hover:z-30"
                         >
                           <div className="flex w-full items-center gap-3">
                             <div className="flex min-w-0 flex-1 items-center gap-3">
-                              <span className={`flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-50 ring-1 ring-slate-100 ${active ? "" : "opacity-60"}`}>
+                              <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-50 ${active ? "" : "opacity-60"}`}>
                                 {adapter.logoSrc ? (
                                   <img
                                     src={adapter.logoSrc}
@@ -279,6 +280,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                                   description={adapter.description}
                                 />
                                 </div>
+                                {hasSettings && <p className="text-xs text-slate-500">{configured ? "Configured" : "Not connected"}</p>}
                                 {sourceErrors[adapter.id] && <p role="status" className="text-[11px] leading-relaxed text-amber-800">{sourceErrors[adapter.id]}</p>}
                               </div>
                             </div>
@@ -286,18 +288,19 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                               {hasSettings && (
                                 <button
                                   type="button"
+                                  data-source-settings={adapter.id}
                                   onClick={() => openSourceSettings(adapter)}
-                                  aria-label={`${adapter.label} settings`}
-                                  className={`flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 ${active ? "" : "opacity-60"}`}
+                                  aria-label={configured ? `${adapter.label} settings` : `Connect ${adapter.label}`}
+                                  className={`flex h-10 min-w-10 px-2 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300`}
                                 >
-                                  <Settings className="h-4 w-4" strokeWidth={1.8} />
+                                  {configured ? <Settings className="h-4 w-4" strokeWidth={1.8} /> : <span className="text-xs">Connect</span>}
                                 </button>
                               )}
-                              <Toggle
+                              {(!hasSettings || configured) && <Toggle
                                 id={`source-toggle-${adapter.id}`}
                                 checked={active}
                                 onChange={() => handleSourceToggle(adapter)}
-                              />
+                              />}
                             </div>
                           </div>
                         </div>
@@ -315,6 +318,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                 >
                   <button
                     type="button"
+                    data-source-back
                     onClick={() => setView("sources")}
                     className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                   >

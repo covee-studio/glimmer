@@ -35,7 +35,21 @@ html, body {
 }
 .reading-panel h2, .reading-panel h3 { color: #293c31; }
 .reading-panel .source-row { border-color: #dedfd5; }
-.reading-panel .source-row:hover { background-color: #eef1e8; }
+.reading-panel .source-row::before {
+  content: "";
+  position: absolute;
+  inset: 5px -8px;
+  border-radius: 14px;
+  background: #eef1e8;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms cubic-bezier(.22,1,.36,1);
+}
+.reading-panel .source-row > * { position: relative; }
+@media (hover: hover) {
+  .reading-panel .source-row:hover::before { opacity: .75; }
+}
+.reading-panel .source-row:focus-within::before { opacity: .55; }
 .reading-panel button[type="submit"] { background-color: #3f5b49; }
 .reading-panel button:disabled { opacity: .55; cursor: wait; }
 .reading-primary { text-wrap: pretty; color: var(--reading-ink); }

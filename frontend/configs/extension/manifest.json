@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Glimmer – A New Tab for Discovery",
   "short_name": "Glimmer",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Rediscover articles, notes and book highlights from Wikipedia, Hacker News, Memos, Hypothesis and WeRead in every new tab.",
   "permissions": [
     "storage",

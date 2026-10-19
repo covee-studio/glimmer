@@ -144,3 +144,21 @@
   .bamboo-rain { display: none; }
   .scene-meteor { opacity: 0; }
 }
+
+/* Palette changes accompany the scene dissolve rather than snapping first. */
+.reading-room { transition: background-color 700ms cubic-bezier(.4,0,.2,1); }
+.reading-room :is(h1, h2, h3, p, a) {
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-duration: 650ms;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
+.reading-room .theme-option { transition-duration: 350ms; }
+.reading-room .appearance-swatch {
+  transition-property: transform, box-shadow, border-color, filter;
+  transition-duration: 450ms;
+  transition-timing-function: cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-room, .reading-room :is(h1, h2, h3, p, a) { transition: none; }
+  .reading-room .theme-option:hover .appearance-swatch { transform: none; }
+}

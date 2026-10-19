@@ -116,7 +116,7 @@ if (
   !/logoSrc:\s*\"\/source-icons\/hacker-news\.png\"/.test(hackerNews) ||
   !/logoSrc:\s*\"\/source-icons\/memos\.png\"/.test(memos) ||
   !/logoSrc:\s*\"\/source-icons\/hypothesis\.png\"/.test(hypothesis) ||
-  !/aria-label=\{`\$\{adapter\.label\} settings`\}/.test(sourcesModal)
+  (!/data-source-settings=\{adapter\.id\}/.test(sourcesModal) || !/\$\{adapter\.label\} settings/.test(sourcesModal) || !/Connect \$\{adapter\.label\}/.test(sourcesModal))
 ) {
   throw new Error("Memos settings entry or brand asset is missing")
 }
