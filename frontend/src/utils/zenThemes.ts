@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import '../components/zen/theme-scenes.css'
+import '../components/zen/nature-scenes.css'
 import { WavesTheme, WavesPreview } from '../components/zen/WavesTheme'
 import { MistTheme, MistPreview } from '../components/zen/MistTheme'
 import { ConstellationTheme, ConstellationPreview } from '../components/zen/ConstellationTheme'
@@ -11,6 +12,11 @@ import { OceanTheme, OceanPreview } from '../components/zen/OceanTheme'
 import { RainbowTheme, RainbowPreview } from '../components/zen/RainbowTheme'
 import { SolarTheme, SolarPreview } from '../components/zen/SolarTheme'
 import { SnowTheme, SnowPreview } from '../components/zen/SnowTheme'
+import { AuroraTheme, AuroraPreview } from '../components/zen/AuroraTheme'
+import { SunriseTheme, SunrisePreview } from '../components/zen/SunriseTheme'
+import { StreamTheme, StreamPreview } from '../components/zen/StreamTheme'
+import { ZenGardenTheme, ZenGardenPreview } from '../components/zen/ZenGardenTheme'
+import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesTheme'
 
 export interface ZenTheme {
   id: string
@@ -100,5 +106,43 @@ export const ZEN_THEMES: ZenTheme[] = [
     surface: 'linear-gradient(180deg, #e8edf1 0%, #eef1f3 100%)',
     Preview: SnowPreview,
     Backdrop: SnowTheme,
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora',
+    surface: 'linear-gradient(180deg, #060a14 0%, #0a1220 45%, #0d1522 100%)',
+    Preview: AuroraPreview,
+    Backdrop: AuroraTheme,
+    dark: true,
+  },
+  {
+    // Legacy "sunrise" is migrated to Solar; keep that preference intact.
+    id: 'sunrise-sea',
+    name: 'Sunrise',
+    surface: 'linear-gradient(180deg, #e7ecf1 0%, #f3ede4 55%, #f6e4cd 100%)',
+    Preview: SunrisePreview,
+    Backdrop: SunriseTheme,
+  },
+  {
+    id: 'stream',
+    name: 'Stream',
+    surface: 'linear-gradient(180deg, #f2f4ee 0%, #eef2ec 60%, #e7ede6 100%)',
+    Preview: StreamPreview,
+    Backdrop: StreamTheme,
+  },
+  {
+    id: 'zengarden',
+    name: 'Zen Garden',
+    surface: 'linear-gradient(180deg, #f1e9d6 0%, #ece2c6 55%, #ddcfa9 100%)',
+    Preview: ZenGardenPreview,
+    Backdrop: ZenGardenTheme,
+  },
+  {
+    id: 'fireflies',
+    name: 'Fireflies',
+    surface: 'linear-gradient(180deg, #0d1a15 0%, #14251c 55%, #0a1410 100%)',
+    Preview: FirefliesPreview,
+    Backdrop: FirefliesTheme,
+    dark: true,
   },
 ]

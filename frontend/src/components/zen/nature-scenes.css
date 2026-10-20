@@ -1,0 +1,60 @@
+/* Source palettes, geometry and timings from the Magic Patterns reference.
+   CSS motion shares Glimmer's hidden-page pause and reduced-motion rules. */
+.aurora-star { opacity: .5; animation: glimmer-aurora-star 5s ease-in-out infinite both; }
+.aurora-veil-1 { animation: glimmer-aurora-sway 22s ease-in-out infinite, glimmer-aurora-breathe 22s ease-in-out infinite; }
+.aurora-veil-2 { animation: glimmer-aurora-violet 27s ease-in-out -8s infinite; }
+.aurora-veil-3 { animation: glimmer-aurora-pink 20s ease-in-out -4s infinite; }
+@keyframes glimmer-aurora-star { 0%, 100% { opacity: .15; } 50% { opacity: .85; } }
+@keyframes glimmer-aurora-sway {
+  0%, 100% { transform: translateX(-4%) scaleY(1); }
+  33.333% { transform: translateX(1.333%) scaleY(1.12); }
+  66.667% { transform: translateX(1.333%) scaleY(.95); }
+}
+@keyframes glimmer-aurora-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+@keyframes glimmer-aurora-violet { 0%, 100% { transform: translateX(5%); opacity: .5; } 50% { transform: translateX(-5%); opacity: .85; } }
+@keyframes glimmer-aurora-pink { 0%, 100% { transform: translateX(-3%); opacity: .4; } 50% { transform: translateX(3%); opacity: .7; } }
+
+.sunrise-scene { background: linear-gradient(180deg, #e7ecf1 0%, #eef0ee 50%, #f3ead9 100%); }
+.sunrise-sky { background: linear-gradient(180deg, #eaedf0 0%, #f3ede4 50%, #f8e6c9 100%); animation: glimmer-sunrise-sky 10s ease-out both; }
+.sunrise-sun { bottom: 20%; opacity: 1; animation: glimmer-sunrise-rise 8s ease-out both; }
+.sunrise-reflection { animation: glimmer-sunrise-reflection 5s ease-in-out infinite; }
+.sunrise-glints { animation: glimmer-sunrise-glints 6s ease-in-out infinite; }
+@keyframes glimmer-sunrise-sky { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glimmer-sunrise-rise { from { bottom: -10%; opacity: 0; } to { bottom: 20%; opacity: 1; } }
+@keyframes glimmer-sunrise-reflection { 0%, 100% { opacity: .75; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(1.08); } }
+@keyframes glimmer-sunrise-glints { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+.stream-shimmer { animation: glimmer-stream-shimmer 8s linear infinite; }
+.stream-ripple { opacity: 0; animation: glimmer-stream-ripple 6s ease-out infinite; }
+@keyframes glimmer-stream-shimmer { from { transform: translateX(-50%); } to { transform: translateX(220%); } }
+@keyframes glimmer-stream-ripple {
+  0% { transform: translateX(-50%) scale(.3); opacity: 0; }
+  28.333% { opacity: .55; }
+  56.667%, 100% { transform: translateX(-50%) scale(5); opacity: 0; }
+}
+
+.firefly-grass { animation: glimmer-firefly-grass 5s ease-in-out infinite; }
+.firefly-light { opacity: .5; animation: glimmer-firefly-flight 12s linear infinite; }
+@keyframes glimmer-firefly-grass { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(var(--grass-angle)); } }
+@keyframes glimmer-firefly-flight {
+  0.000000% { transform: translate(var(--fly-x0), var(--fly-y0)); opacity: var(--fly-o0); }
+  7.142857% { transform: translate(var(--fly-x1), var(--fly-y1)); opacity: var(--fly-o1); }
+  14.285714% { transform: translate(var(--fly-x2), var(--fly-y2)); opacity: var(--fly-o2); }
+  21.428571% { transform: translate(var(--fly-x3), var(--fly-y3)); opacity: var(--fly-o3); }
+  28.571429% { transform: translate(var(--fly-x4), var(--fly-y4)); opacity: var(--fly-o4); }
+  35.714286% { transform: translate(var(--fly-x5), var(--fly-y5)); opacity: var(--fly-o5); }
+  42.857143% { transform: translate(var(--fly-x6), var(--fly-y6)); opacity: var(--fly-o6); }
+  50.000000% { transform: translate(var(--fly-x7), var(--fly-y7)); opacity: var(--fly-o7); }
+  57.142857% { transform: translate(var(--fly-x8), var(--fly-y8)); opacity: var(--fly-o8); }
+  64.285714% { transform: translate(var(--fly-x9), var(--fly-y9)); opacity: var(--fly-o9); }
+  71.428571% { transform: translate(var(--fly-x10), var(--fly-y10)); opacity: var(--fly-o10); }
+  78.571429% { transform: translate(var(--fly-x11), var(--fly-y11)); opacity: var(--fly-o11); }
+  85.714286% { transform: translate(var(--fly-x12), var(--fly-y12)); opacity: var(--fly-o12); }
+  92.857143% { transform: translate(var(--fly-x13), var(--fly-y13)); opacity: var(--fly-o13); }
+  100.000000% { transform: translate(var(--fly-x14), var(--fly-y14)); opacity: var(--fly-o14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-scene *, .sunrise-scene *, .stream-scene *, .fireflies-scene * { animation: none !important; }
+  .stream-ripple { opacity: 0; }
+}

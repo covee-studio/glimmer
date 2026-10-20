@@ -12,6 +12,11 @@ import { MistTheme } from '../src/components/zen/MistTheme'
 import { OceanTheme, OceanPreview } from '../src/components/zen/OceanTheme'
 import { WavesPreview } from '../src/components/zen/WavesTheme'
 import { ZEN_THEMES } from '../src/utils/zenThemes'
+import { AuroraTheme } from '../src/components/zen/AuroraTheme'
+import { FirefliesTheme } from '../src/components/zen/FirefliesTheme'
+import { StreamTheme, StreamPreview } from '../src/components/zen/StreamTheme'
+import { SunriseTheme } from '../src/components/zen/SunriseTheme'
+import { ZenGardenTheme, ZenGardenPreview } from '../src/components/zen/ZenGardenTheme'
 
 it('keeps scene randomness repeatable and bounded', () => {
   const a = sceneRandom(123), b = sceneRandom(123)
@@ -43,7 +48,9 @@ it('places stars within the scene with varied sizes and brightness', () => {
 
 it('does not collide SVG gradient or mask IDs between thumbnails and full scenes', () => {
   const html = renderToStaticMarkup(createElement(Fragment, null,
-    createElement(MountainsTheme), createElement(MountainsPreview), createElement(RainbowTheme), createElement(RainbowPreview), createElement(OceanTheme), createElement(OceanPreview)))
+    createElement(MountainsTheme), createElement(MountainsPreview), createElement(RainbowTheme), createElement(RainbowPreview), createElement(OceanTheme), createElement(OceanPreview),
+    createElement(StreamTheme), createElement(StreamPreview), createElement(StreamTheme),
+    createElement(ZenGardenTheme), createElement(ZenGardenPreview), createElement(ZenGardenTheme)))
   const ids = Array.from(html.matchAll(/ id="([^"]+)"/g), match => match[1])
   expect(ids.length).toBeGreaterThan(10)
   expect(new Set(ids).size).toBe(ids.length)
@@ -51,17 +58,28 @@ it('does not collide SVG gradient or mask IDs between thumbnails and full scenes
 })
 
 it('renders decorative scenes without interactive or external content', () => {
-  for (const Component of [MountainsTheme, RainbowTheme, SnowTheme, RipplesTheme, BambooTheme, ConstellationTheme, MistTheme, OceanTheme]) {
+  for (const Component of [MountainsTheme, RainbowTheme, SnowTheme, RipplesTheme, BambooTheme, ConstellationTheme, MistTheme, OceanTheme, AuroraTheme, SunriseTheme, StreamTheme, ZenGardenTheme, FirefliesTheme]) {
     const html = renderToStaticMarkup(createElement(Component))
     expect(html).toContain('aria-hidden="true"')
-    expect(html).not.toMatch(/<(button|a|iframe|img)\b|https?:\/\//)
+    expect(html).not.toMatch(/<(button|a|iframe|img)\b/)
+    // Embedded SVG grain includes an XML namespace, which is not a request.
+    expect(html.replaceAll('http://www.w3.org/2000/svg', '')).not.toMatch(/https?:\/\//)
+  }
+})
+
+it('keeps particle and sand layouts stable across repeated mounts', () => {
+  for (const Component of [AuroraTheme, FirefliesTheme, ZenGardenTheme]) {
+    const first = renderToStaticMarkup(createElement(Component))
+    expect(renderToStaticMarkup(createElement(Component))).toBe(first)
+    expect(first).not.toMatch(/NaN|Infinity/)
   }
 })
 
 it('keeps the saved rainbow identity when presenting the After rain redesign', () => {
-  expect(ZEN_THEMES).toHaveLength(11)
+  expect(ZEN_THEMES).toHaveLength(16)
   expect(ZEN_THEMES.find(theme => theme.id === 'rainbow')?.name).toBe('After rain')
-  expect(new Set(ZEN_THEMES.map(theme => theme.id)).size).toBe(11)
+  expect(new Set(ZEN_THEMES.map(theme => theme.id)).size).toBe(ZEN_THEMES.length)
+  expect(ZEN_THEMES.find(theme => theme.name === 'Sunrise')?.id).toBe('sunrise-sea')
 })
 
 it('starts the flock in flight and schedules the first meteor within one second', () => {
