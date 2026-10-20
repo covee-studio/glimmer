@@ -11,6 +11,7 @@ import type { DiscoveryItem, SourceId } from '../types/DiscoveryItem'
 import { Analytics, isExtension } from '../utils/environment'
 import { CHROME_WEB_STORE_URL } from '../utils/productLinks'
 import { ZEN_THEMES } from '../utils/zenThemes'
+import { dissolveTheme } from '../utils/themeDissolve'
 import { useAutoTranslatedText } from '../utils/translation'
 import { AboutModal } from './AboutModal'
 import { LikesModal } from './LikesModal'
@@ -252,6 +253,23 @@ function AutoThemePreview() {
 
 // Remove outgoing layers only after the newest dissolve actually completes.
 // Unique keys keep rapid A → B → A selections from reusing an exiting scene.
+function ThemeSceneLayer({ id, layerKey, reducedMotion, onComplete }: {
+  id: string
+  layerKey: number
+  reducedMotion: boolean
+  onComplete: (key: number) => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const theme = ZEN_THEMES.find(candidate => candidate.id === id) ?? ZEN_THEMES[0]
+  const Scene = theme.Backdrop
+  useLayoutEffect(() => {
+    if (!ref.current || layerKey === 0) return
+    return dissolveTheme(ref.current, reducedMotion, () => onComplete(layerKey))
+  }, [layerKey, reducedMotion, onComplete])
+  return <div ref={ref} className="absolute inset-0"
+    style={{ background: theme.surface, zIndex: layerKey, opacity: 1 }}><Scene /></div>
+}
+
 function ThemeBackdrop({ themeId, paused }: { themeId: string; paused: boolean }) {
   const reducedMotion = useReducedMotion()
   const sequence = useRef(0)
@@ -260,23 +278,14 @@ function ThemeBackdrop({ themeId, paused }: { themeId: string; paused: boolean }
     setLayers(current => current[current.length - 1].id === themeId ? current
       : [...current, { id: themeId, key: ++sequence.current }])
   }, [themeId])
+  const complete = useCallback((key: number) => {
+    setLayers(current => current[current.length - 1].key === key && current.length > 1
+      ? [current[current.length - 1]] : current)
+  }, [])
   return (
     <div className="theme-backdrop" data-paused={paused} aria-hidden="true">
-      {layers.map(layer => {
-        const theme = ZEN_THEMES.find(candidate => candidate.id === layer.id) ?? ZEN_THEMES[0]
-        const Scene = theme.Backdrop
-        return (
-          <motion.div key={layer.key} className="absolute inset-0"
-            style={{ background: theme.surface, zIndex: layer.key }}
-            initial={{ opacity: layer.key === 0 || reducedMotion ? 1 : 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: reducedMotion ? 0 : 0.8, ease: [0.4, 0, 0.2, 1] }}
-            onAnimationComplete={() => setLayers(current =>
-              current[current.length - 1].key === layer.key && current.length > 1 ? [layer] : current,
-            )}
-          ><Scene /></motion.div>
-        )
-      })}
+      {layers.map(layer => <ThemeSceneLayer key={layer.key} id={layer.id}
+        layerKey={layer.key} reducedMotion={!!reducedMotion} onComplete={complete} />)}
     </div>
   )
 }
