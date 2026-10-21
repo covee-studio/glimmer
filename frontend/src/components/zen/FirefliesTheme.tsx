@@ -48,14 +48,14 @@ function makeFireflies(count: number): Firefly[] {
     )
     const opacity = times.map((time) => {
       const pulse = 0.5 + 0.5 * Math.sin(brightnessPhase + Math.PI * 4 * time)
-      return 0.16 + pulse * 0.8
+      return 0.12 + pulse * 0.54
     })
 
     return {
       left: 4 + random() * 92,
-      top: 34 + random() * 56,
+      top: 68 + random() * 24,
       size: 2.2 + random() * 2.6,
-      dur: 9 + random() * 7,
+      dur: 16 + random() * 10,
       delay: -random() * 10,
       x,
       y,
@@ -106,7 +106,7 @@ function GrassTuft({ tuft }: { tuft: Tuft }) {
 
 /** 萤火虫 —— 夏夜草丛间，点点暖光沿各自连续的小范围轨迹游荡、自然明灭。 */
 export function FirefliesTheme() {
-  const flies = useMemo(() => makeFireflies(22), [])
+  const flies = useMemo(() => makeFireflies(14), [])
   const tufts = useMemo<Tuft[]>(
     () => {
       const random = sceneRandom(623)
@@ -135,11 +135,11 @@ export function FirefliesTheme() {
         style={{
           top: '8%',
           right: '14%',
-          width: 90,
-          height: 90,
+          width: 42,
+          height: 42,
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(232,230,200,0.55) 0%, rgba(232,230,200,0.12) 45%, rgba(232,230,200,0) 70%)',
+            'radial-gradient(circle, rgba(232,230,200,0.22) 0%, rgba(232,230,200,0.05) 45%, rgba(232,230,200,0) 70%)',
           filter: 'blur(2px)',
         }}
       />
@@ -150,28 +150,31 @@ export function FirefliesTheme() {
         ))}
       </div>
 
-      {flies.map((fly, index) => (
-        <span
-          key={index}
-          className="firefly-light absolute rounded-full"
-          style={{
-            left: `${fly.left}%`,
-            animationDuration: `${fly.dur}s`,
-            animationDelay: `${fly.delay}s`,
-            ...Object.fromEntries(fly.times.flatMap((_, i) => [
-              [`--fly-x${i}`, `${fly.x[i]}px`],
-              [`--fly-y${i}`, `${fly.y[i]}px`],
-              [`--fly-o${i}`, fly.opacity[i]],
-            ])),
-            top: `${fly.top}%`,
-            width: fly.size,
-            height: fly.size,
-            background: 'rgba(255,226,140,0.95)',
-            boxShadow: '0 0 7px 2.5px rgba(255,220,120,0.75)',
-          }}
+      <div className="reading-safe-particles">
+        {flies.map((fly, index) => (
+          <span
+            key={index}
+            className="firefly-light absolute rounded-full"
+            style={{
+              left: `${fly.left}%`,
+              animationDuration: `${fly.dur}s`,
+              animationDelay: `${fly.delay}s`,
+              ...Object.fromEntries(fly.times.flatMap((_, i) => [
+                [`--fly-x${i}`, `${fly.x[i]}px`],
+                [`--fly-y${i}`, `${fly.y[i]}px`],
+                [`--fly-o${i}`, fly.opacity[i]],
+              ])),
+              top: `${fly.top}%`,
+              width: fly.size,
+              height: fly.size,
+              background: 'rgba(255,226,140,0.95)',
+              boxShadow: '0 0 5px 1.5px rgba(255,220,120,0.42)',
+            }}
 
-        />
-      ))}
+          />
+        ))}
+
+      </div>
 
       {/* 极细腻的颗粒，打散深色渐变天空容易出现的色带 */}
       <div
@@ -196,19 +199,19 @@ export function FirefliesPreview() {
         style={{
           top: '14%',
           right: '18%',
-          width: 20,
-          height: 20,
+          width: 12,
+          height: 12,
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(232,230,200,0.6) 0%, rgba(232,230,200,0) 70%)',
+            'radial-gradient(circle, rgba(232,230,200,0.25) 0%, rgba(232,230,200,0) 70%)',
         }}
       />
       {[
-        { l: 25, t: 45 },
-        { l: 55, t: 60 },
-        { l: 72, t: 40 },
-        { l: 40, t: 70 },
-        { l: 85, t: 55 },
+        { l: 12, t: 70 },
+        { l: 55, t: 84 },
+        { l: 78, t: 72 },
+        { l: 34, t: 78 },
+        { l: 90, t: 82 },
       ].map((point, index) => (
         <span
           key={index}
@@ -219,7 +222,7 @@ export function FirefliesPreview() {
             width: 3,
             height: 3,
             background: 'rgba(255,226,140,0.95)',
-            boxShadow: '0 0 6px 2px rgba(255,220,120,0.7)',
+            boxShadow: '0 0 6px 2px rgba(255,220,120,0.42)',
           }}
         />
       ))}

@@ -3,8 +3,6 @@
 .sakura-petal { animation: glimmer-sakura-fall 12s linear infinite; }
 .sakura-branch { animation: glimmer-sakura-branch 9s ease-in-out infinite; }
 @keyframes glimmer-sakura-branch { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.6deg); } }
-.maple-mote { opacity: 0; animation: glimmer-maple-mote 14s ease-in-out infinite; }
-@keyframes glimmer-maple-mote { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: .6; transform: translateY(-14px); } 100% { opacity: 0; transform: translateY(-28px); } }
 @keyframes glimmer-maple-fall {
   0.000000% { transform: translate(var(--fall-x0), var(--fall-y0)) rotate(var(--fall-r0)); }
   5.000000% { transform: translate(var(--fall-x1), var(--fall-y1)) rotate(var(--fall-r1)); }
@@ -58,5 +56,4 @@
 @media (prefers-reduced-motion: reduce) {
   .maple-scene *, .sakura-scene * { animation: none !important; }
   .maple-leaf, .sakura-petal { transform: translate(var(--fall-x0), var(--fall-still-y)) rotate(var(--fall-r0)); }
-  .maple-mote { opacity: .3; }
 }

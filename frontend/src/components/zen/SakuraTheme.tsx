@@ -73,7 +73,7 @@ function makePetalTrajectory(near: boolean, random: () => number): FallTrajector
 function makePetals(count: number, near: boolean): Petal[] {
   const random = sceneRandom(near ? 2041 : 2042)
   return Array.from({ length: count }).map(() => {
-    const dur = near ? 8.4 + random() * 3.2 : 11 + random() * 4.2
+    const dur = near ? 15 + random() * 6 : 21 + random() * 8
     return {
       left: random() * 100,
       top: -10 - random() * 20,
@@ -118,8 +118,8 @@ function Blossom({
 
 /** 樱花树 —— 一枝虬曲的樱枝自角落探入画面，枝头缀满真实的五瓣樱花，花瓣一路旋转飘落。 */
 export function SakuraTheme() {
-  const far = useMemo(() => makePetals(14, false), [])
-  const near = useMemo(() => makePetals(14, true), [])
+  const far = useMemo(() => makePetals(8, false), [])
+  const near = useMemo(() => makePetals(8, true), [])
   const all = [...far, ...near]
   const blossoms = useMemo(
     () => [
@@ -201,30 +201,32 @@ export function SakuraTheme() {
         ))}
       </svg>
 
-      {all.map((p, i) => (
-        <span
-          key={i}
-          className="sakura-petal absolute"
-          style={{
-            left: `${p.left}%`,
-            animationDuration: `${p.dur}s`,
-            animationDelay: `${p.delay}s`,
-            '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
-            ...Object.fromEntries(p.trajectory.times.flatMap((_, step) => [
-              [`--fall-x${step}`, `${p.trajectory.x[step]}px`],
-              [`--fall-y${step}`, p.trajectory.y[step]],
-              [`--fall-r${step}`, `${p.trajectory.rotate[step]}deg`],
-            ])),
-            top: p.top,
-            width: p.size,
-            height: p.size * 1.15,
-            background: `radial-gradient(circle at 35% 28%, #fff5f7 0%, ${PETAL_TONES[p.tone]} 72%)`,
-            clipPath: PETAL_CLIP,
-            filter: p.blur ? `blur(${p.blur}px)` : undefined,
-          } as CSSProperties}
+      <div className="reading-safe-particles">
+        {all.map((p, i) => (
+          <span
+            key={i}
+            className="sakura-petal absolute"
+            style={{
+              left: `${p.left}%`,
+              animationDuration: `${p.dur}s`,
+              animationDelay: `${p.delay}s`,
+              '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
+              ...Object.fromEntries(p.trajectory.times.flatMap((_, step) => [
+                [`--fall-x${step}`, `${p.trajectory.x[step]}px`],
+                [`--fall-y${step}`, p.trajectory.y[step]],
+                [`--fall-r${step}`, `${p.trajectory.rotate[step]}deg`],
+              ])),
+              top: p.top,
+              width: p.size,
+              height: p.size * 1.15,
+              background: `radial-gradient(circle at 35% 28%, #fff5f7 0%, ${PETAL_TONES[p.tone]} 72%)`,
+              clipPath: PETAL_CLIP,
+              filter: p.blur ? `blur(${p.blur}px)` : undefined,
+            } as CSSProperties}
 
-        />
-      ))}
+          />
+        ))}
+      </div>
     </div>
   )
 }

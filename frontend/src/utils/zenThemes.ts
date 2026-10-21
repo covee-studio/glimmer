@@ -14,9 +14,6 @@ import { RainbowTheme, RainbowPreview } from '../components/zen/RainbowTheme'
 import { SolarTheme, SolarPreview } from '../components/zen/SolarTheme'
 import { SnowTheme, SnowPreview } from '../components/zen/SnowTheme'
 import { AuroraTheme, AuroraPreview } from '../components/zen/AuroraTheme'
-import { SunriseTheme, SunrisePreview } from '../components/zen/SunriseTheme'
-import { StreamTheme, StreamPreview } from '../components/zen/StreamTheme'
-import { ZenGardenTheme, ZenGardenPreview } from '../components/zen/ZenGardenTheme'
 import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesTheme'
 import { MapleTheme, MaplePreview } from '../components/zen/MapleTheme'
 import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
@@ -117,28 +114,6 @@ export const ZEN_THEMES: ZenTheme[] = [
     Preview: AuroraPreview,
     Backdrop: AuroraTheme,
     dark: true,
-  },
-  {
-    // Legacy "sunrise" is migrated to Solar; keep that preference intact.
-    id: 'sunrise-sea',
-    name: 'Sunrise',
-    surface: 'linear-gradient(180deg, #e7ecf1 0%, #f3ede4 55%, #f6e4cd 100%)',
-    Preview: SunrisePreview,
-    Backdrop: SunriseTheme,
-  },
-  {
-    id: 'stream',
-    name: 'Stream',
-    surface: 'linear-gradient(180deg, #f2f4ee 0%, #eef2ec 60%, #e7ede6 100%)',
-    Preview: StreamPreview,
-    Backdrop: StreamTheme,
-  },
-  {
-    id: 'zengarden',
-    name: 'Zen Garden',
-    surface: 'linear-gradient(180deg, #f1e9d6 0%, #ece2c6 55%, #ddcfa9 100%)',
-    Preview: ZenGardenPreview,
-    Backdrop: ZenGardenTheme,
   },
   {
     id: 'fireflies',

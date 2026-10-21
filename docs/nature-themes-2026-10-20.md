@@ -56,3 +56,16 @@ User clarified that Maple and Sakura are favorites and that the feature must be 
 - 58 tests, lint, web build, extension build, regression script, and whitespace checks passed again.
 
 These additions remain on `codex/nature-themes`; the baseline flash fix stays independently available on `main`. No merge or store submission has been performed.
+
+
+## Quality curation and polish (2026-10-21)
+
+Following the full-theme visual review, the user approved removing Sunrise, Stream and Zen Garden. Their selectors, random-theme entries, components and unused scene styles are removed. Fifteen themes remain: the original eleven plus Aurora, Fireflies, Maple and Sakura. Earlier counts and screenshots above document historical iterations.
+
+- Maple: replace overlapping smooth lobes with a continuous serrated palm-shaped leaf outline; mute copper/ochre tones; reduce leaves from 26 to 16, lengthen falls to 23–42 seconds, distribute them along the sides, and remove floating glitter.
+- Sakura: reduce petals from 28 to 16, lengthen falls to 15–29 seconds, and preserve the blossom branch.
+- Fireflies: reduce lights from 22 to 14; keep them in the lower meadow, slow their movement, soften their pulse and glow, and reduce the upper-right glow. Update the thumbnail accordingly.
+- Apply a soft elliptical mask only to the three new particle scenes, protecting the central reading area without a hard rectangular boundary.
+- Original eleven scene files and the independently committed backdrop handoff fix remain unchanged. No source, collection, permission or storage behavior is changed.
+
+Verification: 58 tests, ESLint, extension build, web build, regression checks and whitespace checks passed. Real web selections confirmed the 15-item theme list and the final Maple/Sakura/Fireflies renders. Final screenshots are in `docs/screenshots/2026-10-21/`. This is a design branch preview; no store submission or release acceptance is claimed.

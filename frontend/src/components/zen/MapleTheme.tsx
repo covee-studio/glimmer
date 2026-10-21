@@ -4,28 +4,15 @@ import { useId, useMemo, type CSSProperties } from 'react'
 import { sceneRandom } from './sceneGeometry'
 
 const LEAF_TONES: [string, string][] = [
-  ['#f2894a', '#c1401e'],
-  ['#f0a34a', '#b8621f'],
-  ['#e2703a', '#a13818'],
-  ['#eb8f3a', '#a85f1c'],
+  ['#c98654', '#955032'],
+  ['#c6a15f', '#96703d'],
+  ['#bd7046', '#8b4531'],
+  ['#c58d51', '#94623a'],
 ]
 
-/**
- * 一片枫叶裂片：宽阔的曲线叶面向外收成清晰尖端，两侧带自然内凹；
- * 用曲线塑造饱满裂片，而不是用直线连接尖点与凹点形成五角星。
- */
-function lobePath(len: number, width: number) {
-  return `M0,0 C${-width * 0.55},${-len * 0.18} ${-width * 0.7},${-len * 0.55} ${-width * 0.22},${-len * 0.82} C${-width * 0.08},${-len * 0.94} 0,${-len} 0,${-len} C0,${-len} ${width * 0.08},${-len * 0.94} ${width * 0.22},${-len * 0.82} C${width * 0.7},${-len * 0.55} ${width * 0.55},${-len * 0.18} 0,0 Z`
-}
+// A continuous, serrated palm-shaped outline keeps the five lobes legible at small sizes.
+const MAPLE_OUTLINE = 'M0 -39 L6 -25 L11 -28 L10 -13 L23 -25 L23 -17 L34 -19 L28 -7 L34 -5 L16 8 L20 15 L4 12 L2 25 L-2 25 L-4 12 L-20 15 L-16 8 L-34 -5 L-28 -7 L-34 -19 L-23 -17 L-23 -25 L-10 -13 L-11 -28 L-6 -25 Z'
 
-const MAIN_LOBE = lobePath(39, 30)
-const SIDE_LOBE = lobePath(34, 25)
-const BASE_LOBE = lobePath(21, 17)
-
-/**
- * 完整枫叶：五片宽阔的尖裂片以基部为圆心呈扇形排列。中央裂片只略长于两侧，
- * 叶面宽而饱满，不再呈细长放射状；底部两片小裂片外撇，补足真实掌状轮廓。
- */
 function MapleLeaf({
   size,
   tone,
@@ -40,7 +27,7 @@ function MapleLeaf({
     <svg
       width={size}
       height={size}
-      viewBox="-50 -50 100 100"
+      viewBox="-38 -8 76 78"
       style={{ overflow: 'visible' }}
     >
       <defs>
@@ -49,20 +36,9 @@ function MapleLeaf({
           <stop offset="100%" stopColor={deep} />
         </linearGradient>
       </defs>
-      <g transform="translate(0 38)">
-        <line x1="0" y1="0" x2="0" y2="12" stroke={deep} strokeWidth={2.2} strokeLinecap="round" />
-        {/* 两片外撇的基部小裂片，向下向外斜张，贴近真实枫叶根部的形态 */}
-        <path d={BASE_LOBE} fill={`url(#${id})`} transform="rotate(-112)" opacity={0.96} />
-        <path d={BASE_LOBE} fill={`url(#${id})`} transform="rotate(112)" opacity={0.96} />
-        {/* 两片宽阔侧裂片，让整体轮廓更接近真实枫叶 */}
-        <path d={SIDE_LOBE} fill={`url(#${id})`} transform="rotate(-44)" />
-        <path d={SIDE_LOBE} fill={`url(#${id})`} transform="rotate(44)" />
-        {/* 中央最长裂片 */}
-        <path d={MAIN_LOBE} fill={`url(#${id})`} />
-        {/* 细主脉，强化"叶"的识别度 */}
-        <line x1="0" y1="0" x2="0" y2="-42" stroke={deep} strokeWidth={0.8} opacity={0.35} />
-        <line x1="0" y1="0" x2="-14" y2="-30" stroke={deep} strokeWidth={0.6} opacity={0.3} />
-        <line x1="0" y1="0" x2="14" y2="-30" stroke={deep} strokeWidth={0.6} opacity={0.3} />
+      <g transform="translate(0 34)">
+        <path d={MAPLE_OUTLINE} fill={`url(#${id})`} stroke={deep} strokeWidth={0.45} strokeLinejoin="round" />
+        <path d="M0 22 L0 -30 M0 9 L-23 -12 M0 9 L23 -12 M0 9 L-14 11 M0 9 L14 11" fill="none" stroke={deep} strokeWidth={0.65} opacity={0.32} />
       </g>
     </svg>
   )
@@ -128,10 +104,10 @@ function makeLeafTrajectory(near: boolean, random: () => number): FallTrajectory
 function makeLeaves(count: number, near: boolean): Leaf[] {
   const random = sceneRandom(near ? 1941 : 1942)
   return Array.from({ length: count }).map(() => {
-    const dur = near ? 11 + random() * 5 : 15 + random() * 7
+    const dur = near ? 23 + random() * 9 : 30 + random() * 12
     return {
-      left: random() * 100,
-      size: near ? 24 + random() * 20 : 14 + random() * 13,
+      left: random() < 0.5 ? 2 + random() * 23 : 75 + random() * 23,
+      size: near ? 38 + random() * 20 : 18 + random() * 12,
       dur,
       delay: -random() * dur,
       tone: Math.floor(random() * LEAF_TONES.length),
@@ -144,22 +120,9 @@ function makeLeaves(count: number, near: boolean): Leaf[] {
 /** 秋枫 —— 每片叶沿独立、连续的空气动力学轨迹稳定下沉，正面叶身只作缓慢摆振。 */
 export function MapleTheme() {
   const leafId = useId()
-  const far = useMemo(() => makeLeaves(14, false), [])
-  const near = useMemo(() => makeLeaves(12, true), [])
+  const far = useMemo(() => makeLeaves(8, false), [])
+  const near = useMemo(() => makeLeaves(8, true), [])
   const all = [...far, ...near]
-  const motes = useMemo(
-    () => {
-      const random = sceneRandom(1943)
-      return Array.from({ length: 16 }).map(() => ({
-        left: random() * 100,
-        top: random() * 100,
-        size: 1 + random() * 1.5,
-        dur: 10 + random() * 10,
-        delay: random() * 8,
-      }))
-    },
-    [],
-  )
   return (
     <div
       aria-hidden
@@ -177,46 +140,31 @@ export function MapleTheme() {
         }}
       />
 
-      {motes.map((m, i) => (
-        <span
-          key={`m${i}`}
-          className="maple-mote absolute rounded-full"
-          style={{
-            left: `${m.left}%`,
-            animationDuration: `${m.dur}s`,
-            animationDelay: `${m.delay}s`,
-            top: `${m.top}%`,
-            width: m.size,
-            height: m.size,
-            background: 'rgba(255,224,178,0.6)',
-          }}
+      <div className="reading-safe-particles">
+        {all.map((l, i) => (
+          <div
+            key={i}
+            className="maple-leaf absolute"
+            style={{
+              left: `${l.left}%`,
+              animationDuration: `${l.dur}s`,
+              animationDelay: `${l.delay}s`,
+              '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
+              ...Object.fromEntries(l.trajectory.times.flatMap((_, step) => [
+                [`--fall-x${step}`, `${l.trajectory.x[step]}px`],
+                [`--fall-y${step}`, l.trajectory.y[step]],
+                [`--fall-r${step}`, `${l.trajectory.rotate[step]}deg`],
+              ])),
+              top: -l.size - 10,
+              willChange: 'transform',
+              filter: l.blur ? `blur(${l.blur}px)` : undefined,
+            } as CSSProperties}
 
-        />
-      ))}
-
-      {all.map((l, i) => (
-        <div
-          key={i}
-          className="maple-leaf absolute"
-          style={{
-            left: `${l.left}%`,
-            animationDuration: `${l.dur}s`,
-            animationDelay: `${l.delay}s`,
-            '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
-            ...Object.fromEntries(l.trajectory.times.flatMap((_, step) => [
-              [`--fall-x${step}`, `${l.trajectory.x[step]}px`],
-              [`--fall-y${step}`, l.trajectory.y[step]],
-              [`--fall-r${step}`, `${l.trajectory.rotate[step]}deg`],
-            ])),
-            top: -l.size - 10,
-            willChange: 'transform',
-            filter: l.blur ? `blur(${l.blur}px)` : undefined,
-          } as CSSProperties}
-
-        >
-          <MapleLeaf size={l.size} tone={l.tone} id={`${leafId}-${i}`} />
-        </div>
-      ))}
+          >
+            <MapleLeaf size={l.size} tone={l.tone} id={`${leafId}-${i}`} />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
