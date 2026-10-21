@@ -18,6 +18,8 @@ import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesThe
 import { MapleTheme, MaplePreview } from '../components/zen/MapleTheme'
 import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
 
+import { CampfireTheme, CampfirePreview } from '../components/zen/CampfireTheme'
+
 export interface ZenTheme {
   id: string
   name: string
@@ -136,5 +138,13 @@ export const ZEN_THEMES: ZenTheme[] = [
     surface: 'linear-gradient(180deg, #f8ecee 0%, #f9f1ee 45%, #f4e2df 100%)',
     Preview: SakuraPreview,
     Backdrop: SakuraTheme,
+  },
+  {
+    id: 'campfire',
+    name: 'Campfire',
+    surface: 'linear-gradient(180deg, #252a31, #302b29 62%, #3a2e28)',
+    Preview: CampfirePreview,
+    Backdrop: CampfireTheme,
+    dark: true,
   },
 ]
