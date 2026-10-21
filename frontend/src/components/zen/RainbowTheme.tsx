@@ -6,14 +6,13 @@ function RefractedLight() {
   return <svg className="after-rain-light" viewBox="0 0 1200 800" preserveAspectRatio="none">
     <defs>
       <radialGradient id={`${id}-spectrum`}>
-        <stop offset="0.88" stopColor="#a8b7d9" stopOpacity="0" />
-        <stop offset="0.895" stopColor="#aaa4cf" stopOpacity=".36" />
-        <stop offset="0.914" stopColor="#9bbdd9" stopOpacity=".46" />
-        <stop offset="0.933" stopColor="#afd1c4" stopOpacity=".48" />
-        <stop offset="0.952" stopColor="#e4dfad" stopOpacity=".46" />
-        <stop offset="0.97" stopColor="#e9c7ab" stopOpacity=".42" />
-        <stop offset="0.985" stopColor="#dcb4b1" stopOpacity=".28" />
-        <stop offset="1" stopColor="#dcb4b1" stopOpacity="0" />
+        <stop offset="0.93" stopColor="#c6b7ed" stopOpacity="0" />
+        <stop offset="0.944" stopColor="#c6b7ed" stopOpacity=".28" />
+        <stop offset="0.957" stopColor="#b4d4f3" stopOpacity=".34" />
+        <stop offset="0.97" stopColor="#bce1d0" stopOpacity=".32" />
+        <stop offset="0.98" stopColor="#f8e8b4" stopOpacity=".32" />
+        <stop offset="0.99" stopColor="#f5c0b8" stopOpacity=".28" />
+        <stop offset="1" stopColor="#f5c0b8" stopOpacity="0" />
       </radialGradient>
       <linearGradient id={`${id}-fade`} x1="0" y1="0" x2="1" y2="1">
         <stop stopColor="white" stopOpacity=".15" />

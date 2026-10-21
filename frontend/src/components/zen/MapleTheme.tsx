@@ -10,9 +10,22 @@ const LEAF_TONES: [string, string][] = [
   ['#c58d51', '#94623a'],
 ]
 
-// A continuous, serrated palm-shaped outline keeps the five lobes legible at small sizes.
-const MAPLE_OUTLINE = 'M0 -39 L6 -25 L11 -28 L10 -13 L23 -25 L23 -17 L34 -19 L28 -7 L34 -5 L16 8 L20 15 L4 12 L2 25 L-2 25 L-4 12 L-20 15 L-16 8 L-34 -5 L-28 -7 L-34 -19 L-23 -17 L-23 -25 L-10 -13 L-11 -28 L-6 -25 Z'
+/**
+ * 一片枫叶裂片：宽阔的曲线叶面向外收成清晰尖端，两侧带自然内凹；
+ * 用曲线塑造饱满裂片，而不是用直线连接尖点与凹点形成五角星。
+ */
+function lobePath(len: number, width: number) {
+  return `M0,0 C${-width * 0.55},${-len * 0.18} ${-width * 0.7},${-len * 0.55} ${-width * 0.22},${-len * 0.82} C${-width * 0.08},${-len * 0.94} 0,${-len} 0,${-len} C0,${-len} ${width * 0.08},${-len * 0.94} ${width * 0.22},${-len * 0.82} C${width * 0.7},${-len * 0.55} ${width * 0.55},${-len * 0.18} 0,0 Z`
+}
 
+const MAIN_LOBE = lobePath(39, 30)
+const SIDE_LOBE = lobePath(34, 25)
+const BASE_LOBE = lobePath(21, 17)
+
+/**
+ * 完整枫叶：五片宽阔的尖裂片以基部为圆心呈扇形排列。中央裂片只略长于两侧，
+ * 叶面宽而饱满，不再呈细长放射状；底部两片小裂片外撇，补足真实掌状轮廓。
+ */
 function MapleLeaf({
   size,
   tone,
@@ -27,7 +40,7 @@ function MapleLeaf({
     <svg
       width={size}
       height={size}
-      viewBox="-38 -8 76 78"
+      viewBox="-42 -8 84 78"
       style={{ overflow: 'visible' }}
     >
       <defs>
@@ -36,19 +49,23 @@ function MapleLeaf({
           <stop offset="100%" stopColor={deep} />
         </linearGradient>
       </defs>
-      <g transform="translate(0 34)">
-        <path d={MAPLE_OUTLINE} fill={`url(#${id})`} stroke={deep} strokeWidth={0.45} strokeLinejoin="round" />
-        <path d="M0 22 L0 -30 M0 9 L-23 -12 M0 9 L23 -12 M0 9 L-14 11 M0 9 L14 11" fill="none" stroke={deep} strokeWidth={0.65} opacity={0.32} />
+      <g transform="translate(0 38)">
+        <line x1="0" y1="0" x2="0" y2="12" stroke={deep} strokeWidth={2.2} strokeLinecap="round" />
+        {/* 两片外撇的基部小裂片，向下向外斜张，贴近真实枫叶根部的形态 */}
+        <path d={BASE_LOBE} fill={`url(#${id})`} transform="rotate(-112)" opacity={0.96} />
+        <path d={BASE_LOBE} fill={`url(#${id})`} transform="rotate(112)" opacity={0.96} />
+        {/* 两片宽阔侧裂片，让整体轮廓更接近真实枫叶 */}
+        <path d={SIDE_LOBE} fill={`url(#${id})`} transform="rotate(-44)" />
+        <path d={SIDE_LOBE} fill={`url(#${id})`} transform="rotate(44)" />
+        {/* 中央最长裂片 */}
+        <path d={MAIN_LOBE} fill={`url(#${id})`} />
+        {/* 细主脉，强化"叶"的识别度 */}
+        <line x1="0" y1="0" x2="0" y2="-42" stroke={deep} strokeWidth={0.8} opacity={0.35} />
+        <line x1="0" y1="0" x2="-14" y2="-30" stroke={deep} strokeWidth={0.6} opacity={0.3} />
+        <line x1="0" y1="0" x2="14" y2="-30" stroke={deep} strokeWidth={0.6} opacity={0.3} />
       </g>
     </svg>
   )
-}
-
-interface FallTrajectory {
-  x: number[]
-  y: string[]
-  rotate: number[]
-  times: number[]
 }
 
 interface Leaf {
@@ -58,47 +75,9 @@ interface Leaf {
   delay: number
   tone: number
   blur: number
-  trajectory: FallTrajectory
-}
-
-/**
- * 从同一个解析曲线采样位置与姿态：枫叶在下落中连续完成几次左右摆振，持续向下，
- * 姿态角与横向速度同步；不使用侧翻缩放，叶面始终正对观看者。
- */
-function makeLeafTrajectory(near: boolean, random: () => number): FallTrajectory {
-  const steps = 60
-  const times = Array.from({ length: steps + 1 }, (_, index) => index / steps)
-  const phase = random() * Math.PI * 2
-  const cycles = 2.6 + random() * 0.8
-  const sway = (near ? 62 : 32) + random() * (near ? 34 : 24)
-  const drift = -18 + random() * 36
-  const bob = 1.4 + random() * 1.5
-  const baseAngle = -10 + random() * 20
-  const tilt = 23 + random() * 10
-  const initialWave = Math.sin(phase)
-  const initialSecondary = Math.sin(phase * 0.7)
-
-  const x = times.map((time) => {
-    const wave = Math.sin(phase + Math.PI * 2 * cycles * time) - initialWave
-    const secondary =
-      Math.sin(phase * 0.7 + Math.PI * 4 * cycles * time) - initialSecondary
-    return sway * (wave + secondary * 0.12) + drift * time
-  })
-
-  const y = times.map((time) => {
-    const verticalFlutter =
-      Math.sin(phase + Math.PI * 2 * cycles * time) - initialWave
-    return `${-12 + 126 * time + bob * verticalFlutter}vh`
-  })
-
-  const rotate = times.map(
-    (time) =>
-      baseAngle +
-      tilt * Math.cos(phase + Math.PI * 2 * cycles * time) +
-      2.4 * Math.sin(phase + Math.PI * 4 * cycles * time),
-  )
-
-  return { x, y, rotate, times }
+  sway: number
+  swayDuration: number
+  tilt: number
 }
 
 function makeLeaves(count: number, near: boolean): Leaf[] {
@@ -112,12 +91,14 @@ function makeLeaves(count: number, near: boolean): Leaf[] {
       delay: -random() * dur,
       tone: Math.floor(random() * LEAF_TONES.length),
       blur: near ? 0 : 0.8,
-      trajectory: makeLeafTrajectory(near, random),
+      sway: near ? 42 + random() * 26 : 24 + random() * 18,
+      swayDuration: 4.2 + random() * 1.8,
+      tilt: 10 + random() * 6,
     }
   })
 }
 
-/** 秋枫 —— 每片叶沿独立、连续的空气动力学轨迹稳定下沉，正面叶身只作缓慢摆振。 */
+/** Separate constant descent from eased lateral swaying, with no sampled direction changes. */
 export function MapleTheme() {
   const leafId = useId()
   const far = useMemo(() => makeLeaves(8, false), [])
@@ -150,18 +131,17 @@ export function MapleTheme() {
               animationDuration: `${l.dur}s`,
               animationDelay: `${l.delay}s`,
               '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
-              ...Object.fromEntries(l.trajectory.times.flatMap((_, step) => [
-                [`--fall-x${step}`, `${l.trajectory.x[step]}px`],
-                [`--fall-y${step}`, l.trajectory.y[step]],
-                [`--fall-r${step}`, `${l.trajectory.rotate[step]}deg`],
-              ])),
+              '--sway-distance': `${l.sway}px`,
+              '--sway-duration': `${l.swayDuration}s`,
+              '--sway-delay': `${l.delay}s`,
+              '--sway-tilt': `${l.tilt}deg`,
               top: -l.size - 10,
               willChange: 'transform',
               filter: l.blur ? `blur(${l.blur}px)` : undefined,
             } as CSSProperties}
 
           >
-            <MapleLeaf size={l.size} tone={l.tone} id={`${leafId}-${i}`} />
+            <div className="maple-leaf-sway"><MapleLeaf size={l.size} tone={l.tone} id={`${leafId}-${i}`} /></div>
           </div>
         ))}
       </div>

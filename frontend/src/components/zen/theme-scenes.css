@@ -51,12 +51,12 @@
 @keyframes mist-pearl { from { transform: translate(-10%, 0); } to { transform: translate(12%, -19%) scale(1.12); } }
 .theme-preview .mist-cloud { width: 80%; min-width: 0; filter: blur(3px); }
 
-.after-rain-scene { background: radial-gradient(ellipse at 80% 14%, #fff8e7 0%, transparent 58%), linear-gradient(155deg, #d6e5eb, #edf2ed 54%, #d8e7e3); }
-.after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(3px); }
+.after-rain-scene { background: radial-gradient(ellipse at 80% 14%, #ffffff 0%, transparent 58%), linear-gradient(155deg, #eaf3f9, #fafcfd 54%, #f1f6fa); }
+.after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(1.5px); }
 .after-rain-ribbon { transform-origin: 80% 90%; }
 .after-rain-ribbon-cool { animation: refraction-cool 32s -6s ease-in-out infinite alternate; }
-.after-rain-sun { position: absolute; inset: 0; background: radial-gradient(ellipse at 82% 8%, #fffbe899, transparent 48%); animation: after-rain-sun 24s ease-in-out infinite alternate; }
-.after-rain-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 42% 36% at 50% 48%, #f5f7efb0 10%, transparent 100%), radial-gradient(ellipse at 12% 80%, #a4bdb522, transparent 56%); }
+.after-rain-sun { position: absolute; inset: 0; background: radial-gradient(ellipse at 82% 8%, #ffffff66, transparent 48%); animation: after-rain-sun 24s ease-in-out infinite alternate; }
+.after-rain-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 42% 36% at 50% 48%, #ffffffa0 10%, transparent 100%); }
 @keyframes refraction-cool { from { transform: translate(-.5%, 0) scale(.99); opacity: .72; } to { transform: translate(.5%, -1%) scale(1.01); opacity: 1; } }
 @keyframes after-rain-sun { from { opacity: .65; } to { opacity: .95; } }
 .theme-preview .after-rain-light { filter: blur(.3px); }
@@ -66,8 +66,8 @@
 .water-light { position: absolute; width: 70%; height: 40%; background: radial-gradient(ellipse, #fff7, transparent 68%); filter: blur(16px); }
 .water-light-one { left: -20%; top: -8%; animation: water-light 18s ease-in-out infinite alternate; }
 .water-light-two { right: -22%; bottom: -12%; animation: water-light 22s -8s ease-in-out infinite alternate-reverse; }
-.ripple-pool { position: absolute; aspect-ratio: 2.5; transform: translate(-50%, -50%) rotate(-8deg); }
-.water-ring { position: absolute; inset: 0; border: 1px solid #72968a55; border-top-color: #ffffffc0; border-bottom-color: #527c6d70; border-radius: 50%; box-shadow: 0 1px 2px #527c6d18, inset 0 1px 1px #fff9; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) cubic-bezier(.16,.5,.45,1) infinite; }
+.ripple-pool { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.water-ring { position: absolute; inset: 0; border: 1px solid #72968a55; border-top-color: #ffffff90; border-bottom-color: #527c6d55; border-radius: 50%; box-shadow: 0 1px 2px #527c6d18, inset 0 1px 1px #fff9; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) cubic-bezier(.16,.5,.45,1) infinite; }
 .water-drop { position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px #fff; animation: water-drop var(--ripple-duration) var(--ripple-delay) linear infinite; }
 @keyframes water-expand { 0% { transform: scale(.025); opacity: 0; } 8% { opacity: .72; } 48% { opacity: .38; } 82% { opacity: .1; } 100% { transform: scale(1); opacity: 0; } }
 @keyframes water-drop { 0%, 9% { opacity: .8; transform: scale(1); } 20%, 100% { opacity: 0; transform: scale(0); } }

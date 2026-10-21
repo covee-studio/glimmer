@@ -81,3 +81,14 @@ User requested more visible side-to-side maple falling, more Sakura petals with 
 - Follow-up assessment: Solar is the next candidate for improvement because its broad violet/orange gradient is visually generic and relatively saturated. No changes to Solar were made in this pass.
 
 Verification: 58 tests, ESLint, both builds, regression script and whitespace check passed. Live Maple sampling over 360 animation frames (~6 seconds) found horizontal direction reversals in all 16 leaves, with near-layer horizontal spans 138–159px. Real selection and screenshots verified all four scenes; reduced-motion emulation found zero animated scene descendants in each, and the emulation was cleared. Screenshots are under `docs/screenshots/2026-10-21/refinement/`. Local preview server restarted at port 5001 after discovering that the earlier tab had retained an old page while the server was stopped. These remain design-branch changes, not a release.
+
+## User correction: softer leaves, cleaner rainbow, overhead water (2026-10-21)
+
+User rejected the serrated leaf as too sharp, reported uneven motion, found the rainbow muddy, and clarified that Ripples must be viewed directly from above. This supersedes the previous visual direction for those details.
+
+- Restore the source's curved maple lobes. Separate constant vertical descent on the outer track from a compositor-transform lateral pendulum on an inner element, using eased alternating turns instead of a single sampled transform path. Retain the central clearing and 16-leaf count. Do not attribute all perceived stutter to one unmeasured cause: the new implementation removes the sampled velocity joints and reduces motion complexity.
+- After Rain now uses a neutral white/blue sky, narrower pastel spectrum, less blur and no yellow/green base or muddy overlapping haze.
+- Ripples returns to circular expansion with no rotation or oblique perspective; gentle edge illumination and decay remain.
+- Sakura remains at 24 petals, unchanged in this correction.
+
+Verification: 240 live animation frames had zero frame gaps above 34ms; maximum per-frame horizontal displacement was 0.880px, maximum change of that displacement was 0.083px. This is local web evidence, not a universal device-performance guarantee. Reduced-motion Maple retained 16 leaves with zero animated descendants; emulation cleared. Real screenshots of all three corrected scenes saved under `docs/screenshots/2026-10-21/correction/`. 58 tests, lint, both builds, regression script and whitespace checks passed.
