@@ -1,0 +1,62 @@
+/* Preserve the reference trajectories while sharing pause/reduced-motion behavior. */
+.maple-leaf { animation: glimmer-maple-fall 16s linear infinite; }
+.sakura-petal { animation: glimmer-sakura-fall 12s linear infinite; }
+.sakura-branch { animation: glimmer-sakura-branch 9s ease-in-out infinite; }
+@keyframes glimmer-sakura-branch { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.6deg); } }
+.maple-mote { opacity: 0; animation: glimmer-maple-mote 14s ease-in-out infinite; }
+@keyframes glimmer-maple-mote { 0% { opacity: 0; transform: translateY(0); } 50% { opacity: .6; transform: translateY(-14px); } 100% { opacity: 0; transform: translateY(-28px); } }
+@keyframes glimmer-maple-fall {
+  0.000000% { transform: translate(var(--fall-x0), var(--fall-y0)) rotate(var(--fall-r0)); }
+  5.000000% { transform: translate(var(--fall-x1), var(--fall-y1)) rotate(var(--fall-r1)); }
+  10.000000% { transform: translate(var(--fall-x2), var(--fall-y2)) rotate(var(--fall-r2)); }
+  15.000000% { transform: translate(var(--fall-x3), var(--fall-y3)) rotate(var(--fall-r3)); }
+  20.000000% { transform: translate(var(--fall-x4), var(--fall-y4)) rotate(var(--fall-r4)); }
+  25.000000% { transform: translate(var(--fall-x5), var(--fall-y5)) rotate(var(--fall-r5)); }
+  30.000000% { transform: translate(var(--fall-x6), var(--fall-y6)) rotate(var(--fall-r6)); }
+  35.000000% { transform: translate(var(--fall-x7), var(--fall-y7)) rotate(var(--fall-r7)); }
+  40.000000% { transform: translate(var(--fall-x8), var(--fall-y8)) rotate(var(--fall-r8)); }
+  45.000000% { transform: translate(var(--fall-x9), var(--fall-y9)) rotate(var(--fall-r9)); }
+  50.000000% { transform: translate(var(--fall-x10), var(--fall-y10)) rotate(var(--fall-r10)); }
+  55.000000% { transform: translate(var(--fall-x11), var(--fall-y11)) rotate(var(--fall-r11)); }
+  60.000000% { transform: translate(var(--fall-x12), var(--fall-y12)) rotate(var(--fall-r12)); }
+  65.000000% { transform: translate(var(--fall-x13), var(--fall-y13)) rotate(var(--fall-r13)); }
+  70.000000% { transform: translate(var(--fall-x14), var(--fall-y14)) rotate(var(--fall-r14)); }
+  75.000000% { transform: translate(var(--fall-x15), var(--fall-y15)) rotate(var(--fall-r15)); }
+  80.000000% { transform: translate(var(--fall-x16), var(--fall-y16)) rotate(var(--fall-r16)); }
+  85.000000% { transform: translate(var(--fall-x17), var(--fall-y17)) rotate(var(--fall-r17)); }
+  90.000000% { transform: translate(var(--fall-x18), var(--fall-y18)) rotate(var(--fall-r18)); }
+  95.000000% { transform: translate(var(--fall-x19), var(--fall-y19)) rotate(var(--fall-r19)); }
+  100.000000% { transform: translate(var(--fall-x20), var(--fall-y20)) rotate(var(--fall-r20)); }
+}
+@keyframes glimmer-sakura-fall {
+  0.000000% { transform: translate(var(--fall-x0), var(--fall-y0)) rotate(var(--fall-r0)); }
+  4.166667% { transform: translate(var(--fall-x1), var(--fall-y1)) rotate(var(--fall-r1)); }
+  8.333333% { transform: translate(var(--fall-x2), var(--fall-y2)) rotate(var(--fall-r2)); }
+  12.500000% { transform: translate(var(--fall-x3), var(--fall-y3)) rotate(var(--fall-r3)); }
+  16.666667% { transform: translate(var(--fall-x4), var(--fall-y4)) rotate(var(--fall-r4)); }
+  20.833333% { transform: translate(var(--fall-x5), var(--fall-y5)) rotate(var(--fall-r5)); }
+  25.000000% { transform: translate(var(--fall-x6), var(--fall-y6)) rotate(var(--fall-r6)); }
+  29.166667% { transform: translate(var(--fall-x7), var(--fall-y7)) rotate(var(--fall-r7)); }
+  33.333333% { transform: translate(var(--fall-x8), var(--fall-y8)) rotate(var(--fall-r8)); }
+  37.500000% { transform: translate(var(--fall-x9), var(--fall-y9)) rotate(var(--fall-r9)); }
+  41.666667% { transform: translate(var(--fall-x10), var(--fall-y10)) rotate(var(--fall-r10)); }
+  45.833333% { transform: translate(var(--fall-x11), var(--fall-y11)) rotate(var(--fall-r11)); }
+  50.000000% { transform: translate(var(--fall-x12), var(--fall-y12)) rotate(var(--fall-r12)); }
+  54.166667% { transform: translate(var(--fall-x13), var(--fall-y13)) rotate(var(--fall-r13)); }
+  58.333333% { transform: translate(var(--fall-x14), var(--fall-y14)) rotate(var(--fall-r14)); }
+  62.500000% { transform: translate(var(--fall-x15), var(--fall-y15)) rotate(var(--fall-r15)); }
+  66.666667% { transform: translate(var(--fall-x16), var(--fall-y16)) rotate(var(--fall-r16)); }
+  70.833333% { transform: translate(var(--fall-x17), var(--fall-y17)) rotate(var(--fall-r17)); }
+  75.000000% { transform: translate(var(--fall-x18), var(--fall-y18)) rotate(var(--fall-r18)); }
+  79.166667% { transform: translate(var(--fall-x19), var(--fall-y19)) rotate(var(--fall-r19)); }
+  83.333333% { transform: translate(var(--fall-x20), var(--fall-y20)) rotate(var(--fall-r20)); }
+  87.500000% { transform: translate(var(--fall-x21), var(--fall-y21)) rotate(var(--fall-r21)); }
+  91.666667% { transform: translate(var(--fall-x22), var(--fall-y22)) rotate(var(--fall-r22)); }
+  95.833333% { transform: translate(var(--fall-x23), var(--fall-y23)) rotate(var(--fall-r23)); }
+  100.000000% { transform: translate(var(--fall-x24), var(--fall-y24)) rotate(var(--fall-r24)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .maple-scene *, .sakura-scene * { animation: none !important; }
+  .maple-leaf, .sakura-petal { transform: translate(var(--fall-x0), var(--fall-still-y)) rotate(var(--fall-r0)); }
+  .maple-mote { opacity: .3; }
+}

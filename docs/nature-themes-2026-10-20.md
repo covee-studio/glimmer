@@ -40,4 +40,19 @@ No environmental audio, new dependency, network asset, storage key, permission, 
 
 ## Review guidance
 
-Start with Aurora for the dark palette and Sunrise/Stream for daylight. Fireflies intentionally retains the reference's sparse lights across the view; judge distraction using longer reading, not only a screenshot. Keep audio and the more active seasonal scenes for a later, separate iteration.
+Start with Aurora for the dark palette and Sunrise/Stream for daylight. Fireflies intentionally retains the reference's sparse lights across the view; judge distraction using longer reading, not only a screenshot. Keep audio for a later, separate iteration; seasonal themes were subsequently added at the user's request below.
+
+## Follow-up: Maple and Sakura (2026-10-21)
+
+User clarified that Maple and Sakura are favorites and that the feature must be additive. Both are now appended after the original eleven and the first five additions, for eighteen total themes. Rechecked the source artifact through Magic Patterns MCP; it is unchanged.
+
+- Preserve source maple leaf SVG geometry, five-petal blossoms and branch artwork, colors, particle counts (26 maple leaves, 28 sakura petals), sampled analytic trajectories, depths and timings.
+- Use seeded layouts and per-instance Maple SVG gradient IDs, CSS motion that shares backdrop pause, and visible static placement under reduced motion.
+- Shift only the new Sakura branch below the top toolbar's brand label to prevent overlap. No original scene is restyled.
+- A direct Git comparison to baseline `8444600` confirms all eleven original theme definitions are byte-for-byte retained and no preexisting scene file changed. The original data-source/collection logic is untouched; only the theme menu's viewport boundary changed in the earlier integration.
+- Live web selection sampling: Maple 120 frames, Sakura 120 frames; zero layer-opacity regressions, both finish with one opaque layer.
+- Browser reduced-motion emulation verified zero moving scene elements and 26/28 visible leaves/petals respectively; emulation cleared afterward.
+- After the branch-position correction, final screenshots saved as `maple.jpg` and `sakura.jpg`; the preview is left on Sakura.
+- 58 tests, lint, web build, extension build, regression script, and whitespace checks passed again.
+
+These additions remain on `codex/nature-themes`; the baseline flash fix stays independently available on `main`. No merge or store submission has been performed.

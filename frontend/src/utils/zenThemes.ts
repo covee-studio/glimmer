@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import '../components/zen/theme-scenes.css'
 import '../components/zen/nature-scenes.css'
+import '../components/zen/seasonal-scenes.css'
 import { WavesTheme, WavesPreview } from '../components/zen/WavesTheme'
 import { MistTheme, MistPreview } from '../components/zen/MistTheme'
 import { ConstellationTheme, ConstellationPreview } from '../components/zen/ConstellationTheme'
@@ -17,6 +18,8 @@ import { SunriseTheme, SunrisePreview } from '../components/zen/SunriseTheme'
 import { StreamTheme, StreamPreview } from '../components/zen/StreamTheme'
 import { ZenGardenTheme, ZenGardenPreview } from '../components/zen/ZenGardenTheme'
 import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesTheme'
+import { MapleTheme, MaplePreview } from '../components/zen/MapleTheme'
+import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
 
 export interface ZenTheme {
   id: string
@@ -144,5 +147,19 @@ export const ZEN_THEMES: ZenTheme[] = [
     Preview: FirefliesPreview,
     Backdrop: FirefliesTheme,
     dark: true,
+  },
+  {
+    id: 'maple',
+    name: 'Maple',
+    surface: 'linear-gradient(180deg, #f2e4d8 0%, #ede0cc 55%, #e6d0ac 100%)',
+    Preview: MaplePreview,
+    Backdrop: MapleTheme,
+  },
+  {
+    id: 'sakura',
+    name: 'Sakura',
+    surface: 'linear-gradient(180deg, #f8ecee 0%, #f9f1ee 45%, #f4e2df 100%)',
+    Preview: SakuraPreview,
+    Backdrop: SakuraTheme,
   },
 ]
