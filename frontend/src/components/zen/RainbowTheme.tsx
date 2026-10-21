@@ -5,22 +5,25 @@ function RefractedLight() {
   const id = useId().replace(/:/g, '')
   return <svg className="after-rain-light" viewBox="0 0 1200 800" preserveAspectRatio="none">
     <defs>
-      <linearGradient id={`${id}-cool`}>
-        <stop stopColor="#b0d6df" stopOpacity="0" /><stop offset=".34" stopColor="#9fced4" stopOpacity=".72" />
-        <stop offset=".65" stopColor="#fafff7" stopOpacity=".95" /><stop offset=".83" stopColor="#acd0e6" stopOpacity=".65" /><stop offset="1" stopColor="#b6d9e8" stopOpacity="0" />
+      <radialGradient id={`${id}-spectrum`}>
+        <stop offset="0.88" stopColor="#a8b7d9" stopOpacity="0" />
+        <stop offset="0.895" stopColor="#aaa4cf" stopOpacity=".36" />
+        <stop offset="0.914" stopColor="#9bbdd9" stopOpacity=".46" />
+        <stop offset="0.933" stopColor="#afd1c4" stopOpacity=".48" />
+        <stop offset="0.952" stopColor="#e4dfad" stopOpacity=".46" />
+        <stop offset="0.97" stopColor="#e9c7ab" stopOpacity=".42" />
+        <stop offset="0.985" stopColor="#dcb4b1" stopOpacity=".28" />
+        <stop offset="1" stopColor="#dcb4b1" stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id={`${id}-fade`} x1="0" y1="0" x2="1" y2="1">
+        <stop stopColor="white" stopOpacity=".15" />
+        <stop offset=".45" stopColor="white" />
+        <stop offset="1" stopColor="white" stopOpacity="0" />
       </linearGradient>
-      <linearGradient id={`${id}-warm`}>
-        <stop stopColor="#e2eccc" stopOpacity="0" /><stop offset=".4" stopColor="#f1e4c8" stopOpacity=".6" />
-        <stop offset=".67" stopColor="#fffdf4" stopOpacity=".9" /><stop offset=".85" stopColor="#d1e8e5" stopOpacity=".55" /><stop offset="1" stopColor="#c9e2e8" stopOpacity="0" />
-      </linearGradient>
+      <mask id={`${id}-veil`}><rect width="1200" height="800" fill={`url(#${id}-fade)`} /></mask>
     </defs>
-    <g className="after-rain-ribbon after-rain-ribbon-cool">
-      <path d="M-170 850C176 569 -10 284 247 -100L424 -100C159 281 363 602 78 850Z" fill={`url(#${id}-cool)`} />
-      <path d="M-30 850C244 556 70 271 335 -100" fill="none" stroke="#fbfff8" strokeWidth="3" opacity=".5" />
-    </g>
-    <g className="after-rain-ribbon after-rain-ribbon-warm">
-      <path d="M693 900C1105 628 1141 365 1246 165L1400 243C1168 626 1320 697 992 900Z" fill={`url(#${id}-warm)`} />
-      <path d="M862 900C1200 629 1150 495 1320 258" fill="none" stroke="#fffef5" strokeWidth="4" opacity=".55" />
+    <g className="after-rain-ribbon after-rain-ribbon-cool" mask={`url(#${id}-veil)`}>
+      <circle cx="1450" cy="950" r="850" fill={`url(#${id}-spectrum)`} />
     </g>
   </svg>
 }

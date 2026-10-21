@@ -62,19 +62,19 @@ interface Leaf {
 }
 
 /**
- * 从同一个解析曲线采样位置与姿态：枫叶只进行一次左右摆振，持续向下，
+ * 从同一个解析曲线采样位置与姿态：枫叶在下落中连续完成几次左右摆振，持续向下，
  * 姿态角与横向速度同步；不使用侧翻缩放，叶面始终正对观看者。
  */
 function makeLeafTrajectory(near: boolean, random: () => number): FallTrajectory {
-  const steps = 20
+  const steps = 60
   const times = Array.from({ length: steps + 1 }, (_, index) => index / steps)
   const phase = random() * Math.PI * 2
-  const cycles = 0.72 + random() * 0.34
-  const sway = (near ? 26 : 15) + random() * (near ? 24 : 15)
+  const cycles = 2.6 + random() * 0.8
+  const sway = (near ? 62 : 32) + random() * (near ? 34 : 24)
   const drift = -18 + random() * 36
   const bob = 1.4 + random() * 1.5
   const baseAngle = -10 + random() * 20
-  const tilt = 10 + random() * 8
+  const tilt = 23 + random() * 10
   const initialWave = Math.sin(phase)
   const initialSecondary = Math.sin(phase * 0.7)
 
@@ -106,7 +106,7 @@ function makeLeaves(count: number, near: boolean): Leaf[] {
   return Array.from({ length: count }).map(() => {
     const dur = near ? 23 + random() * 9 : 30 + random() * 12
     return {
-      left: random() < 0.5 ? 2 + random() * 23 : 75 + random() * 23,
+      left: random() < 0.5 ? 8 + random() * 18 : 74 + random() * 18,
       size: near ? 38 + random() * 20 : 18 + random() * 12,
       dur,
       delay: -random() * dur,

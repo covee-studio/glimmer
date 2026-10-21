@@ -69,3 +69,15 @@ Following the full-theme visual review, the user approved removing Sunrise, Stre
 - Original eleven scene files and the independently committed backdrop handoff fix remain unchanged. No source, collection, permission or storage behavior is changed.
 
 Verification: 58 tests, ESLint, extension build, web build, regression checks and whitespace checks passed. Real web selections confirmed the 15-item theme list and the final Maple/Sakura/Fireflies renders. Final screenshots are in `docs/screenshots/2026-10-21/`. This is a design branch preview; no store submission or release acceptance is claimed.
+
+## Motion and water-light refinement (2026-10-21)
+
+User requested more visible side-to-side maple falling, more Sakura petals with the existing central clearing, and a quality pass on After Rain and Ripples. This explicitly extends the previous preservation scope to these two original themes; the other nine original scenes remain untouched.
+
+- Maple retains its leaf artwork, count, palette and vertical speed, but now completes 2.6–3.4 lateral cycles per fall, with 62–96px near-layer sway and a larger correlated tilt. Increase trajectory samples from 20 to 60 so turnarounds remain smooth.
+- Sakura increases from 16 to 24 petals, retaining the same center mask and trajectories.
+- After Rain replaces the vague two-ribbon refraction with a soft spectral arc on the right, cooler shaded sky and warm upper-right daylight. The central reading haze and existing persisted rainbow ID remain.
+- Ripples uses elliptical perspective, directionally lit ring edges, a slightly deeper water palette, and a decelerating expansion with gradual decay. Pool and particle counts remain bounded.
+- Follow-up assessment: Solar is the next candidate for improvement because its broad violet/orange gradient is visually generic and relatively saturated. No changes to Solar were made in this pass.
+
+Verification: 58 tests, ESLint, both builds, regression script and whitespace check passed. Live Maple sampling over 360 animation frames (~6 seconds) found horizontal direction reversals in all 16 leaves, with near-layer horizontal spans 138–159px. Real selection and screenshots verified all four scenes; reduced-motion emulation found zero animated scene descendants in each, and the emulation was cleared. Screenshots are under `docs/screenshots/2026-10-21/refinement/`. Local preview server restarted at port 5001 after discovering that the earlier tab had retained an old page while the server was stopped. These remain design-branch changes, not a release.

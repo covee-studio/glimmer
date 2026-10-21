@@ -51,27 +51,25 @@
 @keyframes mist-pearl { from { transform: translate(-10%, 0); } to { transform: translate(12%, -19%) scale(1.12); } }
 .theme-preview .mist-cloud { width: 80%; min-width: 0; filter: blur(3px); }
 
-.after-rain-scene { background: radial-gradient(ellipse at 65% 28%, #fcfcf5 0%, transparent 62%), linear-gradient(155deg, #e0eff2, #f3f7f0 60%, #deeeec); }
-.after-rain-light { position: absolute; inset: -8%; width: 116%; height: 116%; filter: blur(7px); }
-.after-rain-ribbon { transform-origin: 50% 50%; }
-.after-rain-ribbon-cool { animation: refraction-cool 22s -6s ease-in-out infinite alternate; }
-.after-rain-ribbon-warm { animation: refraction-warm 26s -11s ease-in-out infinite alternate; }
-.after-rain-sun { position: absolute; inset: 0; background: radial-gradient(ellipse at 80% 8%, #fffbe8b3, transparent 55%); animation: after-rain-sun 18s ease-in-out infinite alternate; }
-.after-rain-haze { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 48%, #f8fcf650 10%, transparent 68%); }
-@keyframes refraction-cool { from { transform: translate(-2%, -2%) skewX(-4deg); opacity: .6; } to { transform: translate(5%, 2%) skewX(5deg); opacity: 1; } }
-@keyframes refraction-warm { from { transform: translate(2%, 1%) skewX(3deg); opacity: .65; } to { transform: translate(-4%, -3%) skewX(-6deg); opacity: 1; } }
-@keyframes after-rain-sun { from { opacity: .5; transform: translateX(-2%); } to { opacity: .95; transform: translateX(2%); } }
-.theme-preview .after-rain-light { filter: blur(.6px); }
+.after-rain-scene { background: radial-gradient(ellipse at 80% 14%, #fff8e7 0%, transparent 58%), linear-gradient(155deg, #d6e5eb, #edf2ed 54%, #d8e7e3); }
+.after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(3px); }
+.after-rain-ribbon { transform-origin: 80% 90%; }
+.after-rain-ribbon-cool { animation: refraction-cool 32s -6s ease-in-out infinite alternate; }
+.after-rain-sun { position: absolute; inset: 0; background: radial-gradient(ellipse at 82% 8%, #fffbe899, transparent 48%); animation: after-rain-sun 24s ease-in-out infinite alternate; }
+.after-rain-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 42% 36% at 50% 48%, #f5f7efb0 10%, transparent 100%), radial-gradient(ellipse at 12% 80%, #a4bdb522, transparent 56%); }
+@keyframes refraction-cool { from { transform: translate(-.5%, 0) scale(.99); opacity: .72; } to { transform: translate(.5%, -1%) scale(1.01); opacity: 1; } }
+@keyframes after-rain-sun { from { opacity: .65; } to { opacity: .95; } }
+.theme-preview .after-rain-light { filter: blur(.3px); }
 @keyframes cloud-drift { from { transform: translateX(-7%); } to { transform: translateX(7%); } }
 
-.ripples-scene { background: radial-gradient(ellipse at 48% 40%, #f5f7f2 10%, #e4ece6 70%, #ceded6 100%); }
+.ripples-scene { background: radial-gradient(ellipse at 48% 40%, #edf3ef 10%, #d8e5df 65%, #b7cec5 100%); }
 .water-light { position: absolute; width: 70%; height: 40%; background: radial-gradient(ellipse, #fff7, transparent 68%); filter: blur(16px); }
 .water-light-one { left: -20%; top: -8%; animation: water-light 18s ease-in-out infinite alternate; }
 .water-light-two { right: -22%; bottom: -12%; animation: water-light 22s -8s ease-in-out infinite alternate-reverse; }
-.ripple-pool { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); }
-.water-ring { position: absolute; inset: 0; border: 1px solid #72968a70; border-radius: 50%; box-shadow: 0 0 2px #fff9, inset 0 0 2px #fff6; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) linear infinite; }
+.ripple-pool { position: absolute; aspect-ratio: 2.5; transform: translate(-50%, -50%) rotate(-8deg); }
+.water-ring { position: absolute; inset: 0; border: 1px solid #72968a55; border-top-color: #ffffffc0; border-bottom-color: #527c6d70; border-radius: 50%; box-shadow: 0 1px 2px #527c6d18, inset 0 1px 1px #fff9; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) cubic-bezier(.16,.5,.45,1) infinite; }
 .water-drop { position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px #fff; animation: water-drop var(--ripple-duration) var(--ripple-delay) linear infinite; }
-@keyframes water-expand { 0% { transform: scale(.025); opacity: 0; } 12% { opacity: .85; } 65% { opacity: .35; } 100% { transform: scale(1); opacity: 0; } }
+@keyframes water-expand { 0% { transform: scale(.025); opacity: 0; } 8% { opacity: .72; } 48% { opacity: .38; } 82% { opacity: .1; } 100% { transform: scale(1); opacity: 0; } }
 @keyframes water-drop { 0%, 9% { opacity: .8; transform: scale(1); } 20%, 100% { opacity: 0; transform: scale(0); } }
 @keyframes water-light { from { transform: translateX(-10%) skewX(-12deg); } to { transform: translateX(10%) skewX(12deg); } }
 .ripples-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; }

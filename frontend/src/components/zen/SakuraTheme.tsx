@@ -118,8 +118,8 @@ function Blossom({
 
 /** 樱花树 —— 一枝虬曲的樱枝自角落探入画面，枝头缀满真实的五瓣樱花，花瓣一路旋转飘落。 */
 export function SakuraTheme() {
-  const far = useMemo(() => makePetals(8, false), [])
-  const near = useMemo(() => makePetals(8, true), [])
+  const far = useMemo(() => makePetals(12, false), [])
+  const near = useMemo(() => makePetals(12, true), [])
   const all = [...far, ...near]
   const blossoms = useMemo(
     () => [
