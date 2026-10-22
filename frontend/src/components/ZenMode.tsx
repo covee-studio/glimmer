@@ -239,7 +239,7 @@ function ChromeButton({
     : active ? 'bg-white text-slate-900 shadow-[0_2px_8px_rgba(15,23,42,0.08)]' : 'text-slate-500 hover:text-slate-900 hover:bg-white/60'
   return (
     <button type="button" onClick={onClick} aria-label={label} title={label}
-      className={`relative z-20 w-10 h-10 inline-flex items-center justify-center rounded-full transition-colors ${cls}`}>
+      className={`ui-toolbar-button relative z-20 w-10 h-10 inline-flex items-center justify-center rounded-full ${cls}`}>
       {children}
     </button>
   )
@@ -758,8 +758,8 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         type="button" onClick={prev} aria-label="Previous"
         animate={{ opacity: chromeVisible ? 1 : 0, x: chromeVisible ? 0 : -8 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className={`absolute left-6 md:left-10 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 w-11 h-11 rounded-full backdrop-blur-md border transition-all inline-flex items-center justify-center shadow-[0_4px_16px_rgba(15,23,42,0.06)] z-20 ${
-          isDark ? 'bg-white/10 border-white/20 text-slate-200 hover:bg-white/20 hover:text-white' : 'bg-white/40 border-white/60 text-slate-500 hover:bg-white hover:text-slate-900 hover:scale-105'
+        className={`absolute left-6 md:left-10 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 w-11 h-11 rounded-full backdrop-blur-md border ui-toolbar-button inline-flex items-center justify-center shadow-[0_4px_16px_rgba(15,23,42,0.06)] z-20 ${
+          isDark ? 'bg-white/10 border-white/20 text-slate-200 hover:bg-white/20 hover:text-white' : 'bg-white/40 border-white/60 text-slate-500 hover:bg-white hover:text-slate-900'
         }`}
       >
         <ChevronLeftIcon className="w-5 h-5" strokeWidth={2} />
@@ -768,8 +768,8 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         type="button" onClick={next} aria-label="Next"
         animate={{ opacity: chromeVisible ? 1 : 0, x: chromeVisible ? 0 : 8 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className={`absolute right-6 md:right-10 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 w-11 h-11 rounded-full backdrop-blur-md border transition-all inline-flex items-center justify-center shadow-[0_4px_16px_rgba(15,23,42,0.06)] z-20 ${
-          isDark ? 'bg-white/10 border-white/20 text-slate-200 hover:bg-white/20 hover:text-white' : 'bg-white/40 border-white/60 text-slate-500 hover:bg-white hover:text-slate-900 hover:scale-105'
+        className={`absolute right-6 md:right-10 bottom-24 md:bottom-auto md:top-1/2 md:-translate-y-1/2 w-11 h-11 rounded-full backdrop-blur-md border ui-toolbar-button inline-flex items-center justify-center shadow-[0_4px_16px_rgba(15,23,42,0.06)] z-20 ${
+          isDark ? 'bg-white/10 border-white/20 text-slate-200 hover:bg-white/20 hover:text-white' : 'bg-white/40 border-white/60 text-slate-500 hover:bg-white hover:text-slate-900'
         }`}
       >
         <ChevronRightIcon className="w-5 h-5" strokeWidth={2} />

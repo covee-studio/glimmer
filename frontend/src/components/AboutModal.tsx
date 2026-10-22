@@ -1,4 +1,5 @@
-import { Info, X } from 'lucide-react'
+import { CloseButton } from './ui/CloseButton'
+import { usePanelMotion } from './ui/usePanelMotion'
 import { motion, AnimatePresence } from 'motion/react'
 import { useI18n } from '../hooks/useI18n'
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation'
@@ -12,6 +13,7 @@ interface AboutModalProps {
 
 export function AboutModal({ isOpen, onClose }: AboutModalProps) {
   const { t } = useI18n()
+  const panelMotion = usePanelMotion()
   const containerRef = useRef<HTMLDivElement>(null)
 
   useKeyboardNavigation({ onEscape: onClose, enabled: isOpen })
@@ -22,46 +24,26 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
       {isOpen && (
         <motion.div
           key="about-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          {...panelMotion.backdrop}
+          className="fixed inset-0 ui-modal-backdrop z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="about-title"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="reading-panel z-[41] p-7 rounded-2xl w-full max-w-md flex flex-col relative"
-            style={{
-              boxShadow: '0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
-            }}
+            {...panelMotion.panel}
+            className="reading-panel z-[41] p-5 sm:p-7 max-h-[92dvh] overflow-y-auto overscroll-contain w-full max-w-md flex flex-col relative"
             role="document"
             ref={containerRef}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <h2 id="about-title" className="font-serif-editorial text-xl font-semibold text-slate-800">{t('about.title')}</h2>
-              </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-all"
-                aria-label={t('common.close')}
-              >
-                <X className="w-4 h-4" />
-              </button>
+            <div className="ui-panel-header">
+              <h2 id="about-title" className="ui-panel-title font-serif-editorial">{t('about.title')}</h2>
+              <CloseButton onClick={onClose} label={t("common.close")} />
             </div>
 
             {/* Body */}
-            <div className="font-serif-editorial flex flex-col gap-2.5 text-[15px] text-slate-600 leading-[1.75]">
+            <div className="font-serif-editorial flex flex-col gap-2.5 text-[15px] text-[var(--ui-text)] leading-[1.75]">
               <p>A new tab is usually just a moment between things.</p>
               <p>
                 Glimmer puts something there — one article, quietly chosen at random.
@@ -78,7 +60,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   href="https://github.com/IsaacGemal/wikitok"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-800 font-medium hover:underline"
+                  className="text-[var(--ui-ink)] font-medium hover:underline"
                 >
                   wikitok
                 </a>
@@ -87,7 +69,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   href="https://github.com/IsaacGemal"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-800 font-medium hover:underline"
+                  className="text-[var(--ui-ink)] font-medium hover:underline"
                 >
                   IsaacGemal
                 </a>
@@ -96,7 +78,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   href="https://github.com/liminalpurr/jizhi"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-800 font-medium hover:underline"
+                  className="text-[var(--ui-ink)] font-medium hover:underline"
                 >
                   几枝
                 </a>
@@ -104,12 +86,12 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
               </p>
               <p>Hope you enjoy it.</p>
 
-              <div className="font-sans pt-4 border-t border-slate-100 mt-1 flex items-center gap-4">
+              <div className="font-sans pt-4 border-t border-[var(--ui-line-soft)] mt-1 flex items-center gap-4">
                 <a
                   href="https://github.com/covee-studio/glimmer"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-500 hover:text-slate-800 transition-colors font-medium"
+                  className="text-[var(--ui-muted)] hover:text-[var(--ui-ink)] transition-colors font-medium"
                 >
                   GitHub
                 </a>
@@ -118,7 +100,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                   href="https://buymeacoffee.com/exploreryer"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-500 hover:text-slate-800 transition-colors font-medium"
+                  className="text-[var(--ui-muted)] hover:text-[var(--ui-ink)] transition-colors font-medium"
                 >
                   {t('about.buyMeCoffee')} ☕
                 </a>

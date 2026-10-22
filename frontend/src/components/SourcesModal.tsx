@@ -1,4 +1,6 @@
-import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Settings, X } from "lucide-react"
+import { CloseButton } from './ui/CloseButton'
+import { usePanelMotion } from './ui/usePanelMotion'
+import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Settings } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
@@ -61,7 +63,7 @@ function SourceHint({ sourceId, sourceLabel, description }: { sourceId: string; 
         onMouseLeave={() => { hovered.current = false; close() }}
         onFocus={() => { focused.current = true; open() }}
         onBlur={() => { focused.current = false; close() }}
-        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-slate-300 transition-colors hover:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-slate-300 transition-colors hover:text-[var(--ui-muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
       >
         <Info className="h-3.5 w-3.5" strokeWidth={2} />
       </button>
@@ -80,6 +82,7 @@ function SourceHint({ sourceId, sourceLabel, description }: { sourceId: string; 
 }
 
 export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModalProps) {
+  const panelMotion = usePanelMotion()
   const { enabledSources, toggleSource, getSourceConfig, updateSourceConfig, ensureHostPermission, disconnectSource } = useSources()
   const { showToast } = useToast()
   const { currentLanguage, setLanguage } = useLocalization()
@@ -111,14 +114,15 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
     setView(adapter.id)
   }
 
-  useEffect(() => {
-    if (!isOpen) return
-    const frame = requestAnimationFrame(() => {
-      const selector = view === "sources" ? `[data-source-settings="${lastOpenedSource.current}"]` : '[data-source-back]'
-      containerRef.current?.querySelector<HTMLButtonElement>(selector)?.focus()
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [isOpen, view])
+  // With a wait transition the incoming view is not mounted on the first frame.
+  // Restore focus only once it is visible, without stealing an early user click.
+  const focusCurrentView = () => {
+    const scope = containerRef.current?.querySelector<HTMLElement>(`[data-source-view="${view}"]`)
+    if (!scope || scope.contains(document.activeElement)) return
+    const selector = view === "sources" ? `[data-source-settings="${lastOpenedSource.current}"]` : '[data-source-back]'
+    scope.querySelector<HTMLButtonElement>(selector)?.focus()
+  }
+
 
   const saveSourceSettings = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -171,55 +175,38 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
       {isOpen && (
         <motion.div
           key="sources-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm"
+          {...panelMotion.backdrop}
+          className="fixed inset-0 z-50 flex items-center justify-center ui-modal-backdrop p-4"
           role="dialog"
           aria-modal="true"
           aria-label="Sources settings"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            {...panelMotion.panel}
             ref={containerRef}
-            className="reading-panel relative z-[41] flex max-h-[92vh] w-full max-w-md flex-col overflow-y-auto overscroll-y-contain rounded-2xl p-5 sm:p-7"
-            style={{
-              boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)",
-            }}
+            className="reading-panel relative z-[41] flex max-h-[92dvh] w-full max-w-md flex-col overflow-y-auto overscroll-y-contain rounded-2xl p-5 sm:p-7"
             role="document"
           >
-            <div className="mb-7 flex items-center justify-between">
+            <div className="ui-panel-header">
               <div className="flex items-center gap-3">
                 <div>
-                  <h2 className="font-serif-editorial text-[22px] sm:text-2xl font-medium text-slate-800">Your reading room</h2>
+                  <h2 className="ui-panel-title font-serif-editorial">Your reading room</h2>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition-all hover:border-slate-300 hover:text-slate-600"
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              <CloseButton onClick={onClose} />
             </div>
 
             <AnimatePresence mode="wait" initial={false}>
               {view === "sources" ? (
                 <motion.div
                   key="sources-view"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.16, ease: "easeOut" }}
+                  data-source-view="sources"
+                  onAnimationComplete={focusCurrentView}
+                  {...panelMotion.view}
                 >
-                  <div className="mb-4 flex items-center gap-3 border-b border-slate-200/70 pb-5">
+                  <div className="mb-4 flex items-center gap-3 border-b border-[var(--ui-line-soft)] pb-5">
                     <div className="flex min-w-0 flex-1 items-center gap-1">
-                      <label htmlFor="article-language-select" className="block text-sm font-semibold text-slate-700">
+                      <label htmlFor="article-language-select" className="block text-sm font-medium text-[var(--ui-text)]">
                         Language
                       </label>
                       <SourceHint
@@ -233,7 +220,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                         id="article-language-select"
                         value={currentLanguage.id}
                         onChange={(event) => setLanguage(event.target.value)}
-                        className="w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 pr-8 text-sm text-slate-700 outline-none transition-colors focus:border-slate-300 focus:ring-2 focus:ring-slate-300"
+                        className="ui-field w-full cursor-pointer appearance-none px-3 py-2 pr-8 text-sm"
                       >
                         {LANGUAGES.map((lang) => (
                           <option key={lang.id} value={lang.id}>
@@ -241,11 +228,11 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ui-muted)]" />
                     </div>
                   </div>
 
-                  <div className="flex flex-col divide-y divide-slate-200/60">
+                  <div className="flex flex-col divide-y divide-[var(--ui-line-soft)]">
                     {ADAPTER_LIST.map((adapter) => {
                       const active = enabledSources.has(adapter.id)
                       const hasSettings = Boolean(adapter.configSchema?.length)
@@ -274,7 +261,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                                 <div className="flex items-center gap-1">
                                 <label
                                   htmlFor={`source-toggle-${adapter.id}`}
-                                  className={`cursor-pointer select-none font-semibold ${active ? "text-slate-800" : "text-slate-500"}`}
+                                  className={`cursor-pointer select-none font-medium ${active ? "text-[var(--ui-ink)]" : "text-[var(--ui-muted)]"}`}
                                 >
                                   {adapter.label}
                                 </label>
@@ -284,7 +271,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                                   description={adapter.description}
                                 />
                                 </div>
-                                {hasSettings && <p className="text-xs text-slate-500">{configured ? "Configured" : "Not connected"}</p>}
+                                {hasSettings && <p className="text-xs text-[var(--ui-muted)]">{configured ? "Configured" : "Not connected"}</p>}
                                 {sourceErrors[adapter.id] && <p role="status" className="text-[11px] leading-relaxed text-amber-800">{sourceErrors[adapter.id]}</p>}
                               </div>
                             </div>
@@ -295,7 +282,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                                   data-source-settings={adapter.id}
                                   onClick={() => openSourceSettings(adapter)}
                                   aria-label={configured ? `${adapter.label} settings` : `Connect ${adapter.label}`}
-                                  className={`flex h-10 min-w-10 px-2 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300`}
+                                  className={`ui-secondary-button`}
                                 >
                                   {configured ? <Settings className="h-4 w-4" strokeWidth={1.8} /> : <span className="text-xs">Connect</span>}
                                 </button>
@@ -315,16 +302,15 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
               ) : (
                 <motion.div
                   key={`${settingsAdapter?.id ?? "source"}-view`}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  transition={{ duration: 0.16, ease: "easeOut" }}
+                  data-source-view={view}
+                  onAnimationComplete={focusCurrentView}
+                  {...panelMotion.view}
                 >
                   <button
                     type="button"
                     data-source-back
                     onClick={() => setView("sources")}
-                    className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                    className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--ui-muted)] transition-colors hover:text-[var(--ui-ink)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                   >
                     <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
                     Back to Sources
@@ -338,16 +324,16 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                         className="h-11 w-11 rounded-full object-contain"
                       />
                     ) : (
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-[var(--ui-muted)]">
                         <BookOpen className="h-5 w-5 text-emerald-800" strokeWidth={1.6} />
                       </div>
                     )}
-                    <h3 className="font-serif-editorial text-2xl font-medium tracking-tight text-slate-800">
+                    <h3 className="font-serif-editorial text-2xl font-medium tracking-tight text-[var(--ui-ink)]">
                       {settingsAdapter?.label ?? "Source"}
                     </h3>
                   </div>
 
-                  {settingsAdapter?.setupUrl && <div className="mt-4 text-left text-xs leading-relaxed text-slate-500"><a className="text-emerald-800 underline underline-offset-4" href={settingsAdapter.setupUrl} target="_blank" rel="noopener noreferrer">{settingsAdapter.setupLabel}</a><p className="mt-3">{settingsAdapter.setupHint}</p></div>}
+                  {settingsAdapter?.setupUrl && <div className="mt-4 text-left text-xs leading-relaxed text-[var(--ui-muted)]"><a className="text-emerald-800 underline underline-offset-4" href={settingsAdapter.setupUrl} target="_blank" rel="noopener noreferrer">{settingsAdapter.setupLabel}</a><p className="mt-3">{settingsAdapter.setupHint}</p></div>}
                   <form className="mt-6 flex flex-col gap-5" onSubmit={saveSourceSettings}>
                     {(settingsAdapter?.configSchema ?? []).map((field) => {
                       const isSecret = field.secret === true
@@ -357,7 +343,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                         <div key={field.key}>
                           <label
                             htmlFor={`${settingsAdapter?.id ?? "source"}-${field.key}`}
-                            className="mb-2 block text-sm font-semibold text-slate-700"
+                            className="mb-2 block text-sm font-medium text-[var(--ui-text)]"
                           >
                             {field.label}
                           </label>
@@ -370,7 +356,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                               onChange={(event) => {
                                 setSettingsDraft((previous) => ({ ...previous, [field.key]: event.target.value }))
                               }}
-                              className={`w-full rounded-xl border border-slate-200 bg-white py-3 pl-3.5 text-sm text-slate-800 outline-none transition-shadow placeholder:text-slate-300 focus:border-slate-300 focus:ring-2 focus:ring-slate-200 ${isSecret ? "pr-28" : "pr-3.5"}`}
+                              className={`ui-field w-full py-3 pl-3.5 text-sm ${isSecret ? "pr-28" : "pr-3.5"}`}
                               autoComplete="off"
                               spellCheck={false}
                               required={field.required !== false}
@@ -379,7 +365,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                               <button
                                 type="button"
                                 onClick={() => setShowToken((previous) => !previous)}
-                                className="absolute right-2 top-1/2 z-10 inline-flex -translate-y-1/2 shrink-0 items-center gap-1.5 whitespace-nowrap bg-white px-1 text-xs font-medium text-slate-400 transition-colors hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                                className="absolute right-2 top-1/2 z-10 inline-flex -translate-y-1/2 shrink-0 items-center gap-1.5 whitespace-nowrap bg-white px-1 text-xs font-medium text-[var(--ui-muted)] transition-colors hover:text-[var(--ui-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                                 aria-label={showToken ? "Hide token" : "Show token"}
                               >
                                 {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -395,12 +381,12 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                     <button
                       type="submit"
                       disabled={saving}
-                      className="mt-3 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                      className="ui-primary-button mt-3 w-full px-4 py-3 text-sm font-medium"
                     >
                       {saving ? 'Connecting…' : 'Save & connect'}
                     </button>
-                    {settingsAdapter && Object.keys(getSourceConfig(settingsAdapter.id)).length > 0 && <button type="button" disabled={saving} onClick={() => { void disconnectSource(settingsAdapter.id).catch(() => showToast('Disconnected, but some cached data could not be cleared. Try again.')); setSettingsDraft({}); setView('sources') }} className="text-sm text-slate-500 underline underline-offset-4">Disconnect & remove key</button>}
-                    {settingsAdapter?.id === 'weread' && <p className="text-center text-[11px] leading-relaxed text-slate-500">Your saved highlights stay on this device and are not included in Chrome Sync. Disconnecting keeps your saved collection.</p>}
+                    {settingsAdapter && Object.keys(getSourceConfig(settingsAdapter.id)).length > 0 && <button type="button" disabled={saving} onClick={() => { void disconnectSource(settingsAdapter.id).catch(() => showToast('Disconnected, but some cached data could not be cleared. Try again.')); setSettingsDraft({}); setView('sources') }} className="text-sm text-[var(--ui-muted)] underline underline-offset-4">Disconnect & remove key</button>}
+                    {settingsAdapter?.id === 'weread' && <p className="text-center text-[11px] leading-relaxed text-[var(--ui-muted)]">Your saved highlights stay on this device and are not included in Chrome Sync. Disconnecting keeps your saved collection.</p>}
                   </form>
                 </motion.div>
               )}
