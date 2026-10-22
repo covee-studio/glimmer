@@ -40,7 +40,7 @@ const RANDOM_BATCH_SIZE = "50"
 const MIN_ARTICLES = 12
 const MAX_RANDOM_ATTEMPTS = 3
 
-async function fetchArticleBatch(language: Language): Promise<DiscoveryItem[]> {
+async function fetchArticleBatch(language: Language, signal: AbortSignal): Promise<DiscoveryItem[]> {
   const response = await fetchWithCORS(
     language.api +
       new URLSearchParams({
@@ -62,7 +62,8 @@ async function fetchArticleBatch(language: Language): Promise<DiscoveryItem[]> {
         clshow: "!hidden",
         origin: "*",
         variant: language.id,
-      })
+      }),
+    { signal },
   )
   if (!response.ok) throw new Error(`Wikipedia HTTP error: ${response.status}`)
   const data = await response.json()
@@ -90,12 +91,13 @@ async function fetchArticleBatch(language: Language): Promise<DiscoveryItem[]> {
     }))
 }
 
-async function fetchArticles(language: Language): Promise<DiscoveryItem[]> {
+async function fetchArticles(language: Language, signal: AbortSignal): Promise<DiscoveryItem[]> {
   const seen = new Set<string>()
   const articles: DiscoveryItem[] = []
 
   for (let attempt = 0; attempt < MAX_RANDOM_ATTEMPTS && articles.length < MIN_ARTICLES; attempt++) {
-    const batch = await fetchArticleBatch(language)
+    signal.throwIfAborted()
+    const batch = await fetchArticleBatch(language, signal)
     for (const item of batch) {
       if (seen.has(item.id)) continue
       seen.add(item.id)
@@ -114,7 +116,19 @@ export const wikipediaAdapter: SourceAdapter = {
   logoSrc: "/source-icons/wikipedia.png",
 
   async fetch(config?: FetchConfig): Promise<DiscoveryItem[]> {
-    return fetchArticles(config?.language ?? EN_FALLBACK)
+    const deadline = new AbortController()
+    const timer = setTimeout(() => deadline.abort(), 15000)
+    const signal = config?.signal ? AbortSignal.any([config.signal, deadline.signal]) : deadline.signal
+    try {
+      return await fetchArticles(config?.language ?? EN_FALLBACK, signal)
+    } catch (error) {
+      if (deadline.signal.aborted && !config?.signal?.aborted) {
+        throw new Error('Wikipedia took too long to respond. Try again or choose another source.')
+      }
+      throw error
+    } finally {
+      clearTimeout(timer)
+    }
   },
 
   renderCard(item: DiscoveryItem, props: CardRenderProps) {
