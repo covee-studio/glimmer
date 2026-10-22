@@ -29,6 +29,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
+          aria-labelledby="about-title"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -48,7 +49,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                 <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0">
                   <Info className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="font-serif-editorial text-xl font-semibold text-slate-800">{t('about.title')}</h2>
+                <h2 id="about-title" className="font-serif-editorial text-xl font-semibold text-slate-800">{t('about.title')}</h2>
               </div>
               <button
                 onClick={onClose}
@@ -128,11 +129,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           <div
             className="w-full h-full z-[40] fixed inset-0"
             onClick={onClose}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose() } }}
-            aria-label={t('common.close')}
-            role="button"
-            tabIndex={0}
-            aria-pressed="false"
+            aria-hidden="true"
           />
         </motion.div>
       )}

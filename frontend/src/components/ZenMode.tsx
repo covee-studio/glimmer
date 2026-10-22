@@ -655,7 +655,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
               )}
             </div>
           ) : isLoading ? (
-            <div style={{
+            <div role="status" aria-label="Loading reading content" style={{
               width: 40, height: 40, borderRadius: '50%',
               border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.4)' : 'rgba(15,23,42,0.18)'}`,
               animation: 'zen-breathe 2.6s ease-in-out infinite',

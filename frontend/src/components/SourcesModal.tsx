@@ -156,7 +156,11 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
       }
     }
     const toggled = toggleSource(adapter.id)
-    if (toggled || enabledSources.has(adapter.id)) return
+    if (toggled) return
+    if (enabledSources.has(adapter.id)) {
+      showToast('Keep at least one source on')
+      return
+    }
 
     showToast(`Configure ${adapter.label} before enabling it`)
     if (adapter.requiresConfig) openSourceSettings(adapter)
@@ -320,31 +324,31 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                     type="button"
                     data-source-back
                     onClick={() => setView("sources")}
-                    className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                    className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                   >
                     <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
                     Back to Sources
                   </button>
 
-                  <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-3">
                     {settingsAdapter?.logoSrc ? (
                       <img
                         src={settingsAdapter.logoSrc}
                         alt={settingsAdapter.label}
-                        className="h-20 w-20 rounded-full object-contain shadow-sm"
+                        className="h-11 w-11 rounded-full object-contain"
                       />
                     ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-500">
-                        <BookOpen className="h-9 w-9 text-emerald-800" strokeWidth={1.6} />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                        <BookOpen className="h-5 w-5 text-emerald-800" strokeWidth={1.6} />
                       </div>
                     )}
-                    <h3 className="font-serif-editorial mt-5 text-3xl font-medium tracking-tight text-slate-800">
+                    <h3 className="font-serif-editorial text-2xl font-medium tracking-tight text-slate-800">
                       {settingsAdapter?.label ?? "Source"}
                     </h3>
                   </div>
 
-                  {settingsAdapter?.setupUrl && <div className="mt-5 text-center text-xs leading-relaxed text-slate-500"><a className="text-emerald-800 underline underline-offset-4" href={settingsAdapter.setupUrl} target="_blank" rel="noopener noreferrer">{settingsAdapter.setupLabel}</a><p className="mt-3">{settingsAdapter.setupHint}</p></div>}
-                  <form className="mt-8 flex flex-col gap-5" onSubmit={saveSourceSettings}>
+                  {settingsAdapter?.setupUrl && <div className="mt-4 text-left text-xs leading-relaxed text-slate-500"><a className="text-emerald-800 underline underline-offset-4" href={settingsAdapter.setupUrl} target="_blank" rel="noopener noreferrer">{settingsAdapter.setupLabel}</a><p className="mt-3">{settingsAdapter.setupHint}</p></div>}
+                  <form className="mt-6 flex flex-col gap-5" onSubmit={saveSourceSettings}>
                     {(settingsAdapter?.configSchema ?? []).map((field) => {
                       const isSecret = field.secret === true
                       const value = settingsDraft[field.key] ?? ""
@@ -406,16 +410,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
           <div
             className="fixed inset-0 z-[40] h-full w-full"
             onClick={onClose}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault()
-                onClose()
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Close"
-            aria-pressed="false"
+            aria-hidden="true"
           />
         </motion.div>
       )}
