@@ -39,7 +39,6 @@
 }
 
 /* A warm charcoal evening, with the illumination grounded around the logs. */
-.campfire-scene { background: linear-gradient(180deg, #252a31 0%, #302b29 62%, #3a2e28 100%); }
 .campfire-distant-light { position:absolute; inset:0; background:radial-gradient(ellipse 80% 55% at 65% 0%, #a0a5a514, transparent 80%); }
 .campfire-ground { position:absolute; inset:68% -15% -15%; background:radial-gradient(ellipse at 50% 80%, #1d191770 0%, #362b2418 65%, transparent 80%); }
 .campfire-light-pool { position:absolute; width:min(760px,100vw); height:min(360px,38vh); left:50%; bottom:-8%; transform:translateX(-50%); border-radius:50%; background:radial-gradient(ellipse at 50% 65%, #e8a36538 0%, #c27b4430 23%, #a5653414 48%, transparent 72%); animation:campfire-glow 7s ease-in-out infinite alternate; }
@@ -59,8 +58,6 @@
   65% { opacity:.25; }
   100% { transform:translate3d(var(--ember-drift),var(--ember-rise),0); opacity:0; }
 }
-.theme-preview .campfire-location { bottom:15%; }
-.theme-preview .campfire-art { transform:scale(.32); }
 .theme-preview .campfire-light-pool { width:100%; height:90%; bottom:-25%; }
 @media(max-height:600px) { .campfire-location { bottom:8%; } .campfire-art { transform:scale(.65); } }
 @media(prefers-reduced-motion:reduce) { .campfire-scene * { animation:none !important; } .campfire-ember { opacity:.22; transform:translateY(-30px); } }

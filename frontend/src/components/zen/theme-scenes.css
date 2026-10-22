@@ -51,7 +51,6 @@
 @keyframes mist-pearl { from { transform: translate(-10%, 0); } to { transform: translate(12%, -19%) scale(1.12); } }
 .theme-preview .mist-cloud { width: 80%; min-width: 0; filter: blur(3px); }
 
-.after-rain-scene { background: radial-gradient(ellipse at 80% 14%, #ffffff 0%, transparent 58%), linear-gradient(155deg, #eaf3f9, #fafcfd 54%, #f1f6fa); }
 .after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(1.5px); }
 .after-rain-ribbon { transform-origin: 80% 90%; }
 .after-rain-ribbon-cool { animation: refraction-cool 32s -6s ease-in-out infinite alternate; }
@@ -59,10 +58,9 @@
 .after-rain-haze { position: absolute; inset: 0; background: radial-gradient(ellipse 42% 36% at 50% 48%, #ffffffa0 10%, transparent 100%); }
 @keyframes refraction-cool { from { transform: translate(-.5%, 0) scale(.99); opacity: .72; } to { transform: translate(.5%, -1%) scale(1.01); opacity: 1; } }
 @keyframes after-rain-sun { from { opacity: .65; } to { opacity: .95; } }
-.theme-preview .after-rain-light { filter: blur(.3px); }
+.theme-preview .after-rain-light { inset: 0; width: 100%; height: 100%; filter: none; }
 @keyframes cloud-drift { from { transform: translateX(-7%); } to { transform: translateX(7%); } }
 
-.ripples-scene { background: radial-gradient(ellipse at 48% 40%, #edf3ef 10%, #d8e5df 65%, #b7cec5 100%); }
 .water-light { position: absolute; width: 70%; height: 40%; background: radial-gradient(ellipse, #fff7, transparent 68%); filter: blur(16px); }
 .water-light-one { left: -20%; top: -8%; animation: water-light 18s ease-in-out infinite alternate; }
 .water-light-two { right: -22%; bottom: -12%; animation: water-light 22s -8s ease-in-out infinite alternate-reverse; }
@@ -72,8 +70,8 @@
 @keyframes water-expand { 0% { transform: scale(.025); opacity: 0; } 8% { opacity: .72; } 48% { opacity: .38; } 82% { opacity: .1; } 100% { transform: scale(1); opacity: 0; } }
 @keyframes water-drop { 0%, 9% { opacity: .8; transform: scale(1); } 20%, 100% { opacity: 0; transform: scale(0); } }
 @keyframes water-light { from { transform: translateX(-10%) skewX(-12deg); } to { transform: translateX(10%) skewX(12deg); } }
-.ripples-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ripples-preview-art :is(path, circle) { fill: none; stroke: #8ca79b; stroke-width: .72; stroke-linecap: round; opacity: .5; }
+.ripples-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .85; }
+.ripples-preview-art :is(path, circle) { fill: none; stroke-width: .72; stroke-linecap: round; }
 
 .bamboo-scene { background: radial-gradient(ellipse at 52% 34%, #f1f4eaaa, transparent 70%), linear-gradient(155deg, #d5e2dc, #e9eee4 65%, #cbdcd0); }
 .bamboo-grove { position: absolute; bottom: -12px; width: clamp(200px, 27vw, 390px); height: min(91vh, 880px); color: #355b4c; }
@@ -170,9 +168,7 @@
 .ocean-preview-vessel svg { width:100%; height:100%; }
 .theme-preview .bamboo-grove-near { left:0; opacity:.8; }
 .theme-preview .bamboo-grove-far { right:-6%; opacity:.22; }
-.appearance-swatch .theme-preview .after-rain-light { inset:-4% -22% -4% -4%; width:126%; }
 
-.appearance-swatch .theme-preview .after-rain-light { filter:blur(.2px) saturate(1.5); }
 .appearance-swatch .theme-preview .after-rain-ribbon { opacity:1; }
 
 /* Long-form content owns one scroll area; its source details remain outside it. */

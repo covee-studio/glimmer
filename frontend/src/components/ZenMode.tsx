@@ -332,7 +332,7 @@ function ThemePicker({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className={`appearance-panel absolute right-0 mt-2 w-[320px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain z-20 rounded-2xl backdrop-blur-xl border shadow-[0_16px_48px_rgba(15,23,42,0.16)] p-3 ${dark ? 'bg-slate-900/95 border-slate-600/60' : 'bg-white/90 border-white/70'}`}
+              className={`appearance-panel absolute right-0 mt-2 w-[320px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain z-20 rounded-2xl backdrop-blur-xl border shadow-[0_16px_48px_rgba(15,23,42,0.16)] p-3 ${dark ? 'bg-slate-900/95 border-slate-600/60' : 'ui-popover'}`}
             >
               <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-400 px-1 pb-2">
                 Appearance

@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react'
+import { SCENE_SURFACES } from './sceneSurfaces'
+import { useId, type CSSProperties } from 'react'
 
 // Composed around the reading column instead of spawning over the text.
 const POOLS = [
@@ -22,18 +23,22 @@ function RipplePools() {
 }
 
 export function RipplesTheme() {
-  return <div aria-hidden className="theme-scene ripples-scene">
+  return <div aria-hidden className="theme-scene ripples-scene" style={{ background: SCENE_SURFACES.ripples }}>
     <div className="water-light water-light-one" /><div className="water-light water-light-two" /><RipplePools />
   </div>
 }
 
 export function RipplesPreview() {
-  return <div aria-hidden className="theme-scene theme-preview ripples-scene">
+  const rim = useId()
+  return <div aria-hidden className="theme-scene theme-preview ripples-scene" style={{ background: SCENE_SURFACES.ripples }}>
     <svg className="ripples-preview-art" viewBox="0 0 72 48" preserveAspectRatio="xMidYMid slice">
+      <defs><linearGradient id={rim} x1="0" y1="0" x2="0.7" y2="1"><stop stopColor="#f8fcf9" /><stop offset=".45" stopColor="#91afa1" /><stop offset="1" stopColor="#6f9383" /></linearGradient></defs>
+      <g stroke={`url(#${rim})`}>
       <circle cx="22" cy="29" r="10" />
       <circle cx="22" cy="29" r="15" opacity=".55" />
       <circle cx="56" cy="14" r="7" />
       <circle cx="56" cy="14" r="11" opacity=".55" />
+      </g>
     </svg>
   </div>
 }

@@ -119,3 +119,14 @@ it('keeps the ripples preview free of decorative drop dots', () => {
   expect(html).not.toContain('water-drop')
   expect(html).not.toMatch(/<ellipse\b/)
 })
+
+
+it('uses the registered opaque surface for refined scenes and their thumbnails', () => {
+  for (const id of ['maple', 'sakura', 'campfire', 'rainbow', 'ripples']) {
+    const theme = ZEN_THEMES.find(candidate => candidate.id === id)!
+    for (const Component of [theme.Backdrop, theme.Preview!]) {
+      const html = renderToStaticMarkup(createElement(Component))
+      expect(html).toContain(`style="background:${theme.surface}"`)
+    }
+  }
+})

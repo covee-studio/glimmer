@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from './sceneSurfaces'
 // Flame and log artwork adapted from the user-owned Magic Patterns reference.
 // https://www.magicpatterns.com/c/ckuiwzhktsyxpvxzxcva5h
 import { useId, useMemo, type CSSProperties } from 'react'
@@ -117,7 +118,7 @@ export function CampfireTheme() {
       delay: -random() * 9,
     }))
   }, [])
-  return <div aria-hidden className="theme-scene campfire-scene">
+  return <div aria-hidden className="theme-scene campfire-scene" style={{ background: SCENE_SURFACES.campfire }}>
     <div className="campfire-distant-light" />
     <div className="campfire-ground" />
     <div className="campfire-light-pool" />
@@ -133,7 +134,7 @@ export function CampfireTheme() {
 }
 
 export function CampfirePreview() {
-  return <div aria-hidden className="theme-scene theme-preview campfire-scene campfire-preview">
+  return <div aria-hidden className="theme-scene theme-preview campfire-scene campfire-preview" style={{ background: SCENE_SURFACES.campfire }}>
     <div className="campfire-ground" /><div className="campfire-light-pool" />
     <div className="campfire-location"><CampfireArt /></div>
   </div>

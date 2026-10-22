@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from './sceneSurfaces'
 // Visual geometry and trajectories adapted from the user-owned Magic Patterns design.
 // Source: https://www.magicpatterns.com/c/ckuiwzhktsyxpvxzxcva5h
 import { useId, useMemo, type CSSProperties } from 'react'
@@ -109,8 +110,7 @@ export function MapleTheme() {
       aria-hidden
       className="theme-scene maple-scene"
       style={{
-        background:
-          'linear-gradient(180deg, #f2e4d8 0%, #ede0cc 55%, #e6d0ac 100%)',
+        background: SCENE_SURFACES.maple,
       }}
     >
       <div
@@ -153,9 +153,9 @@ export function MaplePreview() {
   const leafId = useId()
   return (
     <div
-      className="absolute inset-0"
+      className="theme-scene theme-preview maple-scene"
       style={{
-        background: 'linear-gradient(180deg, #f2e4d8 0%, #e6d0ac 100%)',
+        background: SCENE_SURFACES.maple,
       }}
     >
       {[

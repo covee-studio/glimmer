@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from './sceneSurfaces'
 // Visual geometry and trajectories adapted from the user-owned Magic Patterns design.
 // Source: https://www.magicpatterns.com/c/ckuiwzhktsyxpvxzxcva5h
 import { useMemo, type CSSProperties } from 'react'
@@ -143,8 +144,7 @@ export function SakuraTheme() {
       aria-hidden
       className="theme-scene sakura-scene"
       style={{
-        background:
-          'linear-gradient(180deg, #f8ecee 0%, #f9f1ee 45%, #f4e2df 100%)',
+        background: SCENE_SURFACES.sakura,
       }}
     >
       <div
@@ -234,9 +234,9 @@ export function SakuraTheme() {
 export function SakuraPreview() {
   return (
     <div
-      className="absolute inset-0"
+      className="theme-scene theme-preview sakura-scene"
       style={{
-        background: 'linear-gradient(180deg, #f8ecee 0%, #f4e2df 100%)',
+        background: SCENE_SURFACES.sakura,
       }}
     >
       <svg

@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from '../components/zen/sceneSurfaces'
 import type { FC } from 'react'
 import '../components/zen/theme-scenes.css'
 import '../components/zen/nature-scenes.css'
@@ -40,7 +41,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'ripples',
     name: 'Ripples',
-    surface: '#eef2f0',
+    surface: SCENE_SURFACES.ripples,
     Preview: RipplesPreview,
     Backdrop: RipplesTheme,
   },
@@ -97,7 +98,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'rainbow',
     name: 'After rain',
-    surface: 'linear-gradient(160deg, #e8f2f3, #f6f8f0 65%, #e1eeee)',
+    surface: SCENE_SURFACES.rainbow,
     Preview: RainbowPreview,
     Backdrop: RainbowTheme,
   },
@@ -119,21 +120,21 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'maple',
     name: 'Maple',
-    surface: 'linear-gradient(180deg, #f2e4d8 0%, #ede0cc 55%, #e6d0ac 100%)',
+    surface: SCENE_SURFACES.maple,
     Preview: MaplePreview,
     Backdrop: MapleTheme,
   },
   {
     id: 'sakura',
     name: 'Sakura',
-    surface: 'linear-gradient(180deg, #f8ecee 0%, #f9f1ee 45%, #f4e2df 100%)',
+    surface: SCENE_SURFACES.sakura,
     Preview: SakuraPreview,
     Backdrop: SakuraTheme,
   },
   {
     id: 'campfire',
     name: 'Campfire',
-    surface: 'linear-gradient(180deg, #252a31, #302b29 62%, #3a2e28)',
+    surface: SCENE_SURFACES.campfire,
     Preview: CampfirePreview,
     Backdrop: CampfireTheme,
     dark: true,
