@@ -345,7 +345,7 @@ export const memosAdapter: SourceAdapter = {
       contentKind: "body",
       contentScrollable: { maxHeightVh: 55 },
       metaNode: (
-        <span className="inline-flex items-center gap-3">
+        <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2">
           <span className="inline-flex items-center gap-1.5">
             <CalendarIcon className="w-3 h-3" strokeWidth={2} />
             {formatDateLong(raw.displayTime)}
@@ -353,7 +353,7 @@ export const memosAdapter: SourceAdapter = {
           {tags.length > 0 && (
             <>
               <span className="w-1 h-1 rounded-full bg-slate-300" />
-              <span className="font-mono">{tags.slice(0, 4).map((t) => `#${t}`).join('  ')}</span>
+              <span className="min-w-0 max-w-full break-words font-mono [overflow-wrap:anywhere]">{tags.slice(0, 4).map((t) => `#${t}`).join('  ')}</span>
             </>
           )}
         </span>

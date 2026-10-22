@@ -37,7 +37,7 @@ export const wereadAdapter: SourceAdapter = {
       secondary: raw.quote ? raw.thought : undefined,
       secondaryLabel: raw.quote && raw.thought ? 'My thoughts' : undefined,
       contentKind: 'body',
-      metaNode: <span className="inline-flex max-w-full flex-col items-center gap-1.5"><span className="font-serif-editorial text-[14px]">《{raw.bookTitle}》{raw.author && ` · ${raw.author}`}</span>{raw.chapter && <span className="text-[11px]">{raw.chapter}</span>}</span>,
+      metaNode: <span className="inline-flex w-full min-w-0 max-w-full flex-col items-center gap-1.5 break-words [overflow-wrap:anywhere]"><span className="font-serif-editorial max-w-full text-[14px] leading-relaxed">《{raw.bookTitle}》{raw.author && ` · ${raw.author}`}</span>{raw.chapter && <span className="text-[11px]">{raw.chapter}</span>}</span>,
       accent: '#638779', accentText: '#486a5e', sourceLabel: 'WeRead', noLink: !item.url,
     }
   },

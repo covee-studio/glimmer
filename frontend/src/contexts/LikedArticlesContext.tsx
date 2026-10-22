@@ -116,6 +116,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
   const recentArticlesRef = useRef<RecentArticle[]>([])
   const syncEnabledRef = useRef(false)
   const syncWriteChain = useRef(Promise.resolve())
+  const syncRevision = useRef(0)
 
   const applyLocal = useCallback((records: Map<string, LikeRecord>) => {
     recordsRef.current = records
@@ -133,14 +134,18 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
 
   const queueSyncWrite = () => {
     if (!syncEnabledRef.current || !syncAvailable) return
+    const revision = syncRevision.current
     syncWriteChain.current = syncWriteChain.current.then(async () => {
+      if (!syncEnabledRef.current || revision !== syncRevision.current) return
       setSyncStatus("syncing")
       const remote = await readFavoriteSyncRecords()
+      if (!syncEnabledRef.current || revision !== syncRevision.current) return
       const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
+      if (!syncEnabledRef.current || revision !== syncRevision.current) return
       await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
-      setSyncStatus("synced")
+      if (syncEnabledRef.current && revision === syncRevision.current) setSyncStatus("synced")
     }).catch(async () => {
-      setSyncStatus("error")
+      if (syncEnabledRef.current && revision === syncRevision.current) setSyncStatus("error")
     })
   }
 
@@ -179,14 +184,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
       }
 
       setSyncStatus("syncing")
-      try {
-        const remote = await readFavoriteSyncRecords()
-        const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
-        await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
-        if (!cancelled) setSyncStatus("synced")
-      } catch {
-        if (!cancelled) setSyncStatus("error")
-      }
+      // The sync effect performs the initial pull after hydration.
     }
     void hydrate().catch(() => {
       if (!cancelled) setSyncStatus("error")
@@ -232,6 +230,17 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
     if (!hydrated) return
     let cancelled = false
     const unsubscribe = StorageAdapter.onLocalChange(keys => {
+      if (syncAvailable && (!keys.length || keys.includes(SYNC_ENABLED_KEY))) {
+        void StorageAdapter.get<boolean>(SYNC_ENABLED_KEY).then(value => {
+          if (cancelled) return
+          const enabled = value === true
+          if (enabled === syncEnabledRef.current) return
+          syncRevision.current += 1
+          syncEnabledRef.current = enabled
+          setSyncEnabledState(enabled)
+          setSyncStatus(enabled ? "syncing" : "disabled")
+        }).catch(() => { if (!cancelled) setSyncStatus('error') })
+      }
       if (!keys.length || keys.includes(LOCAL_RECORDS_KEY)) {
         void StorageAdapter.get(LOCAL_RECORDS_KEY).then(value => {
           if (cancelled) return
@@ -250,64 +259,45 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
       }
     })
     return () => { cancelled = true; unsubscribe() }
-  }, [hydrated])
+  }, [hydrated, syncAvailable])
 
   const setSyncEnabled = (enabled: boolean) => {
     if (!syncAvailable || !hydrated) return
-    if (enabled) {
-      syncEnabledRef.current = true
-      setSyncEnabledState(true)
-      setSyncStatus("syncing")
-      syncWriteChain.current = syncWriteChain.current.then(async () => {
-        if (!syncEnabledRef.current) return
-        try {
-          const remote = await readFavoriteSyncRecords()
-          const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
-          await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
-          await StorageAdapter.set(SYNC_ENABLED_KEY, true)
-          setSyncStatus("synced")
-        } catch {
-          syncEnabledRef.current = false
-          setSyncEnabledState(false)
-          await StorageAdapter.set(SYNC_ENABLED_KEY, false)
-          setSyncStatus("error")
-        }
-      })
-      return
-    }
-
-    syncEnabledRef.current = false
-    setSyncEnabledState(false)
-    setSyncStatus("syncing")
-    syncWriteChain.current = syncWriteChain.current.then(async () => {
-      // Disabling is local to this Chrome profile. Do not delete the shared
-      // cloud copy: another enabled device may still be using it, and a
-      // destructive clear here would make a simple toggle lose favorites.
-      await StorageAdapter.set(SYNC_ENABLED_KEY, false)
-      setSyncStatus("disabled")
-    }).catch(async () => {
-      await StorageAdapter.set(SYNC_ENABLED_KEY, false)
-      setSyncStatus("error")
+    const revision = ++syncRevision.current
+    syncEnabledRef.current = enabled
+    setSyncEnabledState(enabled)
+    setSyncStatus(enabled ? "syncing" : "disabled")
+    // Persist the preference immediately so other open tabs stop syncing too.
+    // Keep the shared cloud copy intact when this profile opts out.
+    const preferenceSaved = StorageAdapter.set(SYNC_ENABLED_KEY, enabled)
+    // Report persistence errors without letting stale operations replace new state.
+    void preferenceSaved.catch(() => {
+      if (revision === syncRevision.current) setSyncStatus("error")
     })
   }
 
   useEffect(() => {
     if (!hydrated || !syncEnabled || !syncAvailable) return
     let cancelled = false
+    const revision = syncRevision.current
+    const isCurrent = () => !cancelled && syncEnabledRef.current && revision === syncRevision.current
     const pullRemote = async () => {
       try {
+        if (!isCurrent()) return
         setSyncStatus("syncing")
         const remote = await readFavoriteSyncRecords()
-        if (cancelled) return
+        if (!isCurrent()) return
         const merged = await persistLocal(mergeLocalRecords(recordsRef.current, remote.records))
+        if (!isCurrent()) return
         if (!sameRecordVersions(merged, new Map(remote.records.map((record) => [record.id, record])))) {
           await writeFavoriteSyncRecords([...merged.values()], remote.chunkKeys)
         }
-        if (!cancelled) setSyncStatus("synced")
+        if (isCurrent()) setSyncStatus("synced")
       } catch {
-        if (!cancelled) setSyncStatus("error")
+        if (isCurrent()) setSyncStatus("error")
       }
     }
+    void pullRemote()
     const unsubscribe = subscribeToFavoriteSyncChanges(() => { void pullRemote() })
     return () => {
       cancelled = true

@@ -75,7 +75,7 @@ function FadingScroll({ children, maxHeightVh }: { children: React.ReactNode; ma
         : 'none'
 
   return (
-    <div className="relative mx-auto w-full max-w-[680px]">
+    <div className="relative mx-auto flex min-h-0 w-full max-w-[680px] shrink flex-col">
       <div
         ref={scrollRef}
         // A scrollable region must be focusable so keyboard users can scroll it.
@@ -83,7 +83,7 @@ function FadingScroll({ children, maxHeightVh }: { children: React.ReactNode; ma
         tabIndex={0}
         role="region"
         aria-label="Scrollable content"
-        className="zen-scroll w-full overflow-y-auto rounded-lg px-2 outline-none focus-visible:ring-2 focus-visible:ring-slate-400/30"
+        className="zen-scroll min-h-0 w-full overflow-y-auto rounded-lg px-2 outline-none focus-visible:ring-2 focus-visible:ring-slate-400/30"
         style={{ maxHeight: `${maxHeightVh}vh`, maskImage }}
       >
         {children}
@@ -105,6 +105,8 @@ function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
   )
   const translatedPrimary = translation.text
 
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null)
+  const hasImage = Boolean(imageUrl && imageUrl !== failedImageUrl)
   const linkProps = !noLink && item.url ? { href: item.url, target: '_blank' as const, rel: 'noopener noreferrer' } : null
   const imageStyle = { width: 120, height: 120, objectFit: 'cover' as const, flexShrink: 0 }
   // Justify Chinese body copy, but keep English body copy left-aligned so
@@ -188,12 +190,13 @@ function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
     : linkedTextBlock
 
   return (
-    <article className="reading-content text-center flex flex-col items-center w-full" data-source={item.source} data-content-kind={contentKind}>
-      {imageUrl && (
+    <article className="reading-content text-center flex flex-col items-center w-full" style={bodyScroll ? { maxHeight: 'calc(100dvh - 12rem)' } : undefined} data-source={item.source} data-content-kind={contentKind}>
+      {hasImage && (
         linkProps ? (
           <a {...linkProps} className="hover:opacity-80 transition-opacity mb-8">
             <img
               src={imageUrl}
+              onError={() => setFailedImageUrl(imageUrl ?? null)}
               alt=""
               className={`w-[120px] h-[120px] object-cover rounded-full shadow-[0_8px_28px_rgba(15,23,42,0.12)] ring-4 ${dark ? 'ring-white/20' : 'ring-white/60'}`}
               style={imageStyle}
@@ -202,6 +205,7 @@ function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
         ) : (
           <img
             src={imageUrl}
+            onError={() => setFailedImageUrl(imageUrl ?? null)}
             alt=""
             className={`w-[120px] h-[120px] object-cover rounded-full shadow-[0_8px_28px_rgba(15,23,42,0.12)] ring-4 mb-8 ${dark ? 'ring-white/20' : 'ring-white/60'}`}
             style={imageStyle}
@@ -216,7 +220,7 @@ function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
       </div>
       <div aria-hidden className="mx-auto mb-7 h-[2px] w-10 rounded-full" style={{ backgroundColor: accent, opacity: 0.5 }} />
       {content}
-      <div className={`mt-9 text-[12px] ${dark ? 'text-slate-300' : 'text-slate-500'}`}>{metaNode}</div>
+      <div className={`reading-meta mt-7 w-full min-w-0 max-w-[680px] shrink-0 text-[12px] ${dark ? 'text-slate-300' : 'text-slate-500'}`}>{metaNode}</div>
     </article>
   )
 }

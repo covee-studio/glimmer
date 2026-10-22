@@ -295,7 +295,7 @@ export const hypothesisAdapter: SourceAdapter = {
       secondary: quote && note ? note : undefined,
       contentKind: "body",
       metaNode: (
-        <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-2">
           <span className="inline-flex items-center gap-1.5">
             <Calendar className="h-3 w-3" strokeWidth={2} />
             {formatDateLong(raw.updated || raw.created || "")}
@@ -303,7 +303,7 @@ export const hypothesisAdapter: SourceAdapter = {
           {tags.length > 0 && (
             <>
               <span className="h-1 w-1 rounded-full bg-slate-300" />
-              <span className="inline-flex items-center gap-1">
+              <span className="inline-flex min-w-0 max-w-full items-start gap-1 [overflow-wrap:anywhere]">
                 <Tag className="h-3 w-3" strokeWidth={2} />
                 {tags.slice(0, 3).join(" · ")}
               </span>

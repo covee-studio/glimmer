@@ -174,3 +174,10 @@
 
 .appearance-swatch .theme-preview .after-rain-light { filter:blur(.2px) saturate(1.5); }
 .appearance-swatch .theme-preview .after-rain-ribbon { opacity:1; }
+
+/* Long-form content owns one scroll area; its source details remain outside it. */
+.reading-content[data-content-kind="body"] > .reading-meta { line-height:1.6; overflow-wrap:anywhere; }
+@media(max-width:640px) {
+  .reading-meta > span { row-gap:.5rem; }
+  .reading-meta > span > span:first-child { flex-shrink:0; }
+}
