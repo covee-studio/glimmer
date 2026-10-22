@@ -73,7 +73,7 @@
 @keyframes water-drop { 0%, 9% { opacity: .8; transform: scale(1); } 20%, 100% { opacity: 0; transform: scale(0); } }
 @keyframes water-light { from { transform: translateX(-10%) skewX(-12deg); } to { transform: translateX(10%) skewX(12deg); } }
 .ripples-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ripples-preview-art path { fill: none; stroke: #8ca79b; stroke-width: .72; stroke-linecap: round; opacity: .5; }
+.ripples-preview-art :is(path, circle) { fill: none; stroke: #8ca79b; stroke-width: .72; stroke-linecap: round; opacity: .5; }
 
 .bamboo-scene { background: radial-gradient(ellipse at 52% 34%, #f1f4eaaa, transparent 70%), linear-gradient(155deg, #d5e2dc, #e9eee4 65%, #cbdcd0); }
 .bamboo-grove { position: absolute; bottom: -12px; width: clamp(200px, 27vw, 390px); height: min(91vh, 880px); color: #355b4c; }
@@ -160,3 +160,17 @@
   .reading-room, .reading-room :is(h1, h2, h3, p, a) { transition: none; }
   .reading-room .theme-option:hover .appearance-swatch { transform: none; }
 }
+
+/* Thumbnail-only art direction: static scenes, shared framing, no oversized viewport art. */
+.appearance-swatch > div { isolation:isolate; }
+.appearance-swatch .theme-preview .scene-star { box-shadow:none; }
+.appearance-swatch .theme-preview .snow-preview-flake { opacity:.55; }
+.appearance-swatch .theme-preview .sea-reflections { opacity:.5; }
+.ocean-preview-vessel { position:absolute; width:30px; height:24px; right:8%; bottom:12%; }
+.ocean-preview-vessel svg { width:100%; height:100%; }
+.theme-preview .bamboo-grove-near { left:0; opacity:.8; }
+.theme-preview .bamboo-grove-far { right:-6%; opacity:.22; }
+.appearance-swatch .theme-preview .after-rain-light { inset:-4% -22% -4% -4%; width:126%; }
+
+.appearance-swatch .theme-preview .after-rain-light { filter:blur(.2px) saturate(1.5); }
+.appearance-swatch .theme-preview .after-rain-ribbon { opacity:1; }

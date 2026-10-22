@@ -159,16 +159,14 @@ export function MaplePreview() {
       }}
     >
       {[
-        { l: 20, t: 22, s: 18, r: 10, tone: 0 },
-        { l: 50, t: 44, s: 15, r: 60, tone: 1 },
-        { l: 72, t: 20, s: 17, r: -20, tone: 2 },
-        { l: 36, t: 62, s: 15, r: 40, tone: 3 },
-        { l: 84, t: 55, s: 17, r: -50, tone: 0 },
+        { l: 20, t: 24, s: 14, r: -18, tone: 0 },
+        { l: 58, t: 42, s: 17, r: 22, tone: 1 },
+        { l: 78, t: 16, s: 11, r: -12, tone: 2 },
       ].map((p, i) => (
         <div
           key={i}
           className="absolute"
-          style={{ left: `${p.l}%`, top: `${p.t}%`, transform: `rotate(${p.r}deg)` }}
+          style={{ left: `${p.l}%`, top: `${p.t}%`, transform: `translate(-50%, -50%) rotate(${p.r}deg)` }}
         >
           <MapleLeaf size={p.s} tone={p.tone} id={`${leafId}-${i}`} />
         </div>

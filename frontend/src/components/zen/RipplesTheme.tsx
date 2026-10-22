@@ -29,11 +29,11 @@ export function RipplesTheme() {
 
 export function RipplesPreview() {
   return <div aria-hidden className="theme-scene theme-preview ripples-scene">
-    <svg className="ripples-preview-art" viewBox="0 0 100 48" preserveAspectRatio="none">
-      <path d="M7 31 C18 20 39 20 51 31" />
-      <path d="M-4 37 C15 15 43 15 61 36" />
-      <path d="M52 18 C64 8 86 9 102 23" />
-      <path d="M61 25 C72 17 91 18 105 30" />
+    <svg className="ripples-preview-art" viewBox="0 0 72 48" preserveAspectRatio="xMidYMid slice">
+      <circle cx="22" cy="29" r="10" />
+      <circle cx="22" cy="29" r="15" opacity=".55" />
+      <circle cx="56" cy="14" r="7" />
+      <circle cx="56" cy="14" r="11" opacity=".55" />
     </svg>
   </div>
 }

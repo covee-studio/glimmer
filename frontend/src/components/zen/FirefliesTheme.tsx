@@ -194,23 +194,11 @@ export function FirefliesPreview() {
       className="absolute inset-0"
       style={{ background: 'linear-gradient(180deg, #0d1a15 0%, #0a1410 100%)' }}
     >
-      <div
-        className="absolute"
-        style={{
-          top: '14%',
-          right: '18%',
-          width: 12,
-          height: 12,
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(232,230,200,0.25) 0%, rgba(232,230,200,0) 70%)',
-        }}
-      />
       {[
-        { l: 12, t: 70 },
+        { l: 12, t: 65 },
         { l: 55, t: 84 },
-        { l: 78, t: 72 },
-        { l: 34, t: 78 },
+        { l: 78, t: 60 },
+        { l: 34, t: 43 },
         { l: 90, t: 82 },
       ].map((point, index) => (
         <span
@@ -219,10 +207,10 @@ export function FirefliesPreview() {
           style={{
             left: `${point.l}%`,
             top: `${point.t}%`,
-            width: 3,
-            height: 3,
+            width: 2,
+            height: 2,
             background: 'rgba(255,226,140,0.95)',
-            boxShadow: '0 0 6px 2px rgba(255,220,120,0.42)',
+            boxShadow: '0 0 4px 1px rgba(255,220,120,0.35)',
           }}
         />
       ))}

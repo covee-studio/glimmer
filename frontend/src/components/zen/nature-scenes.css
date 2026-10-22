@@ -1,19 +1,5 @@
 /* Source palettes, geometry and timings from the Magic Patterns reference.
    CSS motion shares Glimmer's hidden-page pause and reduced-motion rules. */
-.aurora-star { opacity: .5; animation: glimmer-aurora-star 5s ease-in-out infinite both; }
-.aurora-veil-1 { animation: glimmer-aurora-sway 22s ease-in-out infinite, glimmer-aurora-breathe 22s ease-in-out infinite; }
-.aurora-veil-2 { animation: glimmer-aurora-violet 27s ease-in-out -8s infinite; }
-.aurora-veil-3 { animation: glimmer-aurora-pink 20s ease-in-out -4s infinite; }
-@keyframes glimmer-aurora-star { 0%, 100% { opacity: .15; } 50% { opacity: .85; } }
-@keyframes glimmer-aurora-sway {
-  0%, 100% { transform: translateX(-4%) scaleY(1); }
-  33.333% { transform: translateX(1.333%) scaleY(1.12); }
-  66.667% { transform: translateX(1.333%) scaleY(.95); }
-}
-@keyframes glimmer-aurora-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
-@keyframes glimmer-aurora-violet { 0%, 100% { transform: translateX(5%); opacity: .5; } 50% { transform: translateX(-5%); opacity: .85; } }
-@keyframes glimmer-aurora-pink { 0%, 100% { transform: translateX(-3%); opacity: .4; } 50% { transform: translateX(3%); opacity: .7; } }
-
 .firefly-grass { animation: glimmer-firefly-grass 5s ease-in-out infinite; }
 .firefly-light { opacity: .5; animation: glimmer-firefly-flight 12s linear infinite; }
 @keyframes glimmer-firefly-grass { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(var(--grass-angle)); } }
@@ -36,7 +22,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-scene *, .fireflies-scene * { animation: none !important; }
+  .fireflies-scene * { animation: none !important; }
 }
 
 /* A soft, quiet center shared only by the three particle themes. */
@@ -78,3 +64,7 @@
 .theme-preview .campfire-light-pool { width:100%; height:90%; bottom:-25%; }
 @media(max-height:600px) { .campfire-location { bottom:8%; } .campfire-art { transform:scale(.65); } }
 @media(prefers-reduced-motion:reduce) { .campfire-scene * { animation:none !important; } .campfire-ember { opacity:.22; transform:translateY(-30px); } }
+
+/* Keep the campfire thumbnail grounded without crowding its small frame. */
+.campfire-preview .campfire-location { bottom:18%; }
+.campfire-preview .campfire-art { transform:scale(.27); }

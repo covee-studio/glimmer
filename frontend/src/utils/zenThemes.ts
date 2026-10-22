@@ -13,7 +13,6 @@ import { OceanTheme, OceanPreview } from '../components/zen/OceanTheme'
 import { RainbowTheme, RainbowPreview } from '../components/zen/RainbowTheme'
 import { SolarTheme, SolarPreview } from '../components/zen/SolarTheme'
 import { SnowTheme, SnowPreview } from '../components/zen/SnowTheme'
-import { AuroraTheme, AuroraPreview } from '../components/zen/AuroraTheme'
 import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesTheme'
 import { MapleTheme, MaplePreview } from '../components/zen/MapleTheme'
 import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
@@ -108,14 +107,6 @@ export const ZEN_THEMES: ZenTheme[] = [
     surface: 'linear-gradient(180deg, #e8edf1 0%, #eef1f3 100%)',
     Preview: SnowPreview,
     Backdrop: SnowTheme,
-  },
-  {
-    id: 'aurora',
-    name: 'Aurora',
-    surface: 'linear-gradient(180deg, #060a14 0%, #0a1220 45%, #0d1522 100%)',
-    Preview: AuroraPreview,
-    Backdrop: AuroraTheme,
-    dark: true,
   },
   {
     id: 'fireflies',

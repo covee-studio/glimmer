@@ -240,9 +240,9 @@ export function SakuraPreview() {
       }}
     >
       <svg
-        className="absolute -top-2 -left-3"
-        width={90}
-        height={60}
+        className="absolute top-0 -left-2"
+        width={76}
+        height={50}
         viewBox="0 0 90 60"
         style={{ overflow: 'visible' }}
       >
@@ -255,19 +255,15 @@ export function SakuraPreview() {
         />
         {[
           { cx: 40, cy: 20, tone: 0 },
-          { cx: 50, cy: 24, tone: 1 },
           { cx: 70, cy: 16, tone: 2 },
-          { cx: 80, cy: 20, tone: 3 },
           { cx: 10, cy: 8, tone: 1 },
         ].map((b, i) => (
-          <Blossom key={i} cx={b.cx} cy={b.cy} scale={1.4} tone={b.tone} />
+          <Blossom key={i} cx={b.cx} cy={b.cy} scale={0.9} tone={b.tone} />
         ))}
       </svg>
       {[
-        { l: 25, t: 40, s: 7, r: 20 },
-        { l: 55, t: 55, s: 6, r: 60 },
-        { l: 72, t: 35, s: 7, r: -20 },
-        { l: 40, t: 70, s: 6, r: 40 },
+        { l: 34, t: 64, s: 5, r: 20 },
+        { l: 73, t: 55, s: 6, r: -20 },
       ].map((p, i) => (
         <span
           key={i}

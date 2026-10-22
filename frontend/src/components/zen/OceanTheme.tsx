@@ -52,5 +52,6 @@ export function OceanTheme() {
 export function OceanPreview() {
   return <div className="theme-scene theme-preview ocean-scene">
     <div className="ocean-depth" /><SeaReflections />
+    <div className="ocean-preview-vessel"><SailingBoat /></div>
   </div>
 }

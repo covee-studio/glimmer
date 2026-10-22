@@ -133,7 +133,7 @@ export function CampfireTheme() {
 }
 
 export function CampfirePreview() {
-  return <div aria-hidden className="theme-scene theme-preview campfire-scene">
+  return <div aria-hidden className="theme-scene theme-preview campfire-scene campfire-preview">
     <div className="campfire-ground" /><div className="campfire-light-pool" />
     <div className="campfire-location"><CampfireArt /></div>
   </div>

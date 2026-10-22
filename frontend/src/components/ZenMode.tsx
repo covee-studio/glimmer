@@ -328,7 +328,7 @@ function ThemePicker({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className={`appearance-panel absolute right-0 mt-2 w-[288px] max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain z-20 rounded-2xl backdrop-blur-xl border shadow-[0_16px_48px_rgba(15,23,42,0.16)] p-3 ${dark ? 'bg-slate-900/95 border-slate-600/60' : 'bg-white/90 border-white/70'}`}
+              className={`appearance-panel absolute right-0 mt-2 w-[320px] max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain z-20 rounded-2xl backdrop-blur-xl border shadow-[0_16px_48px_rgba(15,23,42,0.16)] p-3 ${dark ? 'bg-slate-900/95 border-slate-600/60' : 'bg-white/90 border-white/70'}`}
             >
               <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-400 px-1 pb-2">
                 Appearance
@@ -358,7 +358,7 @@ function ThemePicker({
                       aria-label={`${th.name} theme`}
                     >
                       <span
-                        className="appearance-swatch relative w-full h-10 rounded-[10px] overflow-hidden border transition-[transform,box-shadow,border-color,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:brightness-[1.025]"
+                        className="appearance-swatch relative w-full h-12 rounded-[9px] overflow-hidden border transition-[transform,box-shadow,border-color,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:brightness-[1.025]"
                         style={{
                           background: Preview ? undefined : th.swatch,
                           borderColor: selected ? (dark ? '#c7d8cf' : '#71857b') : (dark ? '#475569' : 'rgba(211,220,216,0.82)'),
@@ -476,6 +476,10 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   }, [index, items, feedKey])
   const [themeId, setThemeId] = useState(() => {
     const saved = localStorage.getItem('zen-theme-id')
+    if (saved === 'aurora') {
+      localStorage.setItem('zen-theme-id', 'campfire')
+      return 'campfire'
+    }
     if (saved === 'dawn' || saved === 'sunrise') {
       localStorage.setItem('zen-theme-id', 'solar')
       return 'solar'

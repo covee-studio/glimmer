@@ -12,7 +12,6 @@ import { MistTheme } from '../src/components/zen/MistTheme'
 import { OceanTheme, OceanPreview } from '../src/components/zen/OceanTheme'
 import { WavesPreview } from '../src/components/zen/WavesTheme'
 import { ZEN_THEMES } from '../src/utils/zenThemes'
-import { AuroraTheme } from '../src/components/zen/AuroraTheme'
 import { FirefliesTheme } from '../src/components/zen/FirefliesTheme'
 import { MapleTheme, MaplePreview } from '../src/components/zen/MapleTheme'
 import { CampfireTheme, CampfirePreview } from '../src/components/zen/CampfireTheme'
@@ -57,7 +56,7 @@ it('does not collide SVG gradient or mask IDs between thumbnails and full scenes
 })
 
 it('renders decorative scenes without interactive or external content', () => {
-  for (const Component of [MountainsTheme, RainbowTheme, SnowTheme, RipplesTheme, BambooTheme, ConstellationTheme, MistTheme, OceanTheme, AuroraTheme, FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
+  for (const Component of [MountainsTheme, RainbowTheme, SnowTheme, RipplesTheme, BambooTheme, ConstellationTheme, MistTheme, OceanTheme, FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
     const html = renderToStaticMarkup(createElement(Component))
     expect(html).toContain('aria-hidden="true"')
     expect(html).not.toMatch(/<(button|a|iframe|img)\b/)
@@ -67,7 +66,7 @@ it('renders decorative scenes without interactive or external content', () => {
 })
 
 it('keeps particle layouts stable across repeated mounts', () => {
-  for (const Component of [AuroraTheme, FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
+  for (const Component of [FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
     const first = renderToStaticMarkup(createElement(Component))
     expect(renderToStaticMarkup(createElement(Component))).toBe(first)
     expect(first).not.toMatch(/NaN|Infinity/)
@@ -75,10 +74,10 @@ it('keeps particle layouts stable across repeated mounts', () => {
 })
 
 it('keeps the saved rainbow identity when presenting the After rain redesign', () => {
-  expect(ZEN_THEMES).toHaveLength(16)
+  expect(ZEN_THEMES).toHaveLength(15)
   expect(ZEN_THEMES.find(theme => theme.id === 'rainbow')?.name).toBe('After rain')
   expect(new Set(ZEN_THEMES.map(theme => theme.id)).size).toBe(ZEN_THEMES.length)
-  expect(ZEN_THEMES.some(theme => ['sunrise-sea', 'stream', 'zengarden'].includes(theme.id))).toBe(false)
+  expect(ZEN_THEMES.some(theme => ['aurora', 'sunrise-sea', 'stream', 'zengarden'].includes(theme.id))).toBe(false)
 })
 
 it('starts the flock in flight and schedules the first meteor within one second', () => {
@@ -116,7 +115,7 @@ it('uses artwork without a center marker for the waves preview', () => {
 
 it('keeps the ripples preview free of decorative drop dots', () => {
   const html = renderToStaticMarkup(createElement(RipplesPreview))
-  expect(html.match(/<path/g)).toHaveLength(4)
+  expect(html.match(/<circle/g)).toHaveLength(4)
   expect(html).not.toContain('water-drop')
-  expect(html).not.toMatch(/<(circle|ellipse)\b/)
+  expect(html).not.toMatch(/<ellipse\b/)
 })
