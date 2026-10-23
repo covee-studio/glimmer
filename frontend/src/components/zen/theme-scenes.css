@@ -40,15 +40,21 @@
 @keyframes snow-sway { from { transform: translateX(calc(var(--sway) * -.5)) rotate(0deg); } to { transform: translateX(var(--sway)) rotate(125deg); } }
 @keyframes snow-light { from { opacity: .55; transform: translateX(-2%); } to { opacity: .95; transform: translateX(2%); } }
 
-/* Broad, connected atmosphere. No isolated colored discs or blend-mode mud. */
-.solar-sky-light { position:absolute; inset:0; background:radial-gradient(ellipse 90% 70% at 70% -15%, #ffffff70, transparent 75%); }
-.solar-horizon { position:absolute; inset:38% -10% -15%; background:radial-gradient(ellipse 80% 70% at 50% 95%, var(--solar-horizon), transparent 80%); }
-.mist-veil { position:absolute; width:150%; height:72%; left:-25%; border-radius:50%; filter:blur(20px); }
-.mist-veil-distant { top:-24%; background:radial-gradient(ellipse at 38% 65%, #c5d9e780 0%, #e2edf359 43%, transparent 72%); animation:mist-veil-drift 42s -12s ease-in-out infinite alternate; }
-.mist-veil-near { bottom:-27%; background:radial-gradient(ellipse at 72% 45%, #c9deea85 0%, #e3eef452 48%, transparent 75%); animation:mist-veil-drift 50s -28s ease-in-out infinite alternate-reverse; }
-.mist-reading-light { position:absolute; inset:0; background:radial-gradient(ellipse 65% 55% at 50% 44%, #ffffff70, transparent 85%); }
-@keyframes mist-veil-drift { from { transform:translate(-3%, 0) rotate(-3deg); } to { transform:translate(3%, 3%) rotate(3deg); } }
-.theme-preview .mist-veil { filter:blur(3px); }
+/* Light changes shape over the day, with a low concentrated dusk horizon. */
+.solar-sky-light { position:absolute; inset:0; opacity:var(--solar-sky-light); background:radial-gradient(ellipse 90% 70% at 70% -15%, #ffffff70, transparent 75%); }
+.solar-horizon { position:absolute; inset:0; opacity:var(--solar-glow-opacity); background:radial-gradient(ellipse 90% var(--solar-glow-height) at 50% 100%, var(--solar-horizon), transparent 82%); }
+
+/* Folded volumes, transmitted light and foreground occlusion distinguish fog
+   from paper and open sky. Motion is slow enough to keep reading stationary. */
+.mist-volume { position:absolute; width:138%; height:76%; left:-19%; filter:blur(9px); }
+.mist-volume-far { top:-9%; height:86%; animation:mist-far-flow 38s -12s ease-in-out infinite alternate; }
+.mist-volume-near { bottom:-12%; height:90%; filter:blur(7px); animation:mist-near-flow 29s -17s ease-in-out infinite alternate; }
+.mist-sunbeam { position:absolute; width:65%; height:160%; left:17%; top:-35%; transform:rotate(24deg); filter:blur(26px); opacity:.65; background:linear-gradient(90deg, transparent 16%, #ffffff55 38%, #ffffffaa 49%, #ffffff30 61%, transparent 77%); }
+.mist-reading-light { position:absolute; inset:0; background:radial-gradient(ellipse 48% 33% at 50% 47%, #ffffff38, transparent 85%); }
+@keyframes mist-far-flow { from { transform:translate(-3%, -1%) rotate(-2deg); } to { transform:translate(3%, 2%) rotate(1deg); } }
+@keyframes mist-near-flow { from { transform:translate(4%, 1%) rotate(1deg); } to { transform:translate(-4%, -2%) rotate(-2deg); } }
+.theme-preview .mist-volume { filter:blur(.7px); }
+.theme-preview .mist-sunbeam { filter:blur(2px); }
 
 .after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(1.5px); }
 .after-rain-ribbon { transform-origin: 80% 90%; }

@@ -8,7 +8,7 @@ import { SnowTheme } from '../src/components/zen/SnowTheme'
 import { RipplesTheme, RipplesPreview } from '../src/components/zen/RipplesTheme'
 import { BambooTheme } from '../src/components/zen/BambooTheme'
 import { ConstellationTheme } from '../src/components/zen/ConstellationTheme'
-import { MistTheme } from '../src/components/zen/MistTheme'
+import { MistTheme, MistPreview } from '../src/components/zen/MistTheme'
 import { OceanTheme, OceanPreview } from '../src/components/zen/OceanTheme'
 import { WavesPreview } from '../src/components/zen/WavesTheme'
 import { ZEN_THEMES } from '../src/utils/zenThemes'
@@ -48,7 +48,7 @@ it('places stars within the scene with varied sizes and brightness', () => {
 it('does not collide SVG gradient or mask IDs between thumbnails and full scenes', () => {
   const html = renderToStaticMarkup(createElement(Fragment, null,
     createElement(MountainsTheme), createElement(MountainsPreview), createElement(RainbowTheme), createElement(RainbowPreview), createElement(OceanTheme), createElement(OceanPreview),
-    createElement(MapleTheme), createElement(MaplePreview), createElement(MapleTheme), createElement(CampfireTheme), createElement(CampfirePreview), createElement(CampfireTheme)))
+    createElement(MistTheme), createElement(MistPreview), createElement(MistTheme), createElement(MapleTheme), createElement(MaplePreview), createElement(MapleTheme), createElement(CampfireTheme), createElement(CampfirePreview), createElement(CampfireTheme)))
   const ids = Array.from(html.matchAll(/ id="([^"]+)"/g), match => match[1])
   expect(ids.length).toBeGreaterThan(10)
   expect(new Set(ids).size).toBe(ids.length)

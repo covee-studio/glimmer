@@ -24,7 +24,7 @@ function useLocalLight() {
 export function SolarArtwork({ light, preview = false }: { light: SolarLight; preview?: boolean }) {
   return <div aria-hidden className={`theme-scene solar-scene${preview ? ' theme-preview' : ''}`}
     data-solar-phase={light.name}
-    style={{ background: solarBackground(light), '--solar-horizon': `${light.sky[3]}b3` } as CSSProperties}>
+    style={{ background: solarBackground(light), '--solar-horizon': light.sky[3], '--solar-glow-height': `${light.glowHeight}%`, '--solar-glow-opacity': light.glowOpacity, '--solar-sky-light': light.skyLight } as CSSProperties}>
     <div className="solar-sky-light" />
     <div className="solar-horizon" />
   </div>

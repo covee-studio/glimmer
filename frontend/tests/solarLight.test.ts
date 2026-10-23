@@ -18,3 +18,18 @@ it('changes gradually within a phase instead of holding a fixed band of color', 
   expect(solarLightAt(9).sky).not.toEqual(solarLightAt(10).sky)
   expect(solarLightAt(0).sky).toEqual(solarLightAt(24).sky)
 })
+
+it('gives dusk a lower, narrower light band than dawn', () => {
+  const dawn = solarLightAt(6), dusk = solarLightAt(18)
+  expect(dusk.horizonStart - dawn.horizonStart).toBeGreaterThan(15)
+  expect(dawn.glowHeight).toBeGreaterThan(dusk.glowHeight * 2)
+  expect(dusk.skyLight).toBeLessThan(dawn.skyLight)
+})
+it('keeps the light geometry continuous through phase changes and midnight', () => {
+  for (const hour of [0, 5, 8, 12, 15, 18, 21, 24]) {
+    const before = solarLightAt(hour - 1 / 3600), after = solarLightAt(hour + 1 / 3600)
+    for (const key of ['horizonStart', 'glowHeight', 'glowOpacity', 'skyLight'] as const) {
+      expect(Math.abs(before[key] - after[key])).toBeLessThan(.01)
+    }
+  }
+})

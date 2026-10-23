@@ -6,7 +6,7 @@ export const SCENE_SURFACES = {
   campfire: 'linear-gradient(180deg, #252a31 0%, #302b29 62%, #3a2e28 100%)',
   rainbow: 'radial-gradient(ellipse at 80% 14%, #ffffff 0%, transparent 58%), linear-gradient(155deg, #eaf3f9, #fafcfd 54%, #f1f6fa)',
   ripples: 'radial-gradient(ellipse at 48% 40%, #f3f7f7 10%, #e5efef 65%, #cadfdf 100%)',
-  mist: 'linear-gradient(165deg, #edf2f7 0%, #f9fbfc 48%, #e7eff4 100%)',
+  mist: 'linear-gradient(165deg, #cfdfec 0%, #eaf2f8 48%, #d7e5f0 100%)',
   bamboo: 'radial-gradient(ellipse at 52% 34%, #f7fbf9b3, transparent 70%), linear-gradient(155deg, #dfede7, #f0f6f2 65%, #d1e4db)',
   ocean: 'linear-gradient(180deg, #e5f1fa 0%, #f3f9fd 43%, #dfedf8 64%, #bbd7ed 100%)',
 } as const
