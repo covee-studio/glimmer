@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from './sceneSurfaces'
 import type { CSSProperties } from 'react'
 import { sceneRandom } from './sceneGeometry'
 
@@ -43,7 +44,7 @@ function BambooPlant() {
 }
 
 export function BambooTheme() {
-  return <div aria-hidden className="theme-scene bamboo-scene">
+  return <div aria-hidden className="theme-scene bamboo-scene" style={{ background: SCENE_SURFACES.bamboo }}>
     <div className="bamboo-grove bamboo-grove-far"><BambooPlant /></div>
     <div className="bamboo-grove bamboo-grove-near"><BambooPlant /></div>
     <div className="bamboo-haze" />
@@ -54,7 +55,7 @@ export function BambooTheme() {
 }
 
 export function BambooPreview() {
-  return <div className="theme-scene theme-preview bamboo-scene">
+  return <div className="theme-scene theme-preview bamboo-scene" style={{ background: SCENE_SURFACES.bamboo }}>
     <div className="bamboo-grove bamboo-grove-far"><BambooPlant /></div><div className="bamboo-grove bamboo-grove-near"><BambooPlant /></div>
   </div>
 }

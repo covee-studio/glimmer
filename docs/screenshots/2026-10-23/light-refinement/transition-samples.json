@@ -1,0 +1,47 @@
+[
+  {
+    "theme": "Solar",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Mist",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Ocean",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  }
+]

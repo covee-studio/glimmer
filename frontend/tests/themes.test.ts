@@ -122,7 +122,7 @@ it('keeps the ripples preview free of decorative drop dots', () => {
 
 
 it('uses the registered opaque surface for refined scenes and their thumbnails', () => {
-  for (const id of ['maple', 'sakura', 'campfire', 'rainbow', 'ripples']) {
+  for (const id of ['maple', 'sakura', 'campfire', 'rainbow', 'ripples', 'mist', 'bamboo', 'ocean']) {
     const theme = ZEN_THEMES.find(candidate => candidate.id === id)!
     for (const Component of [theme.Backdrop, theme.Preview!]) {
       const html = renderToStaticMarkup(createElement(Component))

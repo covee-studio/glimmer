@@ -48,7 +48,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'mist',
     name: 'Mist',
-    surface: '#f5f5f4',
+    surface: SCENE_SURFACES.mist,
     Preview: MistPreview,
     Backdrop: MistTheme,
   },
@@ -76,7 +76,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'ocean',
     name: 'Ocean',
-    surface: 'linear-gradient(180deg, #e7eef0 0%, #aec6c5 100%)',
+    surface: SCENE_SURFACES.ocean,
     Preview: OceanPreview,
     Backdrop: OceanTheme,
   },
@@ -90,7 +90,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'bamboo',
     name: 'Bamboo',
-    surface: 'linear-gradient(180deg, #d9e0dc 0%, #dbe2dd 100%)',
+    surface: SCENE_SURFACES.bamboo,
     Preview: BambooPreview,
     Backdrop: BambooTheme,
   },

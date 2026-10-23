@@ -1,3 +1,4 @@
+import { SCENE_SURFACES } from './sceneSurfaces'
 import type { CSSProperties } from 'react'
 import { sceneRandom } from './sceneGeometry'
 import { useId } from 'react'
@@ -42,7 +43,7 @@ function SeaReflections() {
 }
 
 export function OceanTheme() {
-  return <div aria-hidden className="theme-scene ocean-scene">
+  return <div aria-hidden className="theme-scene ocean-scene" style={{ background: SCENE_SURFACES.ocean }}>
     <div className="ocean-depth" /><div className="ocean-sunpath" />
     <SeaReflections />
     <div className="ocean-vessel"><SailingBoat /></div>
@@ -50,7 +51,7 @@ export function OceanTheme() {
 }
 
 export function OceanPreview() {
-  return <div className="theme-scene theme-preview ocean-scene">
+  return <div className="theme-scene theme-preview ocean-scene" style={{ background: SCENE_SURFACES.ocean }}>
     <div className="ocean-depth" /><SeaReflections />
     <div className="ocean-preview-vessel"><SailingBoat /></div>
   </div>

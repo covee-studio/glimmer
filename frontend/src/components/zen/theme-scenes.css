@@ -40,16 +40,15 @@
 @keyframes snow-sway { from { transform: translateX(calc(var(--sway) * -.5)) rotate(0deg); } to { transform: translateX(var(--sway)) rotate(125deg); } }
 @keyframes snow-light { from { opacity: .55; transform: translateX(-2%); } to { opacity: .95; transform: translateX(2%); } }
 
-.mist-scene { background: #f4f8f6; }
-.mist-cloud { position: absolute; width: clamp(320px, 52vw, 760px); aspect-ratio: 1; border-radius: 50%; filter: blur(28px); }
-.mist-cloud-blue { left: -8%; top: -17%; background: radial-gradient(ellipse, #b5d6e9b8 10%, #cae2ed80 37%, transparent 70%); animation: mist-blue 23s -5s ease-in-out infinite alternate; }
-.mist-cloud-green { right: -15%; top: 22%; background: radial-gradient(ellipse, #c0e0d3a8 12%, #d4eade70 40%, transparent 70%); animation: mist-green 27s -9s ease-in-out infinite alternate; }
-.mist-cloud-pearl { left: 12%; bottom: -35%; width: clamp(300px, 48vw, 700px); background: radial-gradient(ellipse, #bed9e394 5%, #d4e8eb70 35%, transparent 70%); animation: mist-pearl 21s -12s ease-in-out infinite alternate; }
-.mist-reading-light { position: absolute; inset: 0; background: radial-gradient(ellipse 40% 48% at 50% 43%, #f9fbf54d, transparent 85%); }
-@keyframes mist-blue { from { transform: translate(0, 0) scale(.95); } to { transform: translate(20%, 17%) scale(1.12); } }
-@keyframes mist-green { from { transform: translate(0, 0) scale(1); } to { transform: translate(-17%, -15%) scale(1.15); } }
-@keyframes mist-pearl { from { transform: translate(-10%, 0); } to { transform: translate(12%, -19%) scale(1.12); } }
-.theme-preview .mist-cloud { width: 80%; min-width: 0; filter: blur(3px); }
+/* Broad, connected atmosphere. No isolated colored discs or blend-mode mud. */
+.solar-sky-light { position:absolute; inset:0; background:radial-gradient(ellipse 90% 70% at 70% -15%, #ffffff70, transparent 75%); }
+.solar-horizon { position:absolute; inset:38% -10% -15%; background:radial-gradient(ellipse 80% 70% at 50% 95%, var(--solar-horizon), transparent 80%); }
+.mist-veil { position:absolute; width:150%; height:72%; left:-25%; border-radius:50%; filter:blur(20px); }
+.mist-veil-distant { top:-24%; background:radial-gradient(ellipse at 38% 65%, #c5d9e780 0%, #e2edf359 43%, transparent 72%); animation:mist-veil-drift 42s -12s ease-in-out infinite alternate; }
+.mist-veil-near { bottom:-27%; background:radial-gradient(ellipse at 72% 45%, #c9deea85 0%, #e3eef452 48%, transparent 75%); animation:mist-veil-drift 50s -28s ease-in-out infinite alternate-reverse; }
+.mist-reading-light { position:absolute; inset:0; background:radial-gradient(ellipse 65% 55% at 50% 44%, #ffffff70, transparent 85%); }
+@keyframes mist-veil-drift { from { transform:translate(-3%, 0) rotate(-3deg); } to { transform:translate(3%, 3%) rotate(3deg); } }
+.theme-preview .mist-veil { filter:blur(3px); }
 
 .after-rain-light { position: absolute; inset: -4%; width: 108%; height: 108%; filter: blur(1.5px); }
 .after-rain-ribbon { transform-origin: 80% 90%; }
@@ -65,7 +64,7 @@
 .water-light-one { left: -20%; top: -8%; animation: water-light 18s ease-in-out infinite alternate; }
 .water-light-two { right: -22%; bottom: -12%; animation: water-light 22s -8s ease-in-out infinite alternate-reverse; }
 .ripple-pool { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); }
-.water-ring { position: absolute; inset: 0; border: 1px solid #72968a55; border-top-color: #ffffff90; border-bottom-color: #527c6d55; border-radius: 50%; box-shadow: 0 1px 2px #527c6d18, inset 0 1px 1px #fff9; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) cubic-bezier(.16,.5,.45,1) infinite; }
+.water-ring { position: absolute; inset: 0; border: 1px solid #7c9fa655; border-top-color: #ffffff90; border-bottom-color: #577f8855; border-radius: 50%; box-shadow: 0 1px 2px #577f8818, inset 0 1px 1px #fff9; opacity: .4; transform: scale(.6); animation: water-expand var(--ripple-duration) cubic-bezier(.16,.5,.45,1) infinite; }
 .water-drop { position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px #fff; animation: water-drop var(--ripple-duration) var(--ripple-delay) linear infinite; }
 @keyframes water-expand { 0% { transform: scale(.025); opacity: 0; } 8% { opacity: .72; } 48% { opacity: .38; } 82% { opacity: .1; } 100% { transform: scale(1); opacity: 0; } }
 @keyframes water-drop { 0%, 9% { opacity: .8; transform: scale(1); } 20%, 100% { opacity: 0; transform: scale(0); } }
@@ -73,13 +72,12 @@
 .ripples-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .85; }
 .ripples-preview-art :is(path, circle) { fill: none; stroke-width: .72; stroke-linecap: round; }
 
-.bamboo-scene { background: radial-gradient(ellipse at 52% 34%, #f1f4eaaa, transparent 70%), linear-gradient(155deg, #d5e2dc, #e9eee4 65%, #cbdcd0); }
 .bamboo-grove { position: absolute; bottom: -12px; width: clamp(200px, 27vw, 390px); height: min(91vh, 880px); color: #355b4c; }
 .bamboo-grove-near { left: -3%; animation: bamboo-wind 8s ease-in-out infinite alternate; transform-origin: 25% 100%; }
 .bamboo-grove-far { right: -8%; height: 66vh; opacity: .3; filter: blur(1.1px); transform: scaleX(-1); }
 .bamboo-plant { width: 100%; height: 100%; overflow: visible; }
 .bamboo-sprig { transform-origin: 0 0; animation: bamboo-leaf 6s ease-in-out infinite alternate; }
-.bamboo-haze { position: absolute; bottom: -15%; left: -15%; width: 130%; height: 35%; background: radial-gradient(ellipse, #eff4e9b3, transparent 70%); animation: cloud-drift 24s ease-in-out infinite alternate; }
+.bamboo-haze { position: absolute; bottom: -15%; left: -15%; width: 130%; height: 35%; background: radial-gradient(ellipse, #f2f8f5b3, transparent 70%); animation: cloud-drift 24s ease-in-out infinite alternate; }
 .bamboo-rain { position: absolute; inset: 0; mask-image: linear-gradient(90deg, #0009, #0003 35%, #0003 65%, #0009); }
 .bamboo-rain i { position: absolute; top: -55px; width: 1px; background: linear-gradient(transparent, #74998a65); animation: bamboo-rain 1.2s linear infinite; }
 @keyframes bamboo-wind { from { transform: rotate(-.5deg); } to { transform: rotate(.7deg); } }
@@ -100,9 +98,8 @@
 @keyframes stellar-haze { from { opacity: .35; } to { opacity: .65; } }
 @keyframes meteor-pass { 0% { opacity: 0; transform: translateX(-160px); } 2% { opacity: .9; } 9% { opacity: 0; transform: translateX(260px); } 100% { opacity: 0; transform: translateX(260px); } }
 
-.ocean-scene { background: linear-gradient(180deg, #e8f2f5 0%, #f4f9f6 43%, #e1f0ef 64%, #c0dedd 100%); }
-.ocean-depth { position: absolute; left: 0; right: 0; bottom: -2%; height: 38%; background: linear-gradient(transparent, #abd1cf85); animation: ocean-breathe 17s ease-in-out infinite alternate; }
-.ocean-sunpath { position: absolute; left: 42%; bottom: -12%; width: 37%; height: 44%; background: radial-gradient(ellipse, #fffdf680 0%, transparent 68%); transform: skewX(-18deg); filter: blur(14px); animation: ocean-sunpath 19s ease-in-out infinite alternate; }
+.ocean-depth { position: absolute; left: 0; right: 0; bottom: -2%; height: 38%; background: linear-gradient(transparent, #9fc6e480); animation: ocean-breathe 17s ease-in-out infinite alternate; }
+.ocean-sunpath { position: absolute; left: 42%; bottom: -12%; width: 37%; height: 44%; background: radial-gradient(ellipse, #f8fcff80 0%, transparent 68%); transform: skewX(-18deg); filter: blur(14px); animation: ocean-sunpath 19s ease-in-out infinite alternate; }
 .sea-reflections { position: absolute; bottom: 1%; left: 0; width: 100%; height: 30%; }
 .sea-reflections path { fill: none; stroke: #f9fffc; stroke-width: .85; stroke-linecap: round; opacity: var(--glint-opacity); animation: sea-glint 8s ease-in-out infinite; }
 @keyframes ocean-breathe { from { transform: translateY(0); opacity: .65; } to { transform: translateY(-6px); opacity: .95; } }
@@ -125,10 +122,6 @@
   .bamboo-grove { width: 190px; }
   .bamboo-grove-near { left: -82px; opacity: .65; }
   .bamboo-grove-far { right: -90px; }
-  .mist-cloud { width: 110vw; }
-  .mist-cloud-blue { left: -38%; top: -2%; }
-  .mist-cloud-green { right: -48%; top: 38%; }
-  .mist-cloud-pearl { left: -20%; bottom: -8%; }
   .ocean-vessel { right: 9%; bottom: 20%; }
   .snow-depth-0:nth-child(2n) { display: none; }
 }

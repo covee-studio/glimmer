@@ -32,7 +32,7 @@ export function RipplesPreview() {
   const rim = useId()
   return <div aria-hidden className="theme-scene theme-preview ripples-scene" style={{ background: SCENE_SURFACES.ripples }}>
     <svg className="ripples-preview-art" viewBox="0 0 72 48" preserveAspectRatio="xMidYMid slice">
-      <defs><linearGradient id={rim} x1="0" y1="0" x2="0.7" y2="1"><stop stopColor="#f8fcf9" /><stop offset=".45" stopColor="#91afa1" /><stop offset="1" stopColor="#6f9383" /></linearGradient></defs>
+      <defs><linearGradient id={rim} x1="0" y1="0" x2="0.7" y2="1"><stop stopColor="#f8fcfd" /><stop offset=".45" stopColor="#9bb6bb" /><stop offset="1" stopColor="#75979f" /></linearGradient></defs>
       <g stroke={`url(#${rim})`}>
       <circle cx="22" cy="29" r="10" />
       <circle cx="22" cy="29" r="15" opacity=".55" />
