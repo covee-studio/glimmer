@@ -1,0 +1,107 @@
+[
+  {
+    "theme": "Campfire",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Paper",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Maple",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Sakura",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Ripples",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "After rain",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  },
+  {
+    "theme": "Stars",
+    "result": {
+      "result": {
+        "type": "object",
+        "value": {
+          "backwards": 0,
+          "finalLayers": 1,
+          "frames": 120,
+          "maxLayers": 2,
+          "minCoverage": 1
+        }
+      }
+    }
+  }
+]
