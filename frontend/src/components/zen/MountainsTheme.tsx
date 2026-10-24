@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, type CSSProperties } from 'react'
 
 // Broad wooded shoulders, not rocky sawtooth peaks. Shared with the thumbnail.
 const RIDGES = [
@@ -20,10 +20,25 @@ function MountainLandscape() {
   </svg>
 }
 
+// An uneven, loose formation; each bird beats briefly, then glides.
+const FLOCK = [
+  { x: 62, y: 15, size: 20, delay: -1.4, duration: 3.8, opacity: .78 },
+  { x: 36, y: 27, size: 17, delay: -2.3, duration: 4.2, opacity: .64 },
+  { x: 9, y: 39, size: 14, delay: -.5, duration: 3.6, opacity: .48 },
+  { x: 40, y: 4, size: 15, delay: -3.1, duration: 4.5, opacity: .56 },
+  { x: 13, y: -5, size: 12, delay: -1.9, duration: 4.1, opacity: .38 },
+]
+
 function Birds() {
-  return <div className="mountain-flock" style={{ animationDelay: '-7s' }}>{[0, 1, 2, 3, 4].map(i => (
-    <svg key={i} viewBox="0 0 24 12" style={{ left: Math.abs(i - 2) * 19, top: i * 10, animationDelay: `${-i * .19}s` }}>
-      <path d="M1 8Q6 1 12 7Q18 2 23 6" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+  return <div className="mountain-flock" style={{ animationDelay: '-7s' }}>{FLOCK.map((bird, i) => (
+    <svg key={i} viewBox="0 0 32 20" style={{ left: bird.x, top: bird.y, width: bird.size, height: bird.size * .625, opacity: bird.opacity,
+      '--wing-delay': `${bird.delay}s`, '--wing-duration': `${bird.duration}s`,
+    } as CSSProperties}>
+      <g fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+        <path className="mountain-wing mountain-wing-left" d="M16 11C12 7 7 6 2 7C7 7 12 10 16 11" />
+        <path className="mountain-wing mountain-wing-right" d="M16 11C20 6 25 4 30 5C25 6 20 9 16 11" />
+        <path d="M15.1 10.5L17.6 11.2" strokeWidth="1.5" />
+      </g>
     </svg>
   ))}</div>
 }

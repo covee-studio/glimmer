@@ -246,20 +246,26 @@ export function SakuraPreview() {
         viewBox="0 0 90 60"
         style={{ overflow: 'visible' }}
       >
-        <path
-          d="M0,4 C20,8 30,20 45,22 C58,24 66,14 84,18"
-          fill="none"
-          stroke="rgba(72,56,50,0.55)"
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
+        <path d="M-8 5C10 7 24 20 42 22C57 24 68 15 86 17L86 17.7C69 16.3 57 25.7 42 24C22 22 9 10-8 9Z" fill="#89716b" />
+        <g fill="none" stroke="#9c817b" strokeWidth=".7" strokeLinecap="round">
+          <path d="M23 17Q25 11 30 8M43 23Q47 18 49 13M64 19Q67 24 73 26M73 17Q75 10 80 8" />
+        </g>
         {[
-          { cx: 40, cy: 20, tone: 0 },
-          { cx: 70, cy: 16, tone: 2 },
-          { cx: 10, cy: 8, tone: 1 },
-        ].map((b, i) => (
-          <Blossom key={i} cx={b.cx} cy={b.cy} scale={0.9} tone={b.tone} />
-        ))}
+          { x: 29, y: 9, scale: .85, angle: -18 },
+          { x: 43, y: 22, scale: 1.04, angle: 16 },
+          { x: 68, y: 18, scale: .8, angle: -8 },
+        ].map((flower, i) => <g key={i} transform={`translate(${flower.x} ${flower.y}) rotate(${flower.angle}) scale(${flower.scale})`}>
+          {[0, 73, 148, 218, 289].map((angle, petal) => <path key={angle} d="M0 .6C-2.3-.5-4.1-3.5-2.5-5.5Q-1.1-6.7 0-5.4Q1.2-6.4 2.6-5.2C4.2-3.1 2.3-.4 0 .6Z"
+            transform={`rotate(${angle}) scale(${petal % 2 ? .94 : 1} 1)`} fill={['#fff2f1','#f6d8de','#ffe8e9'][i]} stroke="#dba6b2" strokeWidth=".24" />)}
+          <circle r="1.35" fill="#e2a5b0" opacity=".55" />
+          <g stroke="#b98887" strokeWidth=".35" strokeLinecap="round"><path d="M0 0L-1-2M0 0L1.8-.8M0 0L.4 1.6" /></g>
+          <circle cx="-1" cy="-2" r=".45" fill="#d4af78" />
+        </g>)}
+        <g fill="#dba7b4">
+          <ellipse cx="49" cy="12" rx="1.6" ry="2.5" transform="rotate(28 49 12)" />
+          <ellipse cx="79" cy="8" rx="1.4" ry="2.2" transform="rotate(40 79 8)" />
+          <ellipse cx="73" cy="26" rx="1.5" ry="2" transform="rotate(-30 73 26)" />
+        </g>
       </svg>
       {[
         { l: 34, t: 64, s: 5, r: 20 },

@@ -5,7 +5,7 @@ import { SakuraPreview } from '../src/components/zen/SakuraTheme'
 import '../src/index.css'
 import '../src/components/zen/theme-scenes.css'
 
-function Review() {
+export function Review() {
   return <main style={{ background: '#fafaf7', minHeight: '100vh', padding: 28, color: '#293c31' }}>
     <h1 style={{fontSize:18, marginBottom:20}}>自然场景 · 细节验收</h1>
     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,340px),1fr))',gap:20}}>
