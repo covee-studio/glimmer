@@ -47,10 +47,11 @@ function FadingScroll({ children, maxHeightVh }: { children: React.ReactNode; ma
     const node = scrollRef.current
     if (!node) return
     const overflow = node.scrollHeight - node.clientHeight > 1
-    setFade({
+    const next = {
       top: overflow && node.scrollTop > 1,
       bottom: overflow && node.scrollTop + node.clientHeight < node.scrollHeight - 1,
-    })
+    }
+    setFade(previous => previous.top === next.top && previous.bottom === next.bottom ? previous : next)
   }, [])
 
   useEffect(() => {
@@ -120,7 +121,7 @@ export function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean 
   const isChineseBody = contentKind === "body" && hasChineseText(bodyText)
   const secondaryTextAlign = secondary ? (hasChineseText(secondary) ? 'justify' as const : 'left' as const) : undefined
   const bodyScroll = contentKind === "body" ? (contentScrollable ?? { maxHeightVh: 55 }) : null
-  const readingColumnClass = "mx-auto w-full max-w-[680px]"
+  const readingColumnClass = "reading-column mx-auto w-full max-w-[680px]"
 
   const primaryStyle = {
     // Keep the semantic hierarchy stable across sources. Wikipedia and HN

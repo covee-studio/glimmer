@@ -3,7 +3,7 @@
 .theme-backdrop, .theme-scene { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .theme-backdrop { isolation: isolate; }
 .theme-backdrop[data-paused="true"] * { animation-play-state: paused !important; }
-.theme-preview * { animation: none !important; }
+.theme-preview * { animation: none !important; will-change: auto !important; }
 
 .auto-theme-preview { background: linear-gradient(145deg, #f7f8f5, #edf3f1); }
 .auto-theme-preview svg { position: absolute; inset: 0; width: 100%; height: 100%; }
