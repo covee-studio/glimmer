@@ -60,6 +60,9 @@ function SourceHint({ sourceId, sourceLabel, description }: { sourceId: string; 
         type="button"
         aria-label={`About ${sourceLabel}`}
         aria-describedby={position ? tooltipId : undefined}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape' && position) { event.stopPropagation(); setPosition(null) }
+        }}
         onMouseEnter={() => { hovered.current = true; open() }}
         onMouseLeave={() => { hovered.current = false; close() }}
         onFocus={() => { focused.current = true; open() }}

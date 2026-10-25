@@ -141,19 +141,16 @@ export const hackerNewsAdapter: SourceAdapter = {
     return {
       primary: item.title,
       metaNode: (
-        <span className="inline-flex items-center flex-wrap justify-center gap-x-2 gap-y-1">
-          {domain && <span className="font-mono opacity-85">{domain}</span>}
-          {domain && <span className="text-slate-300">·</span>}
-          <span><span className="font-medium">{raw.score}</span> points</span>
-          <span className="text-slate-300">·</span>
-          <span className="inline-flex items-center gap-1">
-            <MessageSquareIcon className="w-3 h-3" strokeWidth={2} />
-            <span className="font-medium">{raw.commentCount}</span>
+        <span className="reading-meta-hn">
+          {domain && <a href={item.url} target="_blank" rel="noopener noreferrer" className="reading-meta-domain">{domain}</a>}
+          <span className="reading-meta-details">
+            <span>{raw.score.toLocaleString()} points</span>
+            <a href={`${HN_DISCUSSION_URL}${raw.id}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1" aria-label={`${raw.commentCount} comments on Hacker News`}>
+              <MessageSquareIcon className="w-3 h-3" strokeWidth={1.6} />{raw.commentCount}
+            </a>
+            <span>{raw.author}</span>
+            <time dateTime={new Date(raw.time * 1000).toISOString()}>{formatRelativeTime(raw.time)}</time>
           </span>
-          <span className="text-slate-300">·</span>
-          <span>{raw.author}</span>
-          <span className="text-slate-300">·</span>
-          <span>{formatRelativeTime(raw.time)}</span>
         </span>
       ),
       accent: '#b3764e',

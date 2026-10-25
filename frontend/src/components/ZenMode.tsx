@@ -1,3 +1,4 @@
+import { headlineSize } from '../utils/readingTypography'
 import { ReadingState } from './ui/ReadingState'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
@@ -124,8 +125,8 @@ export function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean 
   const primaryStyle = {
     // Keep the semantic hierarchy stable across sources. Wikipedia and HN
     // provide titles/headlines; Memos and Hypothesis provide reading content.
-    fontSize: contentKind === "body" ? 'clamp(18px, 1.65vw, 25px)' : 'clamp(30px, 3.2vw, 46px)',
-    lineHeight: contentKind === "body" ? 1.95 : 1.35,
+    fontSize: contentKind === "body" ? 'clamp(18px, 1.65vw, 25px)' : headlineSize(translatedPrimary),
+    lineHeight: contentKind === "body" ? (isChineseBody ? 1.95 : 1.85) : 1.35,
     letterSpacing: '0.005em',
     fontWeight: contentKind === "body" ? 400 : primaryWeight,
     overflowWrap: 'anywhere' as const,
@@ -191,7 +192,7 @@ export function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean 
     : linkedTextBlock
 
   return (
-    <article className="reading-content text-center flex flex-col items-center w-full" style={bodyScroll ? { maxHeight: 'calc(100dvh - 12rem)' } : undefined} data-source={item.source} data-content-kind={contentKind}>
+    <article className="reading-content text-center flex flex-col items-center w-full" style={bodyScroll ? { maxHeight: 'calc(100dvh - 12rem)' } : undefined} data-source={item.source} data-content-kind={contentKind} data-primary-kind={primaryKind ?? "title"}>
       {hasImage && (
         linkProps ? (
           <a {...linkProps} className="hover:opacity-80 transition-opacity mb-8">

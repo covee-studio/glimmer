@@ -2,7 +2,7 @@ import { ResilientImage } from './ui/ResilientImage'
 import { CloseButton } from './ui/CloseButton'
 import { usePanelMotion } from './ui/usePanelMotion'
 import { Clock3, Cloud, CloudOff, Download, Heart, Search, X } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { useLikedArticles } from "../contexts/LikedArticlesContext"
 import { useI18n } from "../hooks/useI18n"
@@ -50,6 +50,11 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [syncOpen, setSyncOpen] = useState(false)
   const syncRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  const listPositions = useRef({ saved: 0, recent: 0 })
+  useLayoutEffect(() => {
+    if (isOpen && listRef.current) listRef.current.scrollTop = searchQuery.trim() ? 0 : listPositions.current[activeTab]
+  }, [isOpen, activeTab, searchQuery])
   const [removedItem, setRemovedItem] = useState<DiscoveryItem | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const undoButtonRef = useRef<HTMLButtonElement>(null)
@@ -238,7 +243,9 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
 
             }
             {/* List */}
-            <div role="tabpanel" id="collection-panel" aria-labelledby={`collection-tab-${activeTab}`} className="ui-scroll flex-1 overflow-y-auto min-h-0">
+            <div ref={listRef} onScroll={() => {
+              if (!searchQuery.trim() && listRef.current) listPositions.current[activeTab] = listRef.current.scrollTop
+            }} role="tabpanel" id="collection-panel" aria-labelledby={`collection-tab-${activeTab}`} className="ui-scroll flex-1 overflow-y-auto min-h-0">
               {filteredArticles.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-4">

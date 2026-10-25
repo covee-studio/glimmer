@@ -507,3 +507,21 @@ html, body {
   .reading-state-action:hover, .reading-state-link:hover { background:#ffffffb0; color:var(--reading-ink); }
   .reading-room[data-dark="true"] :is(.reading-state-action,.reading-state-link):hover { background:#ffffff25; }
 }
+
+/* Reading hierarchy is shared across sources; scenes keep their own character. */
+.reading-meta { color:var(--reading-muted); line-height:1.65; }
+.reading-meta .font-mono { font-family:inherit; }
+.reading-meta-hn { display:flex; flex-direction:column; align-items:center; gap:7px; }
+.reading-meta-domain { font-size:12px; letter-spacing:.015em; overflow-wrap:anywhere; }
+.reading-meta-details { display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px 16px; font-size:11px; opacity:.85; }
+.reading-meta a { text-underline-offset:4px; text-decoration-color:transparent; transition:text-decoration-color var(--ui-duration) var(--ui-ease); }
+.reading-meta a:hover { text-decoration:underline; text-decoration-color:currentColor; }
+.reading-content[data-content-kind="body"] .reading-primary { max-width:58ch; }
+.reading-content[data-primary-kind="highlight"] .reading-quote { max-width:58ch; padding-left:clamp(16px,2vw,24px); border-left-width:1px; }
+.reading-content[data-content-kind="body"] > .reading-meta { margin-top:26px; }
+.reading-content[data-content-kind="body"] .reading-primary { hanging-punctuation:first last; }
+@media(max-width:640px) {
+  .reading-content[data-content-kind="title"] .reading-primary { line-height:1.45 !important; }
+  .reading-meta-details { gap:6px 12px; }
+  .reading-content[data-content-kind="body"] .reading-primary { font-size:18px !important; }
+}
