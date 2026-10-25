@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.0 (2026-10-25)
+
+* Add a curated collection of quiet nature scenes and coordinated appearance previews.
+* Smooth theme transitions and adapt reading typography to headlines, notes and book highlights.
+* Simplify collection and source settings, preserve list position and improve keyboard focus.
+* Add graceful image, offline, empty and loading-error states.
+* Preserve existing settings, saved items, extension identity and permissions.
+
 ## 2.2.1 (2026-10-11)
 
 * Complete the GitHub repository rename to covee-studio/glimmer and update About, documentation and support links.
