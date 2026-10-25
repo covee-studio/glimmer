@@ -492,3 +492,18 @@ html, body {
     opacity: 0.4;
   }
 }
+
+/* Empty, offline and failure screens retain the same quiet reading hierarchy. */
+.ui-image { background:var(--ui-hover); }
+.ui-image img { transition:opacity 220ms var(--ui-ease); }
+.reading-loader { width:40px; height:40px; border-radius:50%; border:1.5px solid var(--reading-line); }
+.reading-state { color:var(--reading-ink); }
+.reading-state p { color:var(--reading-muted); }
+.reading-state-action { background:#ffffff90; border:1px solid #ffffffa0; transition:background-color var(--ui-duration) var(--ui-ease); }
+.reading-state-link { color:var(--reading-muted); transition:background-color var(--ui-duration) var(--ui-ease); }
+.reading-room[data-dark="true"] .reading-state-action { background:#ffffff16; border-color:#ffffff25; }
+.reading-room[data-dark="true"] .reading-loader { border-color:#ffffff55; }
+@media(hover:hover) {
+  .reading-state-action:hover, .reading-state-link:hover { background:#ffffffb0; color:var(--reading-ink); }
+  .reading-room[data-dark="true"] :is(.reading-state-action,.reading-state-link):hover { background:#ffffff25; }
+}

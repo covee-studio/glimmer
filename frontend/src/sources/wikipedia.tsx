@@ -1,3 +1,4 @@
+import { ResilientImage } from '../components/ui/ResilientImage'
 import type { Language } from "../types/ArticleProps"
 import type { DiscoveryItem } from "../types/DiscoveryItem"
 import { isSafeArticle } from "../utils/contentSafety"
@@ -138,7 +139,7 @@ export const wikipediaAdapter: SourceAdapter = {
   getLikePreview(item: DiscoveryItem): LikePreview {
     const raw = item.raw as WikiArticleRaw
     const thumbnailNode = raw.thumbnail ? (
-      <img
+      <ResilientImage
         src={raw.thumbnail.source}
         alt={raw.title}
         className="w-16 h-16 object-cover rounded-lg flex-shrink-0"

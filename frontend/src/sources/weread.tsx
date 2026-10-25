@@ -1,3 +1,4 @@
+import { ResilientImage } from '../components/ui/ResilientImage'
 import type { DiscoveryItem } from '../types/DiscoveryItem'
 import type { SourceAdapter } from './adapter'
 import { fetchWeReadNotes } from './wereadClient'
@@ -24,7 +25,7 @@ export const wereadAdapter: SourceAdapter = {
   getLikePreview(item) {
     const raw = item.raw as WeReadNote
     return {
-      thumbnailNode: <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><img src="/source-icons/weread-official.png" alt="" className="h-full w-full rounded-lg object-contain" /></div>,
+      thumbnailNode: <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700"><ResilientImage src="/source-icons/weread-official.png" contain className="h-full w-full rounded-lg" /></div>,
       descriptionText: [raw.bookTitle, raw.author, raw.thought].filter(Boolean).join(' · '),
       titleHoverClass: 'hover:text-emerald-800',
     }

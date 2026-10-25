@@ -1,3 +1,4 @@
+import { ResilientImage } from './ui/ResilientImage'
 import { CloseButton } from './ui/CloseButton'
 import { usePanelMotion } from './ui/usePanelMotion'
 import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Settings } from "lucide-react"
@@ -207,12 +208,12 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                   <div className="mb-4 flex items-center gap-3 border-b border-[var(--ui-line-soft)] pb-5">
                     <div className="flex min-w-0 flex-1 items-center gap-1">
                       <label htmlFor="article-language-select" className="block text-sm font-medium text-[var(--ui-text)]">
-                        Language
+                        Reading language
                       </label>
                       <SourceHint
                         sourceId="language"
                         sourceLabel="Language"
-                        description="Wikipedia articles and Hacker News headline translation"
+                        description="Changes Wikipedia articles and Hacker News headline translation. The interface stays in English; your notes keep their original language."
                       />
                     </div>
                     <div className="relative w-[132px] sm:w-[148px] flex-shrink-0">
@@ -246,16 +247,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                           <div className="flex w-full items-center gap-3">
                             <div className="flex min-w-0 flex-1 items-center gap-3">
                               <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-50 ${active ? "" : "opacity-60"}`}>
-                                {adapter.logoSrc ? (
-                                  <img
-                                    src={adapter.logoSrc}
-                                    alt=""
-                                    aria-hidden="true"
-                                    className="h-full w-full object-contain"
-                                  />
-                                ) : (
-                                  <BookOpen className="h-5 w-5 text-emerald-800" aria-hidden="true" />
-                                )}
+                                <ResilientImage src={adapter.logoSrc} contain className="h-full w-full rounded-full" />
                               </span>
                               <div className="flex min-w-0 flex-col items-start gap-1">
                                 <div className="flex items-center gap-1">

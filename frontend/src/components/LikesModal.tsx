@@ -1,3 +1,4 @@
+import { ResilientImage } from './ui/ResilientImage'
 import { CloseButton } from './ui/CloseButton'
 import { usePanelMotion } from './ui/usePanelMotion'
 import { Clock3, Cloud, CloudOff, Download, Heart, Search, X } from "lucide-react"
@@ -25,11 +26,7 @@ function SourceBadge({ item }: { item: DiscoveryItem }) {
   const adapter = getAdapter(item.source)
   return (
     <div title={adapter.label} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 p-0.5">
-      {adapter.logoSrc ? (
-        <img src={adapter.logoSrc} alt="" className="h-full w-full rounded-full object-contain" />
-      ) : (
-        <span className="text-sm font-semibold text-[var(--ui-muted)]">{adapter.label.slice(0, 1)}</span>
-      )}
+      <ResilientImage src={adapter.logoSrc} contain className="h-full w-full rounded-full" />
     </div>
   )
 }
@@ -186,7 +183,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                     className={`relative px-4 pb-2.5 text-sm transition-colors ${selected ? "font-medium text-[var(--ui-ink)]" : "text-[var(--ui-muted)] hover:text-[var(--ui-text)]"}`}
                   >
                     {t(`likes.${tab}`)} <span className="ml-1.5 text-xs font-normal text-[var(--ui-muted)]">{tab === "saved" ? likedArticles.length : recentArticles.length}</span>
-                    {selected && <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-slate-800" />}
+                    {selected && <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-[var(--ui-accent)]" />}
                   </button>
                 )
               })}
@@ -264,7 +261,7 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                     return (
                       <div
                         key={item.id}
-                        className="ui-collection-row group rounded-lg px-2 py-4"
+                        className="ui-collection-row group px-2 py-4"
                       >
                         <div className="flex gap-3.5 items-start">
                           {activeTab === "recent" ? <SourceBadge item={item} /> : preview.thumbnailNode && <div className="shrink-0 [&>*]:h-10 [&>*]:w-10">{preview.thumbnailNode}</div>}

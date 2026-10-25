@@ -89,7 +89,7 @@ if (!/readingColumnClass/.test(zen) || !/w-full max-w-\[680px\]/.test(zen)) {
 
 // The language is a global content/translation preference, not a Wikipedia
 // source setting. It must remain available when Wikipedia is disabled.
-const languageLabelIndex = sourcesModal.search(/>\s*Language\s*<\/label>/)
+const languageLabelIndex = sourcesModal.search(/>\s*Reading language\s*<\/label>/)
 const sourceRowsIndex = sourcesModal.indexOf("{ADAPTER_LIST.map")
 if (languageLabelIndex === -1 || sourceRowsIndex === -1 || languageLabelIndex > sourceRowsIndex) {
   throw new Error("Global content/translation language control is missing")

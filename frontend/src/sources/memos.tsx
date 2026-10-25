@@ -1,3 +1,4 @@
+import { ResilientImage } from '../components/ui/ResilientImage'
 import { commitSourceCache, sourceGeneration } from '../utils/sourceLifecycle'
 import type { DiscoveryItem } from "../types/DiscoveryItem"
 import type { CardRenderProps, FetchConfig, LikePreview, SourceAdapter, ZenContentData } from "./adapter"
@@ -300,7 +301,7 @@ export const memosAdapter: SourceAdapter = {
   getLikePreview(item: DiscoveryItem): LikePreview {
     const raw = item.raw as MemoRaw
     const thumbnailNode = raw.imageUrl ? (
-      <img
+      <ResilientImage
         src={raw.imageUrl}
         alt={raw.title}
         className="w-16 h-16 object-cover rounded-lg flex-shrink-0"

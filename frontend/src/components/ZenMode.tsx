@@ -1,3 +1,4 @@
+import { ReadingState } from './ui/ReadingState'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { Shuffle, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Chrome as ChromeIcon, Heart as HeartIcon, Share2 as Share2Icon, Layers as LayersIcon, Palette as PaletteIcon, Info as InfoIcon } from 'lucide-react'
@@ -94,7 +95,7 @@ function FadingScroll({ children, maxHeightVh }: { children: React.ReactNode; ma
   )
 }
 
-function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
+export function ZenContent({ item, dark }: { item: DiscoveryItem; dark: boolean }) {
   const { primary, primaryKind, secondary, secondaryLabel, imageUrl, metaNode, primaryWeight = 500, contentKind = "title", accent, accentText, sourceLabel, noLink, contentScrollable } =
     getAdapter(item.source).getZenContent(item)
   const { currentLanguage } = useLocalization()
@@ -454,6 +455,13 @@ function TopToolbar({
 
 export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNearEnd, isLoading = false, loadError, onRetry, sourceErrors }: ZenModeProps) {
   const reducedMotion = useReducedMotion()
+  const [online, setOnline] = useState(() => navigator.onLine)
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine)
+    window.addEventListener('online', update)
+    window.addEventListener('offline', update)
+    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update) }
+  }, [])
   const [pageVisible, setPageVisible] = useState(() => !document.hidden)
   useEffect(() => {
     const update = () => setPageVisible(!document.hidden)
@@ -637,39 +645,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center px-8">
-          {loadError ? (
-            <div
-              role="alert"
-              className={`max-w-sm text-center ${isDark ? 'text-slate-100' : 'text-slate-700'}`}
-            >
-              <p className="text-base font-medium">{loadError}</p>
-              <p className={`mt-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
-                Check your connection or source settings, then try again.
-              </p>
-              {onRetry && (
-                <button
-                  type="button"
-                  onClick={onRetry}
-                  className={`mt-5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    isDark ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-white/70 text-slate-700 hover:bg-white'
-                  }`}
-                >
-                  Retry
-                </button>
-              )}
-            </div>
-          ) : isLoading ? (
-            <div role="status" aria-label="Loading reading content" style={{
-              width: 40, height: 40, borderRadius: '50%',
-              border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.4)' : 'rgba(15,23,42,0.18)'}`,
-              animation: 'zen-breathe 2.6s ease-in-out infinite',
-            }} />
-          ) : (
-            <div className={`max-w-sm text-center text-sm ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
-              No content is available from the enabled sources.
-              {onRetry && <button type="button" className="mt-4 block w-full underline underline-offset-4" onClick={onRetry}>Try another batch</button>}
-            </div>
-          )}
+          <ReadingState offline={!online} loading={isLoading} error={loadError} onRetry={onRetry} onSources={() => setModal('sources')} />
         </div>
         <AboutModal key="about-modal" isOpen={modal === 'about'} onClose={() => setModal(null)} />
         <SourcesModal key="sources-modal" isOpen={modal === 'sources'} sourceErrors={sourceErrors} onClose={() => setModal(null)} />
@@ -707,7 +683,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
       onTouchStart={wakeUp}
     >
       <ThemeBackdrop themeId={resolvedThemeId} paused={!pageVisible} />
-      {Object.keys(sourceErrors ?? {}).length > 0 && <button type="button" onClick={() => setModal('sources')} className="source-notice absolute bottom-8 left-8 z-30 max-w-[150px] rounded-full px-3 py-2 text-left text-[11px]" aria-label="Review source connection status">A source needs attention</button>}
+      {(!online || Object.keys(sourceErrors ?? {}).length > 0) && <button type="button" onClick={() => setModal('sources')} className="source-notice absolute bottom-8 left-8 z-30 max-w-[150px] rounded-full px-3 py-2 text-left text-[11px]" aria-label="Review source connection status">{online ? 'A source needs attention' : 'You’re offline'}</button>}
 
       {/* Top-left: brand */}
       <motion.div

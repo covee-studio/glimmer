@@ -20,7 +20,8 @@ export function useFocusTrap(enabled: boolean, containerRef: React.RefObject<HTM
       '[contenteditable]'
     ].join(',');
 
-    const getFocusable = () => Array.from(container.querySelectorAll<HTMLElement>(focusableSelectors));
+    const getFocusable = () => Array.from(container.querySelectorAll<HTMLElement>(focusableSelectors))
+      .filter(node => node.tabIndex >= 0 && node.getClientRects().length > 0 && !node.closest('[inert], [aria-hidden="true"]'));
     const frame = requestAnimationFrame(() => getFocusable()[0]?.focus());
 
     const handleKeydown = (e: KeyboardEvent) => {
