@@ -1,6 +1,10 @@
 # Chrome Web Store Listing — Glimmer
 
-> Last Updated: 2026-10-11
+> Last Updated: 2026-10-26
+
+## Current release status
+
+**2.3.0 submitted and pending review (2026-10-26).** Automatic publication is disabled; publish manually after approval. Dashboard currently shows 2.2.2 as published. See [submission record](docs/releases/2.3.0.md). Historical branding notes below describe the earlier 2.2.0 submission.
 
 ## Branding update
 
