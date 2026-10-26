@@ -556,7 +556,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   const wakeUp = useCallback(() => {
     setIdle(false)
     if (idleTimer.current) clearTimeout(idleTimer.current)
-    idleTimer.current = setTimeout(() => setIdle(!containerRef.current?.querySelector(':focus-visible')), 4000)
+    idleTimer.current = setTimeout(() => setIdle(!containerRef.current?.querySelector(':focus-visible, [role="dialog"], .appearance-panel')), 4000)
   }, [])
 
   useEffect(() => {
@@ -567,9 +567,11 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
     }
   }, [wakeUp])
 
-  useEffect(() => {
-    if (modal) wakeUp()
-  }, [modal, wakeUp])
+  // A panel keeps the page awake. Reset before paint on close, so an expired
+  // idle timer cannot hide the toolbar for one frame while focus is restored.
+  useLayoutEffect(() => {
+    wakeUp()
+  }, [modal, themeOpen, wakeUp])
 
   const next = useCallback(() => {
     if (items.length === 0) return

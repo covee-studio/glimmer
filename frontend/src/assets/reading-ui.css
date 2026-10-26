@@ -75,7 +75,7 @@
   .ui-switch, .ui-switch-thumb, .ui-collection-row, .reading-panel .source-row::before { transition: none; }
 }
 
-.ui-modal-backdrop { background: #2330284a; backdrop-filter: blur(4px); }
+.ui-modal-backdrop { background: #2330284a; }
 .ui-toolbar-button { transition: color var(--ui-duration) var(--ui-ease), background-color var(--ui-duration) var(--ui-ease), border-color var(--ui-duration) var(--ui-ease), box-shadow var(--ui-duration) var(--ui-ease); }
 @media (prefers-reduced-motion: reduce) { .ui-toolbar-button { transition: none; } }
 
