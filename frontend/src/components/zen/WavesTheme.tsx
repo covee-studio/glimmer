@@ -91,9 +91,9 @@ export function WavesTheme() {
 export function WavesPreview() {
   return <div aria-hidden className="theme-scene theme-preview waves-scene">
     <svg className="waves-preview-art" viewBox="0 0 100 48" preserveAspectRatio="none">
-      <path fill="#dfe8e3" d="M0 27 C15 20 27 32 42 25 S68 19 81 27 S94 28 100 23 V48 H0Z" />
-      <path fill="#c8d7cf" d="M0 34 C17 25 29 39 46 31 S72 27 85 35 S96 35 100 32 V48 H0Z" />
-      <path fill="#aebfb6" d="M0 41 C18 33 31 45 49 38 S74 35 87 41 S97 41 100 39 V48 H0Z" />
+      <path fill="#dfe8e3" d="M0 29 C17 29 26 19 40 21 S72 33 100 24 V48 H0Z" />
+      <path fill="#c8d7cf" d="M0 34 C18 27 30 36 48 31 S73 21 100 35 V48 H0Z" />
+      <path fill="#aebfb6" d="M0 41 C18 43 27 31 44 35 S67 43 82 37 S94 35 100 38 V48 H0Z" />
     </svg>
   </div>
 }
