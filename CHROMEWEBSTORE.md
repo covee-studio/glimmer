@@ -1,14 +1,14 @@
 # Chrome Web Store Listing — Glimmer
 
-> Last Updated: 2026-10-26
+> Last Updated: 2026-10-28
 
 ## 2.3.1 patch — 2026-10-28
 
-Clicking the toolbar icon opens Glimmer in a new active tab in the same window. No additional permissions or data access. Verified in the local unpacked Chrome extension; prepared for 2.3.1 submission.
+Clicking the toolbar icon opens Glimmer in a new active tab in the same window. No additional permissions or data access. Verified in the local unpacked Chrome extension; included in 2.3.1, submitted for review.
 
 ## Current release status
 
-**2.3.0 submitted and pending review (2026-10-26).** Automatic publication is disabled; publish manually after approval. Dashboard currently shows 2.2.2 as published. See [submission record](docs/releases/2.3.0.md). Historical branding notes below describe the earlier 2.2.0 submission.
+**2.3.1 submitted and pending review (2026-10-28).** Automatic publication is disabled; publish manually after approval. Dashboard currently shows 2.3.0 as published. See [submission record](docs/releases/2.3.1.md). Historical notes below describe earlier submissions.
 
 ## Branding update
 
