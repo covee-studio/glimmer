@@ -183,6 +183,10 @@ async function buildExtension() {
     
     // Copy required files
     await copyManifest();
+    await copyFile(
+      resolve(__dirname, '../configs/extension/background.js'),
+      resolve(targetDir, 'background.js'),
+    );
     await copyIcons();
     
     console.log('✅ Extension build completed successfully!');

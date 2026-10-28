@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1 (2026-10-28)
+
+* Open Glimmer in a new active tab when its toolbar icon is clicked.
+* Preserve the current window and existing permissions.
+
 ## 2.3.0 (2026-10-25)
 
 * Add a curated collection of quiet nature scenes and coordinated appearance previews.
