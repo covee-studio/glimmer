@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, ChevronDown, Eye, EyeOff, Info, Settings } from "l
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
+import { useAnalyticsConsent } from "../analytics/useAnalyticsConsent"
 import { useSources } from "../contexts/SourcesContext"
 import { useFocusTrap } from "../hooks/useFocusTrap"
 import { useKeyboardNavigation } from "../hooks/useKeyboardNavigation"
@@ -90,6 +91,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
   const { enabledSources, toggleSource, getSourceConfig, updateSourceConfig, ensureHostPermission, disconnectSource } = useSources()
   const { showToast } = useToast()
   const { currentLanguage, setLanguage } = useLocalization()
+  const analytics = useAnalyticsConsent()
   const [view, setView] = useState<SourcesView>("sources")
   const [settingsDraft, setSettingsDraft] = useState<Record<string, string>>({})
   const [showToken, setShowToken] = useState(false)
@@ -293,6 +295,27 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                       )
                     })}
                   </div>
+                  {analytics.visible && (
+                    <div className="mt-5 border-t border-[var(--ui-line-soft)] pt-5">
+                      <div className="flex items-start gap-3">
+                        <div className="min-w-0 flex-1">
+                          <label htmlFor="analytics-consent" className="block text-sm font-medium text-[var(--ui-text)]">
+                            Help improve Glimmer
+                          </label>
+                          <p id="analytics-consent-description" className="mt-1 text-xs leading-relaxed text-[var(--ui-muted)]">
+                            Off by default. Shares anonymous usage, such as which entrance you used and which source was shown. It never sends page addresses, titles, or note text. You can turn this off at any time.
+                          </p>
+                        </div>
+                        <Toggle
+                          id="analytics-consent"
+                          checked={analytics.enabled}
+                          ariaLabel="Help improve Glimmer"
+                          ariaDescribedBy="analytics-consent-description"
+                          onChange={() => { if (analytics.ready) void analytics.update(!analytics.enabled) }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div

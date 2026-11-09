@@ -8,6 +8,7 @@ import { ADAPTER_LIST } from "./sources/registry"
 import type { SourceAdapter } from "./sources/adapter"
 import type { DiscoveryItem } from "./types/DiscoveryItem"
 import type { SourceId } from "./types/DiscoveryItem"
+import { startExtensionSession } from "./analytics/client"
 import { feedCache, CACHE_TTL_MS } from "./utils/feedCache"
 
 type ItemsBySource = Partial<Record<SourceId, DiscoveryItem[]>>
@@ -63,6 +64,10 @@ function App() {
   const { currentLanguage, ready } = useLocalization()
   const { enabledSources, getSourceConfig } = useSources()
   const { showToast } = useToast()
+
+  useEffect(() => {
+    startExtensionSession()
+  }, [])
 
   const zenRestorePendingRef = useRef(true)
   // Tracks the last-seen dataUpdatedAt per adapter so we can detect genuine

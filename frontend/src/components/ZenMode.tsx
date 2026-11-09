@@ -10,6 +10,9 @@ import { useLocalization } from '../hooks/useLocalization'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { getAdapter } from '../sources/registry'
 import type { DiscoveryItem, SourceId } from '../types/DiscoveryItem'
+import { track } from '../analytics/client'
+
+let reportedContentInThisView = false
 import { Analytics, isExtension } from '../utils/environment'
 import { CHROME_WEB_STORE_URL } from '../utils/productLinks'
 import { ZEN_THEMES } from '../utils/zenThemes'
@@ -505,6 +508,12 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
     return ZEN_THEMES[Math.floor(Math.random() * ZEN_THEMES.length)].id
   }, [themeId])
   const [themeOpen, setThemeOpen] = useState(false)
+  const selectTheme = useCallback((id: string) => {
+    if (id !== themeId) void track('settings_changed', { setting: 'theme' })
+    setThemeId(id)
+    localStorage.setItem('zen-theme-id', id)
+    setThemeOpen(false)
+  }, [themeId])
   const [modal, setModal] = useState<ModalKey>(null)
   const [idle, setIdle] = useState(false)
   const [shareCopied, setShareCopied] = useState(false)
@@ -616,6 +625,12 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
     rememberRecent(item)
   }, [isOpen, item, rememberRecent])
 
+  useEffect(() => {
+    if (!isOpen || !item || reportedContentInThisView) return
+    reportedContentInThisView = true
+    void track('content_shown', { source: item.source })
+  }, [isOpen, item])
+
   if (!isOpen) return null
 
   // Only fall back to the dedicated loading screen when we truly have
@@ -642,11 +657,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
           onOpenModal={setModal}
           onToggleTheme={() => setThemeOpen((value) => !value)}
           onCloseTheme={() => setThemeOpen(false)}
-          onSelectTheme={(id) => {
-            setThemeId(id)
-            localStorage.setItem('zen-theme-id', id)
-            setThemeOpen(false)
-          }}
+          onSelectTheme={selectTheme}
         />
         <div className="absolute inset-0 flex items-center justify-center px-8">
           <ReadingState offline={!online} loading={isLoading} error={loadError} onRetry={onRetry} onSources={() => setModal('sources')} />
@@ -709,11 +720,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
         onOpenModal={setModal}
         onToggleTheme={() => setThemeOpen((value) => !value)}
         onCloseTheme={() => setThemeOpen(false)}
-        onSelectTheme={(id) => {
-          setThemeId(id)
-          localStorage.setItem('zen-theme-id', id)
-          setThemeOpen(false)
-        }}
+        onSelectTheme={selectTheme}
       />
 
       {/* Center content */}

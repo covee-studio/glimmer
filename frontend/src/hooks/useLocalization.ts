@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { LANGUAGES } from "../languages"
 import type { Language } from "../types/ArticleProps"
-import { StorageAdapter } from "../utils/environment"
+import { track } from "../analytics/client"
+import { isExtension, StorageAdapter } from "../utils/environment"
 
 const LANGUAGE_CHANGE_EVENT = "wikinote-language-change"
 
@@ -69,9 +70,11 @@ export function useLocalization() {
   const setLanguage = async (languageId: string) => {
     const newLanguage = LANGUAGES.find((lang) => lang.id === languageId)
     if (newLanguage) {
+      if (newLanguage.id === currentLanguage.id) return
       await StorageAdapter.set("lang", newLanguage.id)
       setCurrentLanguage(newLanguage)
       window.dispatchEvent(new CustomEvent(LANGUAGE_CHANGE_EVENT, { detail: newLanguage.id }))
+      if (isExtension) void track("settings_changed", { setting: "language" })
     } else {
       console.warn(`Language not found: ${languageId}`)
     }

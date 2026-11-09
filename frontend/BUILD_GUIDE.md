@@ -46,11 +46,11 @@ frontend/
 Handled by `src/utils/environment.ts`:
 - Storage: localStorage (Web) vs Chrome Storage (Extension)
 - Network: use Wikipedia API with `origin=*`; no custom Origin header
-- Analytics: Vercel Analytics only on Web
+- Analytics: Vercel Analytics on Web. The extension uses a bundled opt-in PostHog HTTP client and does not load remote code.
 
 ## 🔒 CSP (Extension)
 
-`configs/extension/manifest.json` defines strict `extension_pages` CSP with limited `connect-src` to Wikipedia, `img-src` allowing `https` and `data`, and minimal `style-src`.
+`configs/extension/manifest.json` defines the `extension_pages` CSP. `connect-src` already allows `https:`, which covers the PostHog ingest host, `img-src` allows `https` and `data`, and `style-src` stays minimal. No PostHog host permission is declared.
 
 ## 🖼️ Icons
 
