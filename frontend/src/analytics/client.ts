@@ -102,11 +102,22 @@ async function storageSet(items: Record<string, unknown>): Promise<void> {
   })
 }
 
+const LOCK_NAME = 'glimmer-analytics'
+
 let chain: Promise<unknown> = Promise.resolve()
 function serialize<T>(task: () => Promise<T>): Promise<T> {
   const run = chain.then(task, task)
   chain = run.then(() => undefined, () => undefined)
   return run
+}
+
+/** Extension pages and the service worker share one origin, so the Web Locks
+ * API serializes queue, active-day, and distinct-id updates across all of them.
+ * A realm without that API falls back to an in-module promise chain. */
+function withLock<T>(task: () => Promise<T>): Promise<T> {
+  const locks = typeof navigator === 'undefined' ? undefined : navigator.locks
+  if (!locks?.request) return serialize(task)
+  return locks.request(LOCK_NAME, task)
 }
 
 function settle(result: void | Promise<unknown>) {
@@ -186,14 +197,33 @@ function captureUrl(): string | null {
   }
 }
 
-let inFlight: AbortController | null = null
+const inFlight = new Set<AbortController>()
+
+function abortSends() {
+  for (const controller of inFlight) controller.abort()
+  inFlight.clear()
+}
+
+function watchConsentRevocation() {
+  if (!extensionBuild()) return
+  const events = chromeApi()?.storage?.onChanged
+  if (!events) return
+  events.addListener((changes, areaName) => {
+    if (areaName !== 'local' || !(analyticsStorageKeys.consent in changes)) return
+    if (changes[analyticsStorageKeys.consent]?.newValue === true) return
+    // Do not take the analytics lock here. This can run while the revoking
+    // context still holds it, and Web Locks are not reentrant.
+    abortSends()
+  })
+}
+
+watchConsentRevocation()
 
 export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
   if (!extensionBuild()) return
   if (!enabled) {
-    inFlight?.abort()
-    inFlight = null
-    await serialize(async () => {
+    abortSends()
+    await withLock(async () => {
       await storageSet({
         [analyticsStorageKeys.consent]: false,
         [analyticsStorageKeys.queue]: [],
@@ -203,7 +233,7 @@ export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
     mirrorConsent(false)
     return
   }
-  await serialize(async () => {
+  await withLock(async () => {
     await storageSet({ [analyticsStorageKeys.consent]: true })
   })
   mirrorConsent(true)
@@ -221,7 +251,7 @@ export function subscribeConsent(listener: (enabled: boolean) => void): () => vo
 }
 
 async function distinctId(): Promise<string | null> {
-  return serialize(async () => {
+  return withLock(async () => {
     if (!(await readConsent())) return null
     const stored = await storageGet([analyticsStorageKeys.distinctId])
     const existing = stored[analyticsStorageKeys.distinctId]
@@ -233,7 +263,7 @@ async function distinctId(): Promise<string | null> {
 }
 
 async function enqueue(sanitized: SanitizedEvent, oncePerLocalDay = false): Promise<boolean> {
-  return serialize(async () => {
+  return withLock(async () => {
     if (!(await readConsent())) return false
     const today = localCalendarDay()
     const stored = await storageGet([analyticsStorageKeys.queue, analyticsStorageKeys.activeDay])
@@ -261,18 +291,17 @@ export async function flush(): Promise<void> {
   if (!extensionBuild()) return
   const url = captureUrl()
   if (!url) return
+  const controller = new AbortController()
+  inFlight.add(controller)
   try {
-    if (!(await readConsent())) return
+    if (!(await readConsent()) || controller.signal.aborted) return
     const sending = parseQueue((await storageGet([analyticsStorageKeys.queue]))[analyticsStorageKeys.queue]).slice(0, BATCH_SIZE)
     if (!sending.length) {
       clearAlarm()
       return
     }
     const id = await distinctId()
-    if (!id || !(await readConsent())) return
-    const controller = new AbortController()
-    inFlight?.abort()
-    inFlight = controller
+    if (!id || !(await readConsent()) || controller.signal.aborted) return
     const response = await fetch(url, {
       method: 'POST',
       credentials: 'omit',
@@ -286,11 +315,10 @@ export async function flush(): Promise<void> {
       })),
       signal: controller.signal,
     })
-    if (inFlight === controller) inFlight = null
-    if (!(await readConsent())) return
+    if (!(await readConsent()) || controller.signal.aborted) return
     if (!response.ok && !dropBatch(response.status)) return
     const sent = new Set(sending.map((event) => event.uuid))
-    await serialize(async () => {
+    await withLock(async () => {
       if (!(await readConsent())) return
       const current = parseQueue((await storageGet([analyticsStorageKeys.queue]))[analyticsStorageKeys.queue])
       const remaining = current.filter((event) => !sent.has(event.uuid))
@@ -299,6 +327,8 @@ export async function flush(): Promise<void> {
     })
   } catch {
     // Offline, aborted, or blocked. Leave the queue for a later alarm.
+  } finally {
+    inFlight.delete(controller)
   }
 }
 

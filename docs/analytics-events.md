@@ -4,7 +4,7 @@ Opt-in anonymous usage events for the Chrome extension. The web build keeps Verc
 
 The extension does not load PostHog JavaScript. A bundled client posts to `https://us.i.posthog.com/batch/` with `credentials: 'omit'`. The publishable project key lives only in `frontend/src/analytics/config.ts`. Web builds replace that module with an empty stub.
 
-Consent is **Help improve Glimmer** in Sources. It is off by default. While it is off the client does not call PostHog and does not queue events. Turning it off aborts an in-flight send and drops the queue. The anonymous install id in `chrome.storage.local` is kept.
+Consent is **Help improve Glimmer** in Sources. It is off by default. While it is off the client does not call PostHog and does not queue events. Turning it off writes that fact to `chrome.storage.local`, which aborts in-flight sends in every extension context (new-tab pages and the service worker) and drops the queue. Queue, active-day, and install-id updates share one Web Lock, `glimmer-analytics`, so those read-modify-writes stay ordered across contexts. The anonymous install id is kept.
 
 Every accepted event includes:
 

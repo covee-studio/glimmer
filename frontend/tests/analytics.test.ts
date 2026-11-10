@@ -3,13 +3,28 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 let chromeLocal: Record<string, unknown>
 let alarmsCreated: string[]
 let alarmsCleared: string[]
+let consentListeners: Array<(changes: Record<string, { newValue?: unknown }>, area: string) => void>
 const fetchMock = vi.fn()
+
+function installSharedLock() {
+  let tail: Promise<unknown> = Promise.resolve()
+  Object.assign(navigator, {
+    locks: {
+      request: (_name: string, callback: () => Promise<unknown>) => {
+        const run = tail.then(callback, callback)
+        tail = run.then(() => undefined, () => undefined)
+        return run
+      },
+    },
+  })
+}
 
 beforeEach(() => {
   vi.resetModules()
   chromeLocal = {}
   alarmsCreated = []
   alarmsCleared = []
+  consentListeners = []
   fetchMock.mockReset()
   fetchMock.mockResolvedValue(new Response(null, { status: 200 }))
   vi.stubGlobal('__IS_EXTENSION__', true)
@@ -32,8 +47,19 @@ beforeEach(() => {
           callback(result)
         },
         set: (items: Record<string, unknown>, callback: () => void) => {
+          const changes: Record<string, { newValue?: unknown }> = {}
+          for (const [key, value] of Object.entries(items)) changes[key] = { newValue: value }
           Object.assign(chromeLocal, items)
           callback()
+          for (const listener of [...consentListeners]) listener(changes, 'local')
+        },
+      },
+      onChanged: {
+        addListener: (listener: (changes: Record<string, { newValue?: unknown }>, area: string) => void) => {
+          consentListeners.push(listener)
+        },
+        removeListener: (listener: (changes: Record<string, { newValue?: unknown }>, area: string) => void) => {
+          consentListeners = consentListeners.filter((candidate) => candidate !== listener)
         },
       },
     },
@@ -161,6 +187,92 @@ it('sends install and update only when consent is already on', async () => {
       properties: expect.objectContaining({ previous_version: '2.3.0', app: 'glimmer' }),
     }),
   ])
+})
+
+async function twoClients() {
+  installSharedLock()
+  const first = await load()
+  vi.resetModules()
+  const second = await load()
+  return [first, second] as const
+}
+
+function sentEvents() {
+  return fetchMock.mock.calls.flatMap((call) => {
+    const body = JSON.parse(String((call[1] as RequestInit).body)) as {
+      batch: Array<{ event: string; distinct_id: string }>
+    }
+    return body.batch
+  })
+}
+
+it('keeps events from two extension contexts instead of letting one write win', async () => {
+  const [{ setAnalyticsConsent, track, analyticsStorageKeys }, other] = await twoClients()
+  await setAnalyticsConsent(true)
+  await Promise.all([
+    track('entry_opened', { entry: 'newtab' }),
+    other.track('content_shown', { source: 'wikipedia' }),
+  ])
+  const names = [
+    ...sentEvents().map((event) => event.event),
+    ...((chromeLocal[analyticsStorageKeys.queue] as Array<{ event: string }> | undefined) ?? []).map((event) => event.event),
+  ]
+  expect(names).toEqual(expect.arrayContaining(['entry_opened', 'content_shown']))
+  const ids = sentEvents().map((event) => event.distinct_id)
+  expect(new Set(ids).size).toBe(1)
+  expect(ids[0]).toBe(chromeLocal[analyticsStorageKeys.distinctId])
+})
+
+it('records one active day and one install id when two contexts start together', async () => {
+  const [{ setAnalyticsConsent, noteActiveDay, flush, analyticsStorageKeys }, other] = await twoClients()
+  await setAnalyticsConsent(true)
+  await Promise.all([noteActiveDay(), other.noteActiveDay()])
+  const queued = (chromeLocal[analyticsStorageKeys.queue] as Array<{ event: string }> | undefined) ?? []
+  const activeDays = [...sentEvents(), ...queued].filter((event) => event.event === 'active_day')
+  expect(activeDays).toHaveLength(1)
+
+  const firstId = crypto.randomUUID()
+  const secondId = crypto.randomUUID()
+  chromeLocal[analyticsStorageKeys.distinctId] = undefined
+  delete chromeLocal[analyticsStorageKeys.distinctId]
+  chromeLocal[analyticsStorageKeys.queue] = [
+    { uuid: firstId, event: 'entry_opened', timestamp: new Date().toISOString(), properties: { entry: 'newtab' } },
+    { uuid: secondId, event: 'content_shown', timestamp: new Date().toISOString(), properties: { source: 'memos' } },
+  ]
+  fetchMock.mockClear()
+  await Promise.all([flush(), other.flush()])
+  const ids = sentEvents().map((event) => event.distinct_id)
+  expect(ids.length).toBeGreaterThan(0)
+  expect(new Set(ids).size).toBe(1)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBe(ids[0])
+})
+
+it('aborts an in-flight send in another context when consent is turned off', async () => {
+  const [{ setAnalyticsConsent, track, analyticsStorageKeys }, other] = await twoClients()
+  fetchMock.mockImplementation((_url: string, init?: RequestInit) => new Promise((_resolve, reject) => {
+    const signal = init?.signal
+    if (!signal) return
+    if (signal.aborted) {
+      reject(new DOMException('The operation was aborted.', 'AbortError'))
+      return
+    }
+    signal.addEventListener('abort', () => {
+      reject(new DOMException('The operation was aborted.', 'AbortError'))
+    })
+  }))
+  await setAnalyticsConsent(true)
+  const pending = track('entry_opened', { entry: 'action' })
+  await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+  const signal = (fetchMock.mock.calls[0]?.[1] as RequestInit).signal as AbortSignal
+  await other.setAnalyticsConsent(false)
+  expect(signal.aborted).toBe(true)
+  await pending
+  fetchMock.mockClear()
+  await other.track('content_shown', { source: 'hypothesis' })
+  await track('active_day')
+  expect(fetchMock).not.toHaveBeenCalled()
+  expect(chromeLocal[analyticsStorageKeys.queue]).toEqual([])
+  expect(chromeLocal[analyticsStorageKeys.consent]).toBe(false)
 })
 
 it('keeps a failed batch queued and retries on the next flush', async () => {
