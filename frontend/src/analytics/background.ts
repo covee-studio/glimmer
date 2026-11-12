@@ -1,11 +1,5 @@
 import { ANALYTICS_ALARM, flush, trackRuntimeInstall } from './client'
 
-// TODO(uninstall-feedback): Replace this placeholder when Glimmer has a
-// dedicated feedback page. Until then, uninstall opens the public issue
-// tracker named in PRIVACY.md. Chrome cannot deliver a PostHog event from
-// the extension process during uninstall, so none is sent.
-const UNINSTALL_FEEDBACK_URL = 'https://github.com/covee-studio/glimmer/issues'
-
 interface InstalledDetails {
   reason: string
   previousVersion?: string
@@ -18,7 +12,6 @@ interface ClickedTab {
 interface ChromeBackground {
   runtime: {
     getURL: (path: string) => string
-    setUninstallURL: (url: string) => void
     onInstalled: {
       addListener: (listener: (details: InstalledDetails) => void) => void
     }
@@ -45,11 +38,6 @@ function browser(): ChromeBackground | undefined {
 function register() {
   const api = browser()
   if (!api?.runtime || !api.action || !api.tabs) return
-  try {
-    api.runtime.setUninstallURL(UNINSTALL_FEEDBACK_URL)
-  } catch {
-    // The placeholder is best-effort and must not break the toolbar action.
-  }
   api.runtime.onInstalled.addListener((details) => {
     void trackRuntimeInstall(details)
   })

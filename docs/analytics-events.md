@@ -36,9 +36,7 @@ Anything that is not on the allowlist, including URLs, domains, titles, and free
 
 ## Uninstall
 
-`runtime.setUninstallURL` points at `https://github.com/covee-studio/glimmer/issues`.
-
-TODO(uninstall-feedback): replace that placeholder when a dedicated feedback page exists. The extension cannot send a PostHog event during uninstall.
+The extension does not send an uninstall event or open a feedback page.
 
 ## Manual check
 
@@ -51,4 +49,4 @@ TODO(uninstall-feedback): replace that placeholder when a dedicated feedback pag
 7. On every event, confirm `app=glimmer`, `app_version`, and `browser`, and confirm there is no URL, domain, title, or note text.
 8. Turn consent off. Confirm the queue is dropped and later actions send nothing.
 9. With consent already on, reload the extension and confirm `extension_updated` includes `previous_version`. A fresh install with the default off switch does not send `extension_installed`.
-10. Uninstall and confirm the browser opens the GitHub issues placeholder. No uninstall event is sent.
+10. Uninstall and confirm no uninstall event is sent.

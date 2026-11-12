@@ -120,23 +120,17 @@ function withLock<T>(task: () => Promise<T>): Promise<T> {
   return locks.request(LOCK_NAME, task)
 }
 
-function settle(result: void | Promise<unknown>) {
-  if (result && typeof (result as Promise<unknown>).then === 'function') {
-    void (result as Promise<unknown>).catch(() => undefined)
-  }
-}
-
-function ensureAlarm() {
+async function ensureAlarm() {
   try {
-    settle(chromeApi()?.alarms?.create(ANALYTICS_ALARM, { delayInMinutes: 1, periodInMinutes: 1 }))
+    await chromeApi()?.alarms?.create(ANALYTICS_ALARM, { delayInMinutes: 1, periodInMinutes: 1 })
   } catch {
-    // Alarms are only a retry. The page also flushes on hide.
+    // The page also flushes on hide.
   }
 }
 
-function clearAlarm() {
+async function clearAlarm() {
   try {
-    settle(chromeApi()?.alarms?.clear(ANALYTICS_ALARM))
+    await chromeApi()?.alarms?.clear(ANALYTICS_ALARM)
   } catch {
     // Ignore.
   }
@@ -228,8 +222,8 @@ export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
         [analyticsStorageKeys.consent]: false,
         [analyticsStorageKeys.queue]: [],
       })
+      await clearAlarm()
     })
-    clearAlarm()
     mirrorConsent(false)
     return
   }
@@ -278,7 +272,7 @@ async function enqueue(sanitized: SanitizedEvent, oncePerLocalDay = false): Prom
     const patch: Record<string, unknown> = { [analyticsStorageKeys.queue]: queue.slice(-MAX_QUEUE) }
     if (oncePerLocalDay) patch[analyticsStorageKeys.activeDay] = today
     await storageSet(patch)
-    ensureAlarm()
+    await ensureAlarm()
     return true
   })
 }
@@ -297,7 +291,10 @@ export async function flush(): Promise<void> {
     if (!(await readConsent()) || controller.signal.aborted) return
     const sending = parseQueue((await storageGet([analyticsStorageKeys.queue]))[analyticsStorageKeys.queue]).slice(0, BATCH_SIZE)
     if (!sending.length) {
-      clearAlarm()
+      await withLock(async () => {
+        const current = parseQueue((await storageGet([analyticsStorageKeys.queue]))[analyticsStorageKeys.queue])
+        if (!current.length) await clearAlarm()
+      })
       return
     }
     const id = await distinctId()
@@ -323,7 +320,7 @@ export async function flush(): Promise<void> {
       const current = parseQueue((await storageGet([analyticsStorageKeys.queue]))[analyticsStorageKeys.queue])
       const remaining = current.filter((event) => !sent.has(event.uuid))
       await storageSet({ [analyticsStorageKeys.queue]: remaining })
-      if (!remaining.length) clearAlarm()
+      if (!remaining.length) await clearAlarm()
     })
   } catch {
     // Offline, aborted, or blocked. Leave the queue for a later alarm.

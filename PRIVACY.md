@@ -68,7 +68,7 @@ The extension does not send URLs, domains, page titles, article titles, article 
 
 Install and update events are sent only when the switch is already on. A typical first install does not send an install event, because the switch starts off.
 
-Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event. Chrome may then open the project’s public issue tracker, which is a placeholder contact page operated by GitHub until a dedicated feedback page exists.
+Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event.
 
 ### On-device translation
 
