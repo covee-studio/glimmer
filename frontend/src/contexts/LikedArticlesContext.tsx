@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import { Heart } from "lucide-react"
+import { track } from "../analytics/client"
 import { StorageAdapter } from "../utils/environment"
 import type { DiscoveryItem, SourceId } from "../types/DiscoveryItem"
 import {
@@ -262,7 +263,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
   }, [hydrated, syncAvailable])
 
   const setSyncEnabled = (enabled: boolean) => {
-    if (!syncAvailable || !hydrated) return
+    if (!syncAvailable || !hydrated || enabled === syncEnabledRef.current) return
     const revision = ++syncRevision.current
     syncEnabledRef.current = enabled
     setSyncEnabledState(enabled)
@@ -270,6 +271,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
     // Persist the preference immediately so other open tabs stop syncing too.
     // Keep the shared cloud copy intact when this profile opts out.
     const preferenceSaved = StorageAdapter.set(SYNC_ENABLED_KEY, enabled)
+    void track("settings_changed", { setting: "sync_favorites" })
     // Report persistence errors without letting stale operations replace new state.
     void preferenceSaved.catch(() => {
       if (revision === syncRevision.current) setSyncStatus("error")

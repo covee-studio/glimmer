@@ -7,6 +7,7 @@ import { createContext, useContext, useSyncExternalStore } from "react"
 import type { ReactNode } from "react"
 import type { SourceId } from "../types/DiscoveryItem"
 import { ADAPTER_LIST } from "../sources/registry"
+import { track } from "../analytics/client"
 import { requestOptionalHostPermission } from "../utils/environment"
 import { feedCache } from '../utils/feedCache'
 import { invalidateSource } from '../utils/sourceLifecycle'
@@ -128,6 +129,10 @@ export function SourcesProvider({ children }: { children: ReactNode }) {
       invalidateSource(id)
     } else enabled.add(id)
     publish(enabled, current.sourceConfigs)
+    void track("settings_changed", {
+      setting: enabled.has(id) ? "source_enabled" : "source_disabled",
+      source_id: id,
+    })
     return true
   }
 
@@ -146,11 +151,13 @@ export function SourcesProvider({ children }: { children: ReactNode }) {
     const current = getSnapshot()
     const configs = { ...current.sourceConfigs }
     const enabled = new Set(current.enabledSources)
+    const wasEnabled = enabled.has(id)
     invalidateSource(id)
     delete configs[id]
     enabled.delete(id)
     if (!enabled.size) enabled.add(DEFAULT_SOURCE_IDS[0])
     publish(enabled, configs)
+    if (wasEnabled) void track("settings_changed", { setting: "source_disabled", source_id: id })
     await feedCache.clearSource(id)
   }
 

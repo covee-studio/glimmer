@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { resolve } from "path";
+import { stubAnalyticsConfig } from "../stubAnalyticsConfig";
 
 export default defineConfig({
   // The shared runtime needs an explicit web value. The extension build
@@ -12,6 +13,7 @@ export default defineConfig({
     __IS_EXTENSION__: JSON.stringify(false),
   },
   plugins: [
+    stubAnalyticsConfig(),
     react(),
     tailwindcss(),
     VitePWA({

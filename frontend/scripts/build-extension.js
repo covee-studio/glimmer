@@ -162,6 +162,32 @@ async function copyBuiltFiles() {
   }
 }
 
+async function buildBackground(targetDir) {
+  await build({
+    configFile: false,
+    root: resolve(__dirname, '..'),
+    publicDir: false,
+    define: {
+      __IS_EXTENSION__: JSON.stringify(true),
+    },
+    build: {
+      emptyOutDir: false,
+      outDir: targetDir,
+      modulePreload: false,
+      rollupOptions: {
+        input: resolve(__dirname, '../src/analytics/background.ts'),
+        output: {
+          format: 'es',
+          // One file for the service worker. Vite 8 replaces inlineDynamicImports.
+          codeSplitting: false,
+          entryFileNames: 'background.js',
+        },
+      },
+    },
+  });
+  console.log('🧩 Service worker bundled: background.js');
+}
+
 async function buildExtension() {
   console.log('🚀 Building Chrome Extension...');
   
@@ -183,10 +209,7 @@ async function buildExtension() {
     
     // Copy required files
     await copyManifest();
-    await copyFile(
-      resolve(__dirname, '../configs/extension/background.js'),
-      resolve(targetDir, 'background.js'),
-    );
+    await buildBackground(targetDir);
     await copyIcons();
     
     console.log('✅ Extension build completed successfully!');

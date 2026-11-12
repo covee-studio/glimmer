@@ -1,4 +1,5 @@
 // Environment detection and adaptation utilities
+import { track as trackExtensionEvent } from '../analytics/client';
 
 // Global declarations
 type ChromeStorageArea = {
@@ -206,12 +207,11 @@ export class StorageAdapter {
   }
 }
 
-// Analytics adapter. The Vercel script is injected from main.tsx for the web
-// build only, so custom events below are intentionally no-ops in the extension.
+// Web custom events stay on Vercel Analytics. The extension build forwards
+// only the allowlisted product events in src/analytics; consent off is a no-op.
 export const Analytics = {
   track: (event: string, properties?: Record<string, unknown>) => {
     if (!isExtension) {
-      // Use Vercel Analytics only on Web
       if (typeof window !== 'undefined') {
         const w = window as unknown as {
           va?: (e: string, p?: Record<string, unknown>) => void;
@@ -220,8 +220,9 @@ export const Analytics = {
           w.va(event, properties);
         }
       }
+      return;
     }
-    // In extension env either integrate other analytics or no-op
+    void trackExtensionEvent(event, properties);
   }
 };
 

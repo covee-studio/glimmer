@@ -77,7 +77,7 @@ frontend/
 - Environment adaptation in `src/utils/environment.ts`:
   - Storage adapter (localStorage vs Chrome Storage)
   - `fetchWithCORS` with Wikipedia API (`origin=*`), no forced Origin header
-  - Analytics only on Web
+  - Web analytics: Vercel Analytics. Extension analytics: opt-in PostHog capture, separate from the web build.
 - Strong TypeScript settings (strict), ESLint with `jsx-a11y`.
 - PWA (Web) via `vite-plugin-pwa`.
 - Chrome Web Store submission and privacy details are maintained in root `CHROMEWEBSTORE.md` and `PRIVACY.md`.
