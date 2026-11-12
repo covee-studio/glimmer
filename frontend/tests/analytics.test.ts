@@ -279,12 +279,19 @@ it('keeps a failed batch queued and retries on the next flush', async () => {
   const { setAnalyticsConsent, track, flush, analyticsStorageKeys } = await load()
   fetchMock.mockResolvedValueOnce(new Response(null, { status: 503 }))
   await setAnalyticsConsent(true)
-  await track('settings_changed', { setting: 'theme', value: 'campfire' })
+  await track('settings_changed', { setting: 'theme', theme_id: 'campfire' })
   expect(fetchMock).toHaveBeenCalledTimes(1)
   const queued = chromeLocal[analyticsStorageKeys.queue] as Array<{ event: string; properties: Record<string, string> }>
   expect(queued).toHaveLength(1)
-  expect(queued[0]?.properties).toEqual({ setting: 'theme' })
+  expect(queued[0]?.properties).toEqual({ setting: 'theme', theme_id: 'campfire' })
   fetchMock.mockResolvedValueOnce(new Response(null, { status: 200 }))
   await flush()
   expect(chromeLocal[analyticsStorageKeys.queue]).toEqual([])
+})
+
+it('rejects unrecognized theme identifiers', async () => {
+  const { setAnalyticsConsent, track } = await load()
+  await setAnalyticsConsent(true)
+  await track('settings_changed', { setting: 'theme', theme_id: 'private-note' })
+  expect(fetchMock).not.toHaveBeenCalled()
 })

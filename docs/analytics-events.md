@@ -26,7 +26,7 @@ Every accepted event includes:
 | `entry_opened` | new-tab document start | `entry`: `newtab` or `action` |
 | `content_shown` | first successful reading item in that new-tab document | `source`: `wikipedia`, `hackernews`, `memos`, `hypothesis`, or `weread` |
 | `active_day` | first consented activity of the local calendar day | none |
-| `settings_changed` | user changes a setting while consent is on | `setting`: `source_enabled`, `source_disabled`, `language`, `theme`, `sync_favorites`, or `analytics_consent`. Source toggles also send `source_id` from the source list above |
+| `settings_changed` | user changes a setting while consent is on | `setting`: `source_enabled`, `source_disabled`, `language`, `theme`, `sync_favorites`, or `analytics_consent`. Source toggles also send `source_id`; theme selection sends the allowlisted `theme_id` |
 
 `analytics_consent` is recorded only when the switch is turned on. Turning it off sends nothing.
 
@@ -45,7 +45,7 @@ The extension does not send an uninstall event or open a feedback page.
 3. Open another new tab. Expect `entry_opened` (`entry=newtab`), one `content_shown` whose `source` is one of the five source names, and one `active_day`.
 4. Open Glimmer from the toolbar. Expect `entry_opened` with `entry=action`.
 5. Use the new tab again the same local day. Expect no second `active_day`.
-6. Change language, theme, a source, or Sync favorites. Expect `settings_changed` with the setting key only.
+6. Change language, theme, a source, or Sync favorites. Expect `settings_changed` with the setting key; theme selection includes its allowlisted theme ID.
 7. On every event, confirm `app=glimmer`, `app_version`, and `browser`, and confirm there is no URL, domain, title, or note text.
 8. Turn consent off. Confirm the queue is dropped and later actions send nothing.
 9. With consent already on, reload the extension and confirm `extension_updated` includes `previous_version`. A fresh install with the default off switch does not send `extension_installed`.

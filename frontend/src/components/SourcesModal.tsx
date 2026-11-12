@@ -303,7 +303,7 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                             Help improve Glimmer
                           </label>
                           <p id="analytics-consent-description" className="mt-1 text-xs leading-relaxed text-[var(--ui-muted)]">
-                            Off by default. Sends basic usage events and a random installation ID to PostHog to help improve Glimmer. No article titles, addresses, or notes are sent. You can turn this off at any time.
+                            Off by default. Sends basic usage events, selected themes, and a random installation ID to PostHog to help improve Glimmer. No article titles, addresses, or notes are sent. You can turn this off at any time.
                           </p>
                         </div>
                         <Toggle

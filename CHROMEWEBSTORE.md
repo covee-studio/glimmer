@@ -58,7 +58,7 @@ This guide describes Glimmer 2.2.0 submitted for review; it does not confirm pub
 ### Single purpose description
 
 ```text
-Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. If the user turns on Help improve Glimmer, the extension sends pseudonymous product-usage events (entry, content source, and setting keys only) to PostHog in the United States. That switch is off by default.
+Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. If the user turns on Help improve Glimmer, the extension sends pseudonymous product-usage events (entry, content source, and setting keys and the selected theme) to PostHog in the United States. That switch is off by default.
 ```
 
 ### Short description
@@ -82,7 +82,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
-Help improve Glimmer is an optional switch in Sources, off by default. When you turn it on, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
+Help improve Glimmer is an optional switch in Sources, off by default. When you turn it on, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
 
 Glimmer is open source:
 https://github.com/covee-studio/glimmer
@@ -170,7 +170,7 @@ Select the categories that exist in the current dashboard and accurately describ
 
 If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes, Hypothesis quotations/annotation text, and WeRead highlights/thoughts may contain user-generated content.
 
-- User activity — only after the user turns on Help improve Glimmer. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
+- User activity — only after the user turns on Help improve Glimmer. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
 
 Do not select health information, financial or payment information, personal communications, location, or web history.
 

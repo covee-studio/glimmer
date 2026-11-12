@@ -509,7 +509,7 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   }, [themeId])
   const [themeOpen, setThemeOpen] = useState(false)
   const selectTheme = useCallback((id: string) => {
-    if (id !== themeId) void track('settings_changed', { setting: 'theme' })
+    if (id !== themeId) void track('settings_changed', { setting: 'theme', theme_id: id })
     setThemeId(id)
     localStorage.setItem('zen-theme-id', id)
     setThemeOpen(false)

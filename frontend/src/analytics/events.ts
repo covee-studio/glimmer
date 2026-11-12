@@ -3,6 +3,8 @@ export const ANALYTICS_APP = 'glimmer'
 export const SOURCE_IDS = ['wikipedia', 'hackernews', 'memos', 'hypothesis', 'weread'] as const
 export type AnalyticsSource = (typeof SOURCE_IDS)[number]
 
+export const THEME_IDS = ['random', 'waves', 'paper', 'mist', 'solar', 'rainbow', 'ripples', 'ocean', 'mountains', 'bamboo', 'sakura', 'maple', 'snow', 'constellation', 'fireflies', 'campfire'] as const
+
 export const ENTRY_IDS = ['newtab', 'action'] as const
 export type AnalyticsEntry = (typeof ENTRY_IDS)[number]
 
@@ -90,6 +92,10 @@ export function sanitizeEvent(event: string, properties?: Record<string, unknown
       if (input.setting === 'source_enabled' || input.setting === 'source_disabled') {
         if (!isEnum(input.source_id, SOURCE_IDS)) return null
         props.source_id = input.source_id
+      }
+      if (input.setting === 'theme') {
+        if (!isEnum(input.theme_id, THEME_IDS)) return null
+        props.theme_id = input.theme_id
       }
       return { event, properties: props }
     }

@@ -62,7 +62,7 @@ Each event includes the product name (`glimmer`), the extension version, and a b
 - entry opened, as `newtab` or `action` (the toolbar icon);
 - content shown, as a source name only: `wikipedia`, `hackernews`, `memos`, `hypothesis`, or `weread`;
 - active on a local calendar day, at most once that day, with no extra fields;
-- a setting changed, as a key only: `source_enabled`, `source_disabled`, `language`, `theme`, `sync_favorites`, or `analytics_consent`. Source toggles also include the source name from the list above.
+- a setting changed, as a key only: `source_enabled`, `source_disabled`, `language`, `theme`, `sync_favorites`, or `analytics_consent`. Source toggles also include the source name from the list above; theme changes include the selected theme name.
 
 The extension does not send URLs, domains, page titles, article titles, article text, notes, highlights, search queries, API tokens, source credentials, or browsing history. It asks PostHog not to store the IP address of the request.
 
