@@ -80,12 +80,13 @@ async function load() {
 }
 
 it('sends nothing and keeps no queue while consent is off', async () => {
-  const { track, flush, analyticsStorageKeys } = await load()
+  const { track, flush, analyticsStorageKeys, setAnalyticsConsent } = await load()
+  await setAnalyticsConsent(false)
   await track('entry_opened', { entry: 'newtab' })
   await track('content_shown', { source: 'wikipedia' })
   await flush()
   expect(fetchMock).not.toHaveBeenCalled()
-  expect(chromeLocal[analyticsStorageKeys.queue]).toBeUndefined()
+  expect(chromeLocal[analyticsStorageKeys.queue]).toEqual([])
   expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
   expect(alarmsCreated).toEqual([])
 })
@@ -170,6 +171,7 @@ it('drops the queue on opt-out and does not send a later event', async () => {
 
 it('sends install and update only when consent is already on', async () => {
   const { setAnalyticsConsent, trackRuntimeInstall } = await load()
+  await setAnalyticsConsent(false)
   await trackRuntimeInstall({ reason: 'install' })
   expect(fetchMock).not.toHaveBeenCalled()
   await setAnalyticsConsent(true)
@@ -293,5 +295,17 @@ it('rejects unrecognized theme identifiers', async () => {
   const { setAnalyticsConsent, track } = await load()
   await setAnalyticsConsent(true)
   await track('settings_changed', { setting: 'theme', theme_id: 'private-note' })
+  expect(fetchMock).not.toHaveBeenCalled()
+})
+
+it('enables statistics by default and preserves explicit opt-out', async () => {
+  const { track, setAnalyticsConsent, readConsent } = await load()
+  expect(await readConsent()).toBe(true)
+  await track('entry_opened', { entry: 'newtab' })
+  expect(fetchMock).toHaveBeenCalled()
+  await setAnalyticsConsent(false)
+  fetchMock.mockClear()
+  expect(await readConsent()).toBe(false)
+  await track('entry_opened', { entry: 'newtab' })
   expect(fetchMock).not.toHaveBeenCalled()
 })

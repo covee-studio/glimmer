@@ -92,12 +92,16 @@ async function storageGet(keys: string[]): Promise<Record<string, unknown>> {
 
 async function storageSet(items: Record<string, unknown>): Promise<void> {
   const area = chromeApi()?.storage?.local
-  if (!area) return
-  await new Promise<void>((resolve) => {
+  if (!area) throw new Error('Analytics storage unavailable')
+  await new Promise<void>((resolve, reject) => {
     try {
-      area.set(items, () => resolve())
-    } catch {
-      resolve()
+      area.set(items, () => {
+        const error = chromeApi()?.runtime?.lastError
+        if (error) reject(new Error(error.message ?? 'Analytics storage failed'))
+        else resolve()
+      })
+    } catch (error) {
+      reject(error)
     }
   })
 }
@@ -146,7 +150,7 @@ function mirrorConsent(enabled: boolean) {
 
 export function readConsentMirror(): boolean {
   try {
-    return localStorage.getItem(analyticsStorageKeys.consent) === 'true'
+    return localStorage.getItem(analyticsStorageKeys.consent) !== 'false'
   } catch {
     return false
   }
@@ -154,8 +158,17 @@ export function readConsentMirror(): boolean {
 
 export async function readConsent(): Promise<boolean> {
   if (!extensionBuild()) return false
-  const stored = await storageGet([analyticsStorageKeys.consent])
-  return stored[analyticsStorageKeys.consent] === true
+  const area = chromeApi()?.storage?.local
+  if (!area) return false
+  return new Promise((resolve) => {
+    try {
+      area.get([analyticsStorageKeys.consent], (items) => {
+        if (chromeApi()?.runtime?.lastError || !items) return resolve(false)
+        const preference = items[analyticsStorageKeys.consent]
+        resolve(preference === undefined || preference === true)
+      })
+    } catch { resolve(false) }
+  })
 }
 
 function parseQueue(value: unknown): QueuedEvent[] {

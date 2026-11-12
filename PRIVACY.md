@@ -7,7 +7,7 @@ Glimmer is a Chrome extension that turns the new tab page into a quiet reading s
 ## Summary
 
 - Glimmer has no Glimmer backend, account system, or advertising.
-- Usage analytics are optional, off by default, and limited to pseudonymous product events. The extension does not track browsing history.
+- Usage analytics are on by default, can be turned off at any time, and limited to pseudonymous product events. The extension does not track browsing history.
 - API tokens and private source credentials are stored locally in the browser and are not uploaded to Glimmer.
 - Glimmer sends source-specific requests only to the service selected or configured by you.
 - Chrome Sync is optional. It is used only when you explicitly enable “Sync favorites”.
@@ -47,11 +47,11 @@ Glimmer does not synchronize full private Memos notes, API tokens, source creden
 
 ### Optional usage analytics
 
-Glimmer does not send usage analytics unless you turn on **Help improve Glimmer** in the Sources panel. That switch is off by default.
+Glimmer sends basic usage analytics by default. You can turn off **Help improve Glimmer** in the Sources panel at any time.
 
 While the switch is off, the extension does not contact the analytics processor and does not store events to send later.
 
-While the switch is on, the extension sends pseudonymous product events to [PostHog, Inc.](https://posthog.com/privacy) in the United States at `https://us.i.posthog.com`. PostHog processes this opt-in data for Covee Studio. Glimmer does not sell it and does not use it for advertising, credit decisions, or purposes unrelated to understanding and improving the new-tab reading experience.
+While the switch is on, the extension sends pseudonymous product events to [PostHog, Inc.](https://posthog.com/privacy) in the United States at `https://us.i.posthog.com`. PostHog processes this data for Covee Studio. Glimmer does not sell it and does not use it for advertising, credit decisions, or purposes unrelated to understanding and improving the new-tab reading experience.
 
 The extension creates a random install identifier on this device and stores it in Chrome local storage. The identifier is not your Google account, name, or email. Analytics does not use cookies.
 
@@ -66,7 +66,7 @@ Each event includes the product name (`glimmer`), the extension version, and a b
 
 The extension does not send URLs, domains, page titles, article titles, article text, notes, highlights, search queries, API tokens, source credentials, or browsing history. It asks PostHog not to store the IP address of the request.
 
-Install and update events are sent only when the switch is already on. A typical first install does not send an install event, because the switch starts off.
+Install and update events are sent while the switch is on, including by default on a fresh installation.
 
 Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event.
 
@@ -83,7 +83,7 @@ Requests are sent directly from the extension to the relevant source service:
 - `https://i.weread.qq.com/api/agent/gateway` when you enable WeRead and grant access to that host;
 - the Hypothesis API when the Hypothesis source is configured;
 - the Memos API endpoint entered by you when the Memos source is configured; and
-- PostHog at `https://us.i.posthog.com`, only after you turn on Help improve Glimmer.
+- PostHog at `https://us.i.posthog.com`, while Help improve Glimmer is enabled.
 
 For Memos, use an HTTPS endpoint. The current Chrome extension's connection security policy does not allow plain HTTP API requests.
 
@@ -91,7 +91,7 @@ Glimmer does not inject scripts into ordinary webpages or monitor your browsing 
 
 ## Sharing and sale
 
-Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. If you opt in, the pseudonymous usage events described above are sent to PostHog in the United States.
+Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. Unless you turn off Help improve Glimmer, the pseudonymous usage events described above are sent to PostHog in the United States.
 
 ## Retention and deletion
 

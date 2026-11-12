@@ -2,16 +2,16 @@
 
 > Last Updated: 2026-10-28
 
-## Next submission — opt-in usage analytics (code not yet submitted)
+## Next submission — usage analytics (code not yet submitted)
 
 Version in this tree is still **2.3.1**. Do not upload a package or change the live dashboard until a later version bump. When that package is submitted, update the dashboard as follows. The published 2.3.1 listing does not include this behavior.
 
-- Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the optional, default-off pseudonymous usage analytics.
+- Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the default-on, user-controllable pseudonymous usage analytics.
 - Privacy policy URL: unchanged, `https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md`, after this policy is on `main`.
 - Data use: check **User activity**. Do not check Web history. The activity is not browsing history.
 - Certification: still check all three Limited Use boxes. Data is not sold, not used for unrelated purposes, and not used for creditworthiness or lending. The single purpose of the optional events is to improve the new-tab reading experience.
 - Processor: PostHog, Inc., United States (`https://us.i.posthog.com`). Not sold. No remote code: the capture client is bundled. No PostHog script is downloaded.
-- New permission: `alarms`, used only to retry the opt-in queue. `alarms` is not a Chrome permission-warning permission. No PostHog host permission was added, so this change does not add a “Read and change your data on us.i.posthog.com” warning.
+- New permission: `alarms`, used only to retry the analytics queue. `alarms` is not a Chrome permission-warning permission. No PostHog host permission was added, so this change does not add a “Read and change your data on us.i.posthog.com” warning.
 - Remote code answer remains **No**.
 
 ## 2.3.1 patch — 2026-10-28
@@ -58,7 +58,7 @@ This guide describes Glimmer 2.2.0 submitted for review; it does not confirm pub
 ### Single purpose description
 
 ```text
-Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. If the user turns on Help improve Glimmer, the extension sends pseudonymous product-usage events (entry, content source, and setting keys and the selected theme) to PostHog in the United States. That switch is off by default.
+Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. By default, the extension sends pseudonymous product-usage events (entry, content source, and setting keys and the selected theme) to PostHog in the United States. Users can turn it off in settings.
 ```
 
 ### Short description
@@ -82,7 +82,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
-Help improve Glimmer is an optional switch in Sources, off by default. When you turn it on, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
+Help improve Glimmer is on by default and can be disabled in Sources. While enabled, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
 
 Glimmer is open source:
 https://github.com/covee-studio/glimmer
@@ -105,7 +105,7 @@ Glimmer stores cached feed data, liked articles, and compact source previews loc
 ### `alarms`
 
 ```text
-Glimmer uses alarms only to retry a small queue of opt-in pseudonymous usage events when the first send fails. No alarm is scheduled while Help improve Glimmer is off or the queue is empty. The alarm does not read browsing data, page content, or tabs. This permission does not show a Chrome permission warning.
+Glimmer uses alarms only to retry a small queue of pseudonymous usage events when the first send fails. No alarm is scheduled while Help improve Glimmer is off or the queue is empty. The alarm does not read browsing data, page content, or tabs. This permission does not show a Chrome permission warning.
 ```
 
 ### Host permission: `https://*.wikipedia.org/*`
@@ -146,7 +146,7 @@ Select:
 No, I am not using remote code
 ```
 
-Glimmer fetches data from public and user-configured APIs, but all JavaScript shipped by the extension is included in the extension package. API responses are treated as data; the extension does not download or execute remote JavaScript. Opt-in usage events are sent with a bundled HTTP client. The extension does not load PostHog's JavaScript from PostHog's servers.
+Glimmer fetches data from public and user-configured APIs, but all JavaScript shipped by the extension is included in the extension package. API responses are treated as data; the extension does not download or execute remote JavaScript. Usage events are sent with a bundled HTTP client. The extension does not load PostHog's JavaScript from PostHog's servers.
 
 ## Privacy and data usage
 
@@ -170,7 +170,7 @@ Select the categories that exist in the current dashboard and accurately describ
 
 If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes, Hypothesis quotations/annotation text, and WeRead highlights/thoughts may contain user-generated content.
 
-- User activity — only after the user turns on Help improve Glimmer. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
+- User activity — enabled by default, unless the user turns off Help improve Glimmer. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
 
 Do not select health information, financial or payment information, personal communications, location, or web history.
 

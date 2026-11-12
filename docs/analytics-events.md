@@ -1,10 +1,10 @@
 # Glimmer extension analytics
 
-Opt-in pseudonymous usage events for the Chrome extension. The web build keeps Vercel Analytics and does not send these events.
+Default-on pseudonymous usage events for the Chrome extension. The web build keeps Vercel Analytics and does not send these events.
 
 The extension does not load PostHog JavaScript. A bundled client posts to `https://us.i.posthog.com/batch/` with `credentials: 'omit'`. The publishable project key lives only in `frontend/src/analytics/config.ts`. Web builds replace that module with an empty stub.
 
-Consent is **Help improve Glimmer** in Sources. It is off by default. While it is off the client does not call PostHog and does not queue events. Turning it off writes that fact to `chrome.storage.local`, which aborts in-flight sends in every extension context (new-tab pages and the service worker) and drops the queue. Queue, active-day, and install-id updates share one Web Lock, `glimmer-analytics`, so those read-modify-writes stay ordered across contexts. The pseudonymous install id is kept.
+Consent is **Help improve Glimmer** in Sources. It is on by default and can be turned off at any time. While it is off the client does not call PostHog and does not queue events. Turning it off writes that fact to `chrome.storage.local`, which aborts in-flight sends in every extension context (new-tab pages and the service worker) and drops the queue. Queue, active-day, and install-id updates share one Web Lock, `glimmer-analytics`, so those read-modify-writes stay ordered across contexts. The pseudonymous install id is kept.
 
 Every accepted event includes:
 
@@ -48,5 +48,5 @@ The extension does not send an uninstall event or open a feedback page.
 6. Change language, theme, a source, or Sync favorites. Expect `settings_changed` with the setting key; theme selection includes its allowlisted theme ID.
 7. On every event, confirm `app=glimmer`, `app_version`, and `browser`, and confirm there is no URL, domain, title, or note text.
 8. Turn consent off. Confirm the queue is dropped and later actions send nothing.
-9. With consent already on, reload the extension and confirm `extension_updated` includes `previous_version`. A fresh install with the default off switch does not send `extension_installed`.
+9. With consent already on, reload the extension and confirm `extension_updated` includes `previous_version`. A fresh install with the default on switch sends `extension_installed`.
 10. Uninstall and confirm no uninstall event is sent.
