@@ -7,7 +7,7 @@ Glimmer is a Chrome extension that turns the new tab page into a quiet reading s
 ## Summary
 
 - Glimmer has no Glimmer backend, account system, or advertising.
-- Usage analytics are optional, off by default, and limited to anonymous product events. The extension does not track browsing history.
+- Usage analytics are optional, off by default, and limited to pseudonymous product events. The extension does not track browsing history.
 - API tokens and private source credentials are stored locally in the browser and are not uploaded to Glimmer.
 - Glimmer sends source-specific requests only to the service selected or configured by you.
 - Chrome Sync is optional. It is used only when you explicitly enable “Sync favorites”.
@@ -45,15 +45,15 @@ If you explicitly enable “Sync favorites”, Glimmer stores compact favorite p
 
 Glimmer does not synchronize full private Memos notes, API tokens, source credentials, or WeRead favorites. Chrome processes synced data according to your Chrome account and Google privacy settings. Glimmer does not receive a copy of this synchronized data on its own servers.
 
-### Optional anonymous usage analytics
+### Optional usage analytics
 
 Glimmer does not send usage analytics unless you turn on **Help improve Glimmer** in the Sources panel. That switch is off by default.
 
 While the switch is off, the extension does not contact the analytics processor and does not store events to send later.
 
-While the switch is on, the extension sends anonymous product events to [PostHog, Inc.](https://posthog.com/privacy) in the United States at `https://us.i.posthog.com`. PostHog processes this opt-in data for Covee Studio. Glimmer does not sell it and does not use it for advertising, credit decisions, or purposes unrelated to understanding and improving the new-tab reading experience.
+While the switch is on, the extension sends pseudonymous product events to [PostHog, Inc.](https://posthog.com/privacy) in the United States at `https://us.i.posthog.com`. PostHog processes this opt-in data for Covee Studio. Glimmer does not sell it and does not use it for advertising, credit decisions, or purposes unrelated to understanding and improving the new-tab reading experience.
 
-The extension creates an anonymous install identifier on this device and stores it in Chrome local storage. The identifier is not your Google account, name, or email. Analytics does not use cookies.
+The extension creates a random install identifier on this device and stores it in Chrome local storage. The identifier is not your Google account, name, or email. Analytics does not use cookies.
 
 Each event includes the product name (`glimmer`), the extension version, and a browser family name (`chrome`, `edge`, `opera`, `brave`, `chromium`, or `other`). The event itself is one of:
 
@@ -91,7 +91,7 @@ Glimmer does not inject scripts into ordinary webpages or monitor your browsing 
 
 ## Sharing and sale
 
-Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. If you opt in, the anonymous usage events described above are sent to PostHog in the United States.
+Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. If you opt in, the pseudonymous usage events described above are sent to PostHog in the United States.
 
 ## Retention and deletion
 
