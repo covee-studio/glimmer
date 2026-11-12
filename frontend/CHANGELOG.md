@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.2 (2026-11-12)
+
+* Add basic usage analytics, enabled by default and controllable in settings.
+* Record selected theme and source categories without reading content, URLs or credentials.
+
 ## 2.3.1 (2026-10-28)
 
 * Open Glimmer in a new active tab when its toolbar icon is clicked.

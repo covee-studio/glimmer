@@ -4,7 +4,7 @@
 
 ## Next submission — usage analytics (code not yet submitted)
 
-Version in this tree is still **2.3.1**. Do not upload a package or change the live dashboard until a later version bump. When that package is submitted, update the dashboard as follows. The published 2.3.1 listing does not include this behavior.
+Version **2.3.2** adds this behavior. Update the dashboard as follows when submitting; the previously published listing does not include analytics.
 
 - Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the default-on, user-controllable pseudonymous usage analytics.
 - Privacy policy URL: unchanged, `https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md`, after this policy is on `main`.
