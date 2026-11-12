@@ -297,19 +297,20 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                   </div>
                   {analytics.visible && (
                     <div className="mt-5 border-t border-[var(--ui-line-soft)] pt-5">
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-center gap-3">
                         <div className="min-w-0 flex-1">
-                          <label htmlFor="analytics-consent" className="block text-sm font-medium text-[var(--ui-text)]">
-                            Help improve Glimmer
-                          </label>
-                          <p id="analytics-consent-description" className="mt-1 text-xs leading-relaxed text-[var(--ui-muted)]">
-                            On by default. Sends basic usage events, selected themes, and a random installation ID to PostHog to help improve Glimmer. No article titles, addresses, or notes are sent. You can turn this off at any time.
-                          </p>
+                          <div className="flex items-center gap-1">
+                            <label htmlFor="analytics-consent" className="block text-sm font-medium text-[var(--ui-text)]">
+                              Usage analytics
+                            </label>
+                            <SourceHint sourceId="analytics" sourceLabel="usage analytics" description="On by default. Sends basic usage events, selected themes, and a random installation ID to PostHog. No article titles, addresses, or notes are sent. Turn it off anytime." />
+                          </div>
+                          <p id="analytics-consent-description" className="mt-0.5 text-xs text-[var(--ui-muted)]">Basic usage data sent to PostHog</p>
                         </div>
                         <Toggle
                           id="analytics-consent"
                           checked={analytics.enabled}
-                          ariaLabel="Help improve Glimmer"
+                          ariaLabel="Usage analytics"
                           ariaDescribedBy="analytics-consent-description"
                           onChange={() => { if (analytics.ready) void analytics.update(!analytics.enabled) }}
                         />

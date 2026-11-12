@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.3 (2026-11-12)
+
+* Clarify usage analytics controls and disclosures while keeping the settings panel concise.
+
 ## 2.3.2 (2026-11-12)
 
 * Add basic usage analytics, enabled by default and controllable in settings.

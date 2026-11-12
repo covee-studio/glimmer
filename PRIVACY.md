@@ -47,7 +47,7 @@ Glimmer does not synchronize full private Memos notes, API tokens, source creden
 
 ### Optional usage analytics
 
-Glimmer sends basic usage analytics by default. You can turn off **Help improve Glimmer** in the Sources panel at any time.
+Glimmer sends basic usage analytics by default. You can turn off **Usage analytics** in the Sources panel at any time.
 
 While the switch is off, the extension does not contact the analytics processor and does not store events to send later.
 
@@ -83,7 +83,7 @@ Requests are sent directly from the extension to the relevant source service:
 - `https://i.weread.qq.com/api/agent/gateway` when you enable WeRead and grant access to that host;
 - the Hypothesis API when the Hypothesis source is configured;
 - the Memos API endpoint entered by you when the Memos source is configured; and
-- PostHog at `https://us.i.posthog.com`, while Help improve Glimmer is enabled.
+- PostHog at `https://us.i.posthog.com`, while Usage analytics is enabled.
 
 For Memos, use an HTTPS endpoint. The current Chrome extension's connection security policy does not allow plain HTTP API requests.
 
@@ -91,7 +91,7 @@ Glimmer does not inject scripts into ordinary webpages or monitor your browsing 
 
 ## Sharing and sale
 
-Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. Unless you turn off Help improve Glimmer, the pseudonymous usage events described above are sent to PostHog in the United States.
+Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. Unless you turn off Usage analytics, the pseudonymous usage events described above are sent to PostHog in the United States.
 
 ## Retention and deletion
 
@@ -105,7 +105,7 @@ You can:
 - disconnect a source and remove its credentials from its settings page;
 - delete liked articles from the Likes panel;
 - disable “Sync favorites” at any time;
-- turn off “Help improve Glimmer” at any time; and
+- turn off “Usage analytics” at any time; and
 - clear Glimmer’s extension data through Chrome’s extension settings.
 
 ## Security

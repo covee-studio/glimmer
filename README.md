@@ -93,7 +93,7 @@ New sources should support direct client access through public APIs or user-prov
 
 See the [September 2026 product and code audit](docs/audit-2026-09-05.md) for the implementation decisions, remaining risks, and release verification checklist.
 
-See the [Glimmer Privacy Policy](PRIVACY.md) for details about local storage, source credentials, source content, optional Chrome Sync, and optional anonymous usage analytics.
+See the [Glimmer Privacy Policy](PRIVACY.md) for details about local storage, source credentials, source content, optional Chrome Sync, and usage analytics (on by default, with an option to disable).
 
 ## Support
 

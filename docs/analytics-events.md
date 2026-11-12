@@ -4,7 +4,7 @@ Default-on pseudonymous usage events for the Chrome extension. The web build kee
 
 The extension does not load PostHog JavaScript. A bundled client posts to `https://us.i.posthog.com/batch/` with `credentials: 'omit'`. The publishable project key lives only in `frontend/src/analytics/config.ts`. Web builds replace that module with an empty stub.
 
-Consent is **Help improve Glimmer** in Sources. It is on by default and can be turned off at any time. While it is off the client does not call PostHog and does not queue events. Turning it off writes that fact to `chrome.storage.local`, which aborts in-flight sends in every extension context (new-tab pages and the service worker) and drops the queue. Queue, active-day, and install-id updates share one Web Lock, `glimmer-analytics`, so those read-modify-writes stay ordered across contexts. The pseudonymous install id is kept.
+Consent is **Usage analytics** in Sources. It is on by default and can be turned off at any time. While it is off the client does not call PostHog and does not queue events. Turning it off writes that fact to `chrome.storage.local`, which aborts in-flight sends in every extension context (new-tab pages and the service worker) and drops the queue. Queue, active-day, and install-id updates share one Web Lock, `glimmer-analytics`, so those read-modify-writes stay ordered across contexts. The pseudonymous install id is kept.
 
 Every accepted event includes:
 
@@ -41,7 +41,7 @@ The extension does not send an uninstall event or open a feedback page.
 ## Manual check
 
 1. Load the unpacked extension with consent off. Open a new tab and the toolbar icon. No request to `us.i.posthog.com`.
-2. Turn **Help improve Glimmer** on. The first event may be `settings_changed` with `setting=analytics_consent`.
+2. Turn **Usage analytics** on. The first event may be `settings_changed` with `setting=analytics_consent`.
 3. Open another new tab. Expect `entry_opened` (`entry=newtab`), one `content_shown` whose `source` is one of the five source names, and one `active_day`.
 4. Open Glimmer from the toolbar. Expect `entry_opened` with `entry=action`.
 5. Use the new tab again the same local day. Expect no second `active_day`.

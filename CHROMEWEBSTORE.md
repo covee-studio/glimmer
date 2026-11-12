@@ -4,7 +4,7 @@
 
 ## Next submission — usage analytics (code not yet submitted)
 
-Version **2.3.2** adds this behavior. Update the dashboard as follows when submitting; the previously published listing does not include analytics.
+Version **2.3.3** adds this behavior. Update the dashboard as follows when submitting; the previously published listing does not include analytics.
 
 - Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the default-on, user-controllable pseudonymous usage analytics.
 - Privacy policy URL: unchanged, `https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md`, after this policy is on `main`.
@@ -82,7 +82,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
-Help improve Glimmer is on by default and can be disabled in Sources. While enabled, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
+Usage analytics is on by default and can be disabled in Sources. While enabled, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
 
 Glimmer is open source:
 https://github.com/covee-studio/glimmer
@@ -105,7 +105,7 @@ Glimmer stores cached feed data, liked articles, and compact source previews loc
 ### `alarms`
 
 ```text
-Glimmer uses alarms only to retry a small queue of pseudonymous usage events when the first send fails. No alarm is scheduled while Help improve Glimmer is off or the queue is empty. The alarm does not read browsing data, page content, or tabs. This permission does not show a Chrome permission warning.
+Glimmer uses alarms only to retry a small queue of pseudonymous usage events when the first send fails. No alarm is scheduled while Usage analytics is off or the queue is empty. The alarm does not read browsing data, page content, or tabs. This permission does not show a Chrome permission warning.
 ```
 
 ### Host permission: `https://*.wikipedia.org/*`
@@ -170,7 +170,7 @@ Select the categories that exist in the current dashboard and accurately describ
 
 If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes, Hypothesis quotations/annotation text, and WeRead highlights/thoughts may contain user-generated content.
 
-- User activity — enabled by default, unless the user turns off Help improve Glimmer. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
+- User activity — enabled by default, unless the user turns off Usage analytics. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
 
 Do not select health information, financial or payment information, personal communications, location, or web history.
 
