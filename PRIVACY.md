@@ -68,7 +68,7 @@ The extension does not send URLs, domains, page titles, article titles, article 
 
 Install and update events are sent while the switch is on, including by default on a fresh installation.
 
-Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event.
+Turning the switch off stops further events immediately, discards anything still waiting to be sent, and deletes the local analytics installation identifier and active-day marker. Turning it on again creates a new random installation identifier when events are sent. This does not delete events already received by PostHog. Uninstalling does not send an analytics event.
 
 ### On-device translation
 
