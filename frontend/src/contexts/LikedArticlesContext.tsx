@@ -7,6 +7,7 @@ import { StorageAdapter } from "../utils/environment"
 import type { DiscoveryItem, SourceId } from "../types/DiscoveryItem"
 import {
   isFavoriteSyncAvailable,
+  deleteSyncedFavoriteData,
   readFavoriteSyncRecords,
   subscribeToFavoriteSyncChanges,
   writeFavoriteSyncRecords,
@@ -64,6 +65,7 @@ interface LikedArticlesContextType {
   syncEnabled: boolean
   syncStatus: FavoriteSyncStatus
   setSyncEnabled: (enabled: boolean) => void
+  clearSyncedFavorites: () => Promise<void>
 }
 
 export interface RecentArticle {
@@ -278,6 +280,17 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  /** Explicit deletion never affects local favorites or the active sync flow. */
+  const clearSyncedFavorites = async (): Promise<void> => {
+    if (!hydrated || !syncAvailable || syncEnabledRef.current) {
+      throw new Error('Turn off favorite sync before deleting its cloud copy.')
+    }
+    // Finish any in-flight local sync write before deleting its cloud data.
+    await syncWriteChain.current
+    if (syncEnabledRef.current) throw new Error('Favorite sync is active.')
+    await deleteSyncedFavoriteData()
+  }
+
   useEffect(() => {
     if (!hydrated || !syncEnabled || !syncAvailable) return
     let cancelled = false
@@ -308,7 +321,7 @@ export function LikedArticlesProvider({ children }: { children: ReactNode }) {
   }, [hydrated, syncEnabled, syncAvailable, persistLocal])
 
   return (
-    <LikedArticlesContext.Provider value={{ likedArticles, recentArticles, toggleLike, isLiked, rememberRecent, clearRecent, syncAvailable, syncEnabled, syncStatus, setSyncEnabled }}>
+    <LikedArticlesContext.Provider value={{ likedArticles, recentArticles, toggleLike, isLiked, rememberRecent, clearRecent, syncAvailable, syncEnabled, syncStatus, setSyncEnabled, clearSyncedFavorites }}>
       {children}
       {showHeart && (
         <div className="heart-animation">
