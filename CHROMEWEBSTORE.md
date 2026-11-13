@@ -1,14 +1,16 @@
 # Chrome Web Store Listing — Glimmer
 
-> Last Updated: 2026-10-28
+> Last Updated: 2026-11-13
 
-## Next submission — usage analytics (code not yet submitted)
+## Planned follow-up update — explicit usage analytics consent (not submitted)
 
-Version **2.3.3** adds this behavior. Update the dashboard as follows when submitting; the previously published listing does not include analytics.
+The **2.3.3** package with default-on usage analytics has already been submitted for review. The following changes apply only to a later release, after this pull request is merged and a new version is prepared. Do not alter or withdraw the existing review package as part of this PR.
 
-- Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the default-on, user-controllable pseudonymous usage analytics.
+The follow-up release uses a one-time explicit opt-in prompt, starts with analytics off, and deletes the local installation ID when the user opts out. Update the dashboard as follows when submitting the new release.
+
+- Single purpose and detailed description: use the drafts below. They still say Glimmer does not track browsing history. They also disclose the explicitly opted-in, user-controllable pseudonymous usage analytics.
 - Privacy policy URL: unchanged, `https://github.com/covee-studio/glimmer/blob/main/PRIVACY.md`, after this policy is on `main`.
-- Data use: check **User activity**. Do not check Web history. The activity is not browsing history.
+- Data use: check **User activity** for the optionally transmitted usage events. Do not check Web history solely because analytics is enabled; no browsing history is transmitted.
 - Certification: still check all three Limited Use boxes. Data is not sold, not used for unrelated purposes, and not used for creditworthiness or lending. The single purpose of the optional events is to improve the new-tab reading experience.
 - Processor: PostHog, Inc., United States (`https://us.i.posthog.com`). Not sold. No remote code: the capture client is bundled. No PostHog script is downloaded.
 - New permission: `alarms`, used only to retry the analytics queue. `alarms` is not a Chrome permission-warning permission. No PostHog host permission was added, so this change does not add a “Read and change your data on us.i.posthog.com” warning.
@@ -18,7 +20,7 @@ Version **2.3.3** adds this behavior. Update the dashboard as follows when submi
 
 Clicking the toolbar icon opens Glimmer in a new active tab in the same window. No additional permissions or data access. Verified in the local unpacked Chrome extension; included in 2.3.1, submitted for review.
 
-## Current release status
+## Historical release status
 
 **2.3.1 submitted and pending review (2026-10-28).** Automatic publication is disabled; publish manually after approval. Dashboard currently shows 2.3.0 as published. See [submission record](docs/releases/2.3.1.md). Historical notes below describe earlier submissions.
 
@@ -58,7 +60,7 @@ This guide describes Glimmer 2.2.0 submitted for review; it does not confirm pub
 ### Single purpose description
 
 ```text
-Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. By default, the extension sends pseudonymous product-usage events (entry, content source, and setting keys and the selected theme) to PostHog in the United States. Users can turn it off in settings.
+Glimmer replaces the Chrome new tab page with a calm reading space that presents one randomly selected item at a time from enabled sources such as Wikipedia, Hacker News, the user's Memos notes, Hypothesis annotations, and WeRead book highlights and reading thoughts. Users can discover and revisit knowledge, save favorites, optionally sync compact favorite previews through Chrome Sync, and translate supported headlines with Chrome's on-device language APIs. Glimmer does not inject content into ordinary webpages, display ads, or track browsing history. Glimmer sends pseudonymous product-usage events (entry, content source, setting keys and selected theme) to PostHog in the United States only after users choose to share usage analytics. Users can turn it off in settings.
 ```
 
 ### Short description
@@ -82,7 +84,7 @@ Glimmer presents one carefully formatted item at a time from the sources you cho
 
 Save items you want to revisit, optionally sync compact favorite previews across Chrome devices, and use Chrome's supported on-device language APIs to translate headlines. Glimmer has no ads, no browsing-history tracking, and no Glimmer account or backend.
 
-Usage analytics is on by default and can be disabled in Sources. While enabled, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
+Usage analytics is off until the user explicitly agrees in the first-use prompt or enables it in Sources. While enabled, Glimmer sends pseudonymous usage events to PostHog in the United States: which entrance you used, which source was shown, and which setting changed and which theme was selected. It does not send page addresses, titles, notes, or browsing history. You can turn it off at any time.
 
 Glimmer is open source:
 https://github.com/covee-studio/glimmer
@@ -170,7 +172,7 @@ Select the categories that exist in the current dashboard and accurately describ
 
 If the dashboard does not offer a separate “User-generated content” category, do not invent one or select an unrelated category. The privacy policy explains that Memos notes, Hypothesis quotations/annotation text, and WeRead highlights/thoughts may contain user-generated content.
 
-- User activity — enabled by default, unless the user turns off Usage analytics. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
+- User activity — only when the user explicitly enables Usage analytics. Pseudonymous events record install or update, new-tab versus toolbar entry, the content source that was shown (an enum), one activity marker per local day, and the key of a changed setting and selected theme when applicable. Not collected: URLs, domains, page titles, article titles or text, notes, tokens, or browsing history. Processor: PostHog, Inc. in the United States.
 
 Do not select health information, financial or payment information, personal communications, location, or web history.
 
