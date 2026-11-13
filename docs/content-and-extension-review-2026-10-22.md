@@ -42,10 +42,10 @@
 
 ## Chrome 环境中需要区分的两个实例
 
-| 用途 | 插件 ID | Chrome 显示的加载目录 |
+| 用途 | 实例 | 加载目录（相对路径） |
 | --- | --- | --- |
-| 本轮修复和验收 | `likeldlafpbeoddjcpmkmncadnmbkeai` | `~/Developer/glimmer/frontend/dist/extension` |
-| 当前接管默认新标签页的旧实例 | `ldieodkkkimnmpkhegkopdnbckglmcnc` | `~/Developer/wikinote/frontend/dist/extension` |
+| 本轮修复和验收 | 本地测试实例 | `frontend/dist/extension` |
+| 当时接管默认新标签页的旧实例 | 历史测试实例 | 旧版构建目录（不再公开本机路径与临时 ID） |
 
 两者均显示 2.2.2，但加载位置和数据空间不同。本轮用明确的插件地址测试新实例，未卸载、禁用或迁移旧实例及其数据；商店实例未改动。不能只凭版本号判断是否看到新代码。发布前需整理测试实例，先保留数据并确认收藏与账号配置的归属。
 
