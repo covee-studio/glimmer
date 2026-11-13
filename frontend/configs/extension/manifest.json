@@ -15,8 +15,7 @@
     "https://hypothes.is/*"
   ],
   "optional_host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "https://*/*"
   ],
   "chrome_url_overrides": {
     "newtab": "newtab.html"
