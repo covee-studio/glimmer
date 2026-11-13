@@ -43,7 +43,7 @@ Memos and Hypothesis content may contain personal or user-generated information 
 
 If you explicitly enable “Sync favorites”, Glimmer stores compact favorite previews in Chrome’s `storage.sync` area so they can be available on your other Chrome devices signed into the same Chrome profile. Depending on the source, a preview can include a title, URL, source identifier, a short excerpt or selected quotation, annotation text, tags, and limited display metadata.
 
-Glimmer does not synchronize full private Memos notes, API tokens, source credentials, or WeRead favorites. Chrome processes synced data according to your Chrome account and Google privacy settings. Glimmer does not receive a copy of this synchronized data on its own servers.
+Glimmer does not synchronize full private Memos notes, API tokens, source credentials, or WeRead favorites. Memos preview data omits the duplicate instance endpoint, and Hypothesis previews omit unneeded group identifiers and document-link metadata. Chrome processes synced data according to your Chrome account and Google privacy settings. Glimmer does not receive a copy of this synchronized data on its own servers.
 
 ### Optional usage analytics
 
@@ -68,7 +68,7 @@ The extension does not send URLs, domains, page titles, article titles, article 
 
 Install and update events are sent while the switch is on, including by default on a fresh installation.
 
-Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event.
+Turning the switch off stops further events immediately, discards anything still waiting to be sent, and deletes the local analytics installation identifier and active-day marker. Turning it on again creates a new random installation identifier when events are sent. This does not delete events already received by PostHog. Uninstalling does not send an analytics event.
 
 ### On-device translation
 
@@ -95,7 +95,7 @@ Glimmer does not sell user data. The Chrome extension does not transfer user dat
 
 ## Retention and deletion
 
-Local settings, caches, and favorites remain in your browser until you remove them through the extension, clear the extension’s storage, or uninstall the extension. Disconnecting a source removes its key and local fetch caches; saved favorites and recent items are retained until you remove them separately. Disabling Chrome Sync stops this profile's synchronization but does not delete data already stored in your Chrome account. Source services retain data according to their own policies and account controls.
+Local settings, caches, and favorites remain in your browser until you remove them through the extension, clear the extension’s storage, or uninstall the extension. Disconnecting a source removes its key and local fetch caches; saved favorites and recent items are retained until you remove them separately. Disabling Chrome Sync stops this profile's synchronization but does not automatically delete data already stored in your Chrome account. After turning off **Sync favorites**, select **Delete synced cloud copy** in the favorites sync settings to remove Glimmer's saved favorite previews from Chrome Sync while keeping local favorites. Other devices still syncing may upload those favorites again. Source services retain data according to their own policies and account controls.
 
 Queued analytics events stay on the device only until they are sent, you turn analytics off, or you clear the extension’s storage. Events PostHog has already received are retained under PostHog’s policies and the Covee Studio project settings. Turning analytics off does not delete events already received by PostHog.
 

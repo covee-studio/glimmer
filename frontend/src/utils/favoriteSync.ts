@@ -108,7 +108,8 @@ function compactRaw(item: DiscoveryItem): Record<string, unknown> {
           ? raw.tags.filter((tag): tag is string => typeof tag === "string").slice(0, 12).map((tag) => tag.slice(0, 80))
           : undefined,
         imageUrl: stringValue(raw.imageUrl, 500),
-        endpoint: stringValue(raw.endpoint, 500),
+        // The favorite's own URL already identifies the Memos instance.
+        // Never duplicate its endpoint in the synchronized preview.
       })
     case "hypothesis": {
       const document = asRecord(raw.document)
@@ -126,13 +127,10 @@ function compactRaw(item: DiscoveryItem): Record<string, unknown> {
         tags: Array.isArray(raw.tags)
           ? raw.tags.filter((tag): tag is string => typeof tag === "string").slice(0, 12).map((tag) => tag.slice(0, 80))
           : undefined,
-        group: stringValue(raw.group, 300),
+        // Group and document-link metadata are not needed to render the favorite.
         document: pickDefined({
           title: Array.isArray(document.title)
             ? document.title.filter((title): title is string => typeof title === "string").slice(0, 4).map((title) => title.slice(0, 300))
-            : undefined,
-          link: Array.isArray(document.link)
-            ? document.link.slice(0, 4).map((link) => pickDefined({ href: stringValue(asRecord(link).href, 1000) }))
             : undefined,
         }),
       })
@@ -223,21 +221,49 @@ export async function readFavoriteSyncRecords(): Promise<{ records: LikeRecord[]
   return { records, chunkKeys: manifest.chunks }
 }
 
-export async function writeFavoriteSyncRecords(records: LikeRecord[], previousChunkKeys: string[] = []): Promise<void> {
-  const syncRecords = records.filter(record => !record.id.startsWith('weread-') && record.item?.source !== 'weread').map(toSyncRecord)
-  if (byteLength(syncRecords) > TOTAL_BYTE_LIMIT) {
-    throw new Error("Favorites exceed Chrome Sync storage quota")
-  }
-  const chunks = chunkRecords(syncRecords)
-  const chunkKeys = chunks.map((_, index) => `${CHUNK_PREFIX}${index}`)
-  const values: Record<string, unknown> = {
-    [MANIFEST_KEY]: { version: 1, chunks: chunkKeys } satisfies SyncManifest,
-  }
-  chunks.forEach((chunk, index) => { values[chunkKeys[index]] = chunk })
-  await StorageAdapter.syncSet(values)
+const SYNC_MUTATION_LOCK = 'glimmer-favorites-sync-mutation'
+let fallbackMutation = Promise.resolve()
 
-  const obsoleteKeys = previousChunkKeys.filter((key) => !chunkKeys.includes(key))
-  await StorageAdapter.syncRemove(obsoleteKeys)
+/** Serialize sync writes with explicit cloud deletion across extension tabs. */
+function withSyncMutationLock<T>(action: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks?.request) {
+    return navigator.locks.request(SYNC_MUTATION_LOCK, action)
+  }
+  const run = fallbackMutation.then(action, action)
+  fallbackMutation = run.then(() => undefined, () => undefined)
+  return run
+}
+
+export async function writeFavoriteSyncRecords(records: LikeRecord[], previousChunkKeys: string[] = []): Promise<void> {
+  return withSyncMutationLock(async () => {
+    const syncRecords = records.filter(record => !record.id.startsWith('weread-') && record.item?.source !== 'weread').map(toSyncRecord)
+    if (byteLength(syncRecords) > TOTAL_BYTE_LIMIT) {
+      throw new Error("Favorites exceed Chrome Sync storage quota")
+    }
+    const chunks = chunkRecords(syncRecords)
+    const chunkKeys = chunks.map((_, index) => `${CHUNK_PREFIX}${index}`)
+    const values: Record<string, unknown> = {
+      [MANIFEST_KEY]: { version: 1, chunks: chunkKeys } satisfies SyncManifest,
+    }
+    chunks.forEach((chunk, index) => { values[chunkKeys[index]] = chunk })
+    await StorageAdapter.syncSet(values)
+
+    const obsoleteKeys = previousChunkKeys.filter((key) => !chunkKeys.includes(key))
+    await StorageAdapter.syncRemove(obsoleteKeys)
+  })
+}
+
+/**
+ * Explicit privacy action: remove this extension's favorite preview data from
+ * Chrome Sync. Keep locally saved favorites unchanged. Must only be called
+ * after sync has been disabled in this profile.
+ */
+export async function deleteSyncedFavoriteData(): Promise<void> {
+  return withSyncMutationLock(async () => {
+    const keys = await StorageAdapter.syncKeys()
+    const ownKeys = keys.filter(key => key === MANIFEST_KEY || key.startsWith(CHUNK_PREFIX))
+    await StorageAdapter.syncRemove(ownKeys)
+  })
 }
 
 export function subscribeToFavoriteSyncChanges(listener: () => void): () => void {

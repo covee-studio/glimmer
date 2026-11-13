@@ -43,9 +43,9 @@ The release screenshots sampled roughly every 80–100 ms and only the later par
 
 ## Diagnostic artifacts
 
-- `/Users/charles/Downloads/Trace-20261020T205626.json.gz`: 16.68 s recording, screenshots limited to the first ~7.44 s; does NOT cover its late theme selection and must not be cited as proof of correct switching.
-- `/Users/charles/Downloads/Trace-20261020T210358.json.gz`: ~2.17 s Paper → Stars recording with 130 screenshots. Its completion coverage is narrow; the live store DOM sampling above is the stronger evidence for the one-frame opacity regression.
-- `/tmp/glimmer-analyze-trace.mjs`: local trace screenshot extractor, no product code change.
+- Local Chrome trace A (not committed): 16.68 s recording, screenshots limited to the first ~7.44 s; does NOT cover its late theme selection and must not be cited as proof of correct switching.
+- Local Chrome trace B (not committed): ~2.17 s Paper → Stars recording with 130 screenshots. Its completion coverage is narrow; the live store DOM sampling above is the stronger evidence for the one-frame opacity regression.
+- Local trace screenshot extractor (not committed): local trace screenshot extractor, no product code change.
 
 ## Repair criterion for a later authorized implementation
 

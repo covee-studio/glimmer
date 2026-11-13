@@ -166,6 +166,22 @@ export class StorageAdapter {
     })
   }
 
+  /** Inspect extension-owned Chrome Sync keys without touching unrelated storage. */
+  static async syncKeys(): Promise<string[]> {
+    const area = isExtension && typeof chrome !== 'undefined' ? chrome.storage?.sync : undefined
+    if (!area) throw new Error('Chrome Sync is unavailable')
+    return new Promise((resolve, reject) => {
+      area.get(null, (result) => {
+        const message = chrome?.runtime?.lastError?.message
+        if (message) {
+          reject(new Error(message))
+          return
+        }
+        resolve(Object.keys(result ?? {}))
+      })
+    })
+  }
+
   static async syncSet(items: Record<string, unknown>): Promise<void> {
     const area = isExtension && typeof chrome !== 'undefined' ? chrome.storage?.sync : undefined
     if (!area) throw new Error('Chrome Sync is unavailable')
