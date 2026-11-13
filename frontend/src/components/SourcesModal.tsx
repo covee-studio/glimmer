@@ -303,9 +303,9 @@ export function SourcesModal({ isOpen, onClose, sourceErrors = {} }: SourcesModa
                             <label htmlFor="analytics-consent" className="block text-sm font-medium text-[var(--ui-text)]">
                               Usage analytics
                             </label>
-                            <SourceHint sourceId="analytics" sourceLabel="usage analytics" description="On by default. Sends basic usage events, selected themes, and a random installation ID to PostHog. No article titles, addresses, or notes are sent. Turn it off anytime." />
+                            <SourceHint sourceId="analytics" sourceLabel="usage analytics" description="Off until you choose to share. Sends basic usage events, selected themes, and a random installation ID to PostHog. No article titles, addresses, or notes are sent. Turn it off anytime to delete the local ID." />
                           </div>
-                          <p id="analytics-consent-description" className="mt-0.5 text-xs text-[var(--ui-muted)]">Basic usage data sent to PostHog</p>
+                          <p id="analytics-consent-description" className="mt-0.5 text-xs text-[var(--ui-muted)]">Optional usage data shared with PostHog</p>
                         </div>
                         <Toggle
                           id="analytics-consent"
