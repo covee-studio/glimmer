@@ -93,7 +93,7 @@ https://github.com/covee-studio/glimmer
 ### `storage`
 
 ```text
-Glimmer uses Chrome storage to persist language and appearance preferences, enabled sources, local feed cache, source configuration, and liked article records so the new-tab reading experience can be restored across browser sessions. When the user explicitly enables Sync favorites, compact favorite previews are stored in Chrome Sync. API tokens and private source credentials remain local and are not synchronized. Glimmer does not send this data to a Glimmer server.
+Glimmer uses Chrome storage to persist language and appearance preferences, enabled sources, local feed cache, source configuration, and liked article records so the new-tab reading experience can be restored across browser sessions. When the user explicitly enables Sync favorites, compact favorite previews are stored in Chrome Sync. With Sync favorites disabled, the user may explicitly delete the cloud copy while preserving local favorites. API tokens and private source credentials remain local and are not synchronized. Glimmer does not send this data to a Glimmer server.
 ```
 
 ### `unlimitedStorage`
