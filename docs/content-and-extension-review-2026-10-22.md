@@ -54,7 +54,7 @@
 目录：`docs/screenshots/2026-10-22/content-audit/`。
 
 - `01-long-before.jpg`、`03-long-after.jpg`：长正文调整前后。
-- `narrow-long.png`、`narrow-memo.png`、`narrow-annotation.png`：窄屏内容。
+- `narrow-long.png`：窄屏内容。Memos、Hypothesis 的本地内容截图不保留在公开仓库，避免暴露用户笔记或批注。
 - `narrow-brokenImage.png`：失败图片没有占位。
 - `04-network-error.jpg`、`05-retry-recovered.jpg`：真实错误页与重试恢复。
 
