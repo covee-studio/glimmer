@@ -53,6 +53,19 @@ beforeEach(() => {
           callback()
           for (const listener of [...consentListeners]) listener(changes, 'local')
         },
+        remove: (keys: string[], callback: () => void) => {
+          const changes: Record<string, { newValue?: unknown }> = {}
+          for (const key of keys) {
+            if (key in chromeLocal) {
+              delete chromeLocal[key]
+              changes[key] = { newValue: undefined }
+            }
+          }
+          callback()
+          if (Object.keys(changes).length) {
+            for (const listener of [...consentListeners]) listener(changes, 'local')
+          }
+        },
       },
       onChanged: {
         addListener: (listener: (changes: Record<string, { newValue?: unknown }>, area: string) => void) => {
@@ -166,6 +179,8 @@ it('drops the queue on opt-out and does not send a later event', async () => {
   expect(fetchMock).not.toHaveBeenCalled()
   expect(chromeLocal[analyticsStorageKeys.queue]).toEqual([])
   expect(chromeLocal[analyticsStorageKeys.consent]).toBe(false)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
+  expect(chromeLocal[analyticsStorageKeys.activeDay]).toBeUndefined()
   expect(alarmsCleared.length).toBeGreaterThan(0)
 })
 
@@ -298,14 +313,45 @@ it('rejects unrecognized theme identifiers', async () => {
   expect(fetchMock).not.toHaveBeenCalled()
 })
 
-it('enables statistics by default and preserves explicit opt-out', async () => {
-  const { track, setAnalyticsConsent, readConsent } = await load()
-  expect(await readConsent()).toBe(true)
-  await track('entry_opened', { entry: 'newtab' })
-  expect(fetchMock).toHaveBeenCalled()
-  await setAnalyticsConsent(false)
-  fetchMock.mockClear()
+it('requires explicit opt-in and remembers a declined choice', async () => {
+  const { track, setAnalyticsConsent, readConsent, readConsentChoice, analyticsStorageKeys } = await load()
+  expect(await readConsentChoice()).toBeNull()
   expect(await readConsent()).toBe(false)
   await track('entry_opened', { entry: 'newtab' })
   expect(fetchMock).not.toHaveBeenCalled()
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
+
+  await setAnalyticsConsent(false)
+  expect(await readConsentChoice()).toBe(false)
+  await track('entry_opened', { entry: 'newtab' })
+  expect(fetchMock).not.toHaveBeenCalled()
+
+  await setAnalyticsConsent(true)
+  expect(await readConsentChoice()).toBe(true)
+  await track('entry_opened', { entry: 'newtab' })
+  expect(fetchMock).toHaveBeenCalledTimes(1)
+  const firstId = chromeLocal[analyticsStorageKeys.distinctId]
+  expect(firstId).toMatch(/^[0-9a-f-]{36}$/i)
+
+  await setAnalyticsConsent(false)
+  fetchMock.mockClear()
+  expect(await readConsent()).toBe(false)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
+  await track('entry_opened', { entry: 'newtab' })
+  expect(fetchMock).not.toHaveBeenCalled()
+
+  await setAnalyticsConsent(true)
+  await track('entry_opened', { entry: 'newtab' })
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).not.toBe(firstId)
+})
+
+it('does not treat a pre-existing installation ID as consent', async () => {
+  const { track, readConsent, analyticsStorageKeys, setAnalyticsConsent } = await load()
+  chromeLocal[analyticsStorageKeys.distinctId] = crypto.randomUUID()
+  await track('entry_opened', { entry: 'newtab' })
+  expect(await readConsent()).toBe(false)
+  expect(fetchMock).not.toHaveBeenCalled()
+
+  await setAnalyticsConsent(false)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
 })
