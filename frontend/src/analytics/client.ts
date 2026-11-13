@@ -31,6 +31,7 @@ interface ChromeLike {
     local: {
       get: (keys: string[] | null, callback: (items: Record<string, unknown>) => void) => void
       set: (items: Record<string, unknown>, callback: () => void) => void
+      remove: (keys: string[], callback: () => void) => void
     }
     onChanged?: {
       addListener: (listener: (changes: Record<string, StorageChange>, areaName: string) => void) => void
@@ -106,6 +107,22 @@ async function storageSet(items: Record<string, unknown>): Promise<void> {
   })
 }
 
+async function storageRemove(keys: string[]): Promise<void> {
+  const area = chromeApi()?.storage?.local
+  if (!area) throw new Error('Analytics storage unavailable')
+  await new Promise<void>((resolve, reject) => {
+    try {
+      area.remove(keys, () => {
+        const error = chromeApi()?.runtime?.lastError
+        if (error) reject(new Error(error.message ?? 'Analytics storage failed'))
+        else resolve()
+      })
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 const LOCK_NAME = 'glimmer-analytics'
 
 let chain: Promise<unknown> = Promise.resolve()
@@ -150,13 +167,14 @@ function mirrorConsent(enabled: boolean) {
 
 export function readConsentMirror(): boolean {
   try {
-    return localStorage.getItem(analyticsStorageKeys.consent) !== 'false'
+    return localStorage.getItem(analyticsStorageKeys.consent) === 'true'
   } catch {
     return false
   }
 }
 
-export async function readConsent(): Promise<boolean> {
+/** Null means no explicit decision has been recorded yet. */
+export async function readConsentChoice(): Promise<boolean | null> {
   if (!extensionBuild()) return false
   const area = chromeApi()?.storage?.local
   if (!area) return false
@@ -165,10 +183,14 @@ export async function readConsent(): Promise<boolean> {
       area.get([analyticsStorageKeys.consent], (items) => {
         if (chromeApi()?.runtime?.lastError || !items) return resolve(false)
         const preference = items[analyticsStorageKeys.consent]
-        resolve(preference === undefined || preference === true)
+        resolve(preference === true ? true : preference === false ? false : null)
       })
     } catch { resolve(false) }
   })
+}
+
+export async function readConsent(): Promise<boolean> {
+  return (await readConsentChoice()) === true
 }
 
 function parseQueue(value: unknown): QueuedEvent[] {
@@ -235,6 +257,8 @@ export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
         [analyticsStorageKeys.consent]: false,
         [analyticsStorageKeys.queue]: [],
       })
+      // Clear the stable identifier and day marker when consent is revoked.
+      await storageRemove([analyticsStorageKeys.distinctId, analyticsStorageKeys.activeDay])
       await clearAlarm()
     })
     mirrorConsent(false)
