@@ -9,6 +9,7 @@ import type { SourceAdapter } from "./sources/adapter"
 import type { DiscoveryItem } from "./types/DiscoveryItem"
 import type { SourceId } from "./types/DiscoveryItem"
 import { startExtensionSession } from "./analytics/client"
+import { AnalyticsConsentPrompt } from "./components/AnalyticsConsentPrompt"
 import { feedCache, CACHE_TTL_MS } from "./utils/feedCache"
 
 type ItemsBySource = Partial<Record<SourceId, DiscoveryItem[]>>
@@ -267,6 +268,7 @@ function App() {
   }
 
   return (
+    <>
     <ZenMode
       isOpen={true}
       feedKey={activeSourceKey}
@@ -279,6 +281,8 @@ function App() {
       loadError={hasQueryError ? "Unable to load content" : undefined}
       onRetry={retryLoad}
     />
+    <AnalyticsConsentPrompt />
+    </>
   )
 }
 
