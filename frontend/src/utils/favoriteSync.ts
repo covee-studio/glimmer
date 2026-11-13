@@ -108,7 +108,8 @@ function compactRaw(item: DiscoveryItem): Record<string, unknown> {
           ? raw.tags.filter((tag): tag is string => typeof tag === "string").slice(0, 12).map((tag) => tag.slice(0, 80))
           : undefined,
         imageUrl: stringValue(raw.imageUrl, 500),
-        endpoint: stringValue(raw.endpoint, 500),
+        // The favorite's own URL already identifies the Memos instance.
+        // Never duplicate its endpoint in the synchronized preview.
       })
     case "hypothesis": {
       const document = asRecord(raw.document)
@@ -126,13 +127,10 @@ function compactRaw(item: DiscoveryItem): Record<string, unknown> {
         tags: Array.isArray(raw.tags)
           ? raw.tags.filter((tag): tag is string => typeof tag === "string").slice(0, 12).map((tag) => tag.slice(0, 80))
           : undefined,
-        group: stringValue(raw.group, 300),
+        // Group and document-link metadata are not needed to render the favorite.
         document: pickDefined({
           title: Array.isArray(document.title)
             ? document.title.filter((title): title is string => typeof title === "string").slice(0, 4).map((title) => title.slice(0, 300))
-            : undefined,
-          link: Array.isArray(document.link)
-            ? document.link.slice(0, 4).map((link) => pickDefined({ href: stringValue(asRecord(link).href, 1000) }))
             : undefined,
         }),
       })
