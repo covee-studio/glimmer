@@ -93,7 +93,7 @@ export function AnalyticsConsentPrompt() {
             type="button"
             disabled={saving}
             onClick={() => void decide(true)}
-            className="rounded-lg bg-[var(--ui-text)] px-4 py-2 text-sm font-medium text-[var(--ui-bg)] transition-opacity hover:opacity-85 disabled:opacity-50"
+            className="rounded-lg bg-[var(--ui-ink)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-85 disabled:opacity-50"
           >
             Share analytics
           </button>
