@@ -1,13 +1,13 @@
 # Glimmer Privacy Policy
 
-Last updated: November 9, 2026
+Last updated: November 13, 2026
 
 Glimmer is a Chrome extension that turns the new tab page into a quiet reading space. This privacy policy explains what the extension processes, where that data goes, and what controls are available to you.
 
 ## Summary
 
 - Glimmer has no Glimmer backend, account system, or advertising.
-- Usage analytics are on by default, can be turned off at any time, and limited to pseudonymous product events. The extension does not track browsing history.
+- Usage analytics are off unless you explicitly opt in, can be turned off at any time, and are limited to pseudonymous product events. The extension does not track browsing history.
 - API tokens and private source credentials are stored locally in the browser and are not uploaded to Glimmer.
 - Glimmer sends source-specific requests only to the service selected or configured by you.
 - Chrome Sync is optional. It is used only when you explicitly enable “Sync favorites”.
@@ -47,7 +47,7 @@ Glimmer does not synchronize full private Memos notes, API tokens, source creden
 
 ### Optional usage analytics
 
-Glimmer sends basic usage analytics by default. You can turn off **Usage analytics** in the Sources panel at any time.
+Glimmer does not send usage analytics unless you explicitly agree in the one-time first-use prompt or enable **Usage analytics** in the Sources panel. You can turn it off at any time.
 
 While the switch is off, the extension does not contact the analytics processor and does not store events to send later.
 
@@ -66,9 +66,9 @@ Each event includes the product name (`glimmer`), the extension version, and a b
 
 The extension does not send URLs, domains, page titles, article titles, article text, notes, highlights, search queries, API tokens, source credentials, or browsing history. It asks PostHog not to store the IP address of the request.
 
-Install and update events are sent while the switch is on, including by default on a fresh installation.
+Install and update events are sent only while analytics is enabled. A fresh installation does not send an install event before your consent.
 
-Turning the switch off stops further events immediately and discards anything still waiting to be sent. The local install identifier remains until you clear the extension’s storage or uninstall. Uninstalling does not send an analytics event.
+Turning the switch off stops further events immediately, discards unsent events, and deletes the local install identifier. If you turn analytics on again, a new random identifier is created when an event is sent. Uninstalling does not send an analytics event.
 
 ### On-device translation
 
@@ -91,13 +91,13 @@ Glimmer does not inject scripts into ordinary webpages or monitor your browsing 
 
 ## Sharing and sale
 
-Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. Unless you turn off Usage analytics, the pseudonymous usage events described above are sent to PostHog in the United States.
+Glimmer does not sell user data. The Chrome extension does not transfer user data to advertising networks or data brokers. Source data is sent to a source service only as needed to retrieve the content requested by you, and Chrome Sync data is handled by Chrome when you explicitly enable synchronization. Only if you turn on Usage analytics are the pseudonymous usage events described above sent to PostHog in the United States.
 
 ## Retention and deletion
 
 Local settings, caches, and favorites remain in your browser until you remove them through the extension, clear the extension’s storage, or uninstall the extension. Disconnecting a source removes its key and local fetch caches; saved favorites and recent items are retained until you remove them separately. Disabling Chrome Sync stops this profile's synchronization but does not delete data already stored in your Chrome account. Source services retain data according to their own policies and account controls.
 
-Queued analytics events stay on the device only until they are sent, you turn analytics off, or you clear the extension’s storage. Events PostHog has already received are retained under PostHog’s policies and the Covee Studio project settings. Turning analytics off does not delete events already received by PostHog.
+Queued analytics events stay on the device only until they are sent, you turn analytics off, or you clear the extension’s storage. Events PostHog has already received are retained under PostHog’s policies and the Covee Studio project settings. Turning analytics off deletes the local analytics installation identifier but does not delete events already received by PostHog.
 
 You can:
 
