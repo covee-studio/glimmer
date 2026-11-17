@@ -28,7 +28,7 @@
 .mountain-wing { transform-origin:16px 11px; animation:mountain-wing var(--wing-duration) var(--wing-delay) ease-in-out infinite; }
 .mountain-wing-right { animation-name:mountain-wing-right; }
 @keyframes mountain-mist { from { transform: translateX(-7%) scaleY(.8); opacity: .45; } to { transform: translateX(7%) scaleY(1.2); opacity: .8; } }
-@keyframes mountain-flight { 0% { transform: translate(-190px, 26px); opacity: 0; } 6% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(calc(100vw + 40px), -46px); opacity: 0; } }
+@keyframes mountain-flight { 0% { transform: translate(-190px, 26px) scale(var(--flock-scale, 1)); opacity: 0; } 6% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(calc(100vw + 40px), -46px) scale(var(--flock-scale, 1)); opacity: 0; } }
 @keyframes mountain-flight-far { 0% { transform: translate(-190px, 14px) scale(var(--flock-scale)); opacity: 0; } 6% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(calc(100vw + 40px), -22px) scale(var(--flock-scale)); opacity: 0; } }
 @keyframes mountain-wing { 0%, 36%, 100% { transform:rotate(0deg) scaleY(.78); } 9%, 27% { transform:rotate(-9deg) scaleY(-.45); } 18% { transform:rotate(3deg) scaleY(1); } }
 @keyframes mountain-wing-right { 0%, 36%, 100% { transform:rotate(0deg) scaleY(.78); } 9%, 27% { transform:rotate(7deg) scaleY(-.4); } 18% { transform:rotate(-2deg) scaleY(1); } }
@@ -70,7 +70,8 @@
 @media (max-width: 640px) {
   .waves-canvas { height: clamp(220px, 31svh, 280px); }
   .mountain-landscape { width: 170%; left: -35%; height: 36vh; }
-  .mountain-flock-main { top: 11%; }
+  .mountain-flock-main { top: 14%; --flock-scale: .62; }
+  .mountain-flock-far { display: none; }
   .bamboo-grove { width: 190px; }
   .bamboo-grove-near { left: -82px; opacity: .65; }
   .bamboo-grove-far { right: -90px; }

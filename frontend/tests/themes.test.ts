@@ -107,12 +107,13 @@ it('keeps the roster at the expanded set, with retired ids only in the migration
   }
 })
 
-it('keeps Mountains as its own theme, with geese in formation and a far range', () => {
+it('keeps Mountains as its own theme: the live ridges with geese in formation', () => {
   expect(ZEN_THEMES.some(theme => theme.id === 'mountains')).toBe(true)
   expect(RETIRED_THEME_MIGRATION).not.toHaveProperty('mountains')
   const html = renderToStaticMarkup(createElement(MountainsTheme))
   expect(html.match(/class="mountain-wing mountain-wing-left"/g)).toHaveLength(16)
-  expect(html).toContain('mountain-far')
+  expect(html).not.toContain('mountain-peaks')
+  expect(html.match(/<path d="M-40 /g)).toHaveLength(4)
   expect(html).toContain('mountain-flock-far')
 })
 
