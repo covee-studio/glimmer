@@ -8,6 +8,11 @@ import { clearSourceCaches } from "./sourceLifecycle"
 import { StorageAdapter } from "./environment"
 
 export const CACHE_TTL_MS = 30 * 60 * 1000   // 30 min — if younger, skip refetch
+
+/** Cached items are an error fallback only for sources that explicitly allow it. */
+export function shouldUseCachedDataOnError(fallbackAllowed: boolean | undefined, cachedItems?: DiscoveryItem[]): boolean {
+  return fallbackAllowed === true && Boolean(cachedItems?.length)
+}
 const PREFIX = "wikinote-feed-v2-"
 
 interface CacheEntry {

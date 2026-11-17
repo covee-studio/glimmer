@@ -54,6 +54,18 @@ it('orders recent history saves and clear without bringing cleared history back'
   await store.updateLocalRecent(records => [{item:item('c'),seenAt:3},...records])
   expect((chromeLocal[store.RECENT_RECORDS_KEY] as {item:DiscoveryItem}[]).map(record=>record.item.id)).toEqual(['c'])
 })
+it('caps recent history at the raised limit and exposes seen ids from the mirror', async () => {
+  const store = await import('../src/utils/localCollection')
+  for (let i = 0; i < store.RECENT_LIMIT + 5; i++) {
+    await store.updateLocalRecent(records => [{item:item(`r${i}`),seenAt:i},...records])
+  }
+  const stored = chromeLocal[store.RECENT_RECORDS_KEY] as {item:DiscoveryItem}[]
+  expect(stored).toHaveLength(store.RECENT_LIMIT)
+  expect(stored[0].item.id).toBe(`r${store.RECENT_LIMIT + 4}`)
+  expect(store.getRecentSeenIds().has(`r${store.RECENT_LIMIT + 4}`)).toBe(true)
+  expect(store.getRecentSeenIds().has('r0')).toBe(false)
+})
+
 it('migrates a legacy collection only when the record store is absent', async () => {
   const store = await import('../src/utils/localCollection')
   const legacy = new Map([['a',{id:'a',updatedAt:0,item:item('a')}]])

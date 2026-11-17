@@ -1,6 +1,6 @@
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import { sceneRandom, snowParticles, starParticles, waveY } from '../src/components/zen/sceneGeometry'
 import { MountainsTheme, MountainsPreview } from '../src/components/zen/MountainsTheme'
 import { RainbowTheme, RainbowPreview } from '../src/components/zen/RainbowTheme'
@@ -11,11 +11,44 @@ import { ConstellationTheme } from '../src/components/zen/ConstellationTheme'
 import { MistTheme, MistPreview } from '../src/components/zen/MistTheme'
 import { OceanTheme, OceanPreview } from '../src/components/zen/OceanTheme'
 import { WavesPreview } from '../src/components/zen/WavesTheme'
-import { ZEN_THEMES } from '../src/utils/zenThemes'
+import { ZEN_THEMES, RANDOM_THEME_HISTORY_SIZE, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../src/utils/zenThemes'
 import { FirefliesTheme } from '../src/components/zen/FirefliesTheme'
 import { MapleTheme, MaplePreview } from '../src/components/zen/MapleTheme'
 import { CampfireTheme, CampfirePreview } from '../src/components/zen/CampfireTheme'
 import { SakuraTheme } from '../src/components/zen/SakuraTheme'
+
+it('avoids recently used themes when picking at random', () => {
+  const history = ZEN_THEMES.slice(0, RANDOM_THEME_HISTORY_SIZE).map(theme => theme.id)
+  for (let i = 0; i < 50; i++) {
+    expect(history).not.toContain(pickRandomThemeId(history))
+  }
+})
+
+it('falls back to the full theme list when every theme was used recently', () => {
+  const all = ZEN_THEMES.map(theme => theme.id)
+  for (let i = 0; i < 50; i++) {
+    expect(all).toContain(pickRandomThemeId(all))
+  }
+})
+
+it('records random picks capped at the recent window, newest first', () => {
+  const store = new Map<string, string>()
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+    removeItem: (key: string) => void store.delete(key),
+  })
+  try {
+    for (const theme of ZEN_THEMES) recordRandomTheme(theme.id)
+    recordRandomTheme(ZEN_THEMES[0].id)
+    const history = readRandomThemeHistory()
+    expect(history).toHaveLength(RANDOM_THEME_HISTORY_SIZE)
+    expect(history[0]).toBe(ZEN_THEMES[0].id)
+    expect(new Set(history).size).toBe(RANDOM_THEME_HISTORY_SIZE)
+  } finally {
+    vi.unstubAllGlobals()
+  }
+})
 
 it('keeps scene randomness repeatable and bounded', () => {
   const a = sceneRandom(123), b = sceneRandom(123)

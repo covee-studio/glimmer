@@ -20,6 +20,37 @@ import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
 
 import { CampfireTheme, CampfirePreview } from '../components/zen/CampfireTheme'
 
+export const RANDOM_THEME_HISTORY_KEY = 'zen-random-theme-history'
+/** How many recent random picks a new Random tab avoids repeating. */
+export const RANDOM_THEME_HISTORY_SIZE = 5
+
+/** Recently picked Random themes, newest first. */
+export function readRandomThemeHistory(): string[] {
+  try {
+    const raw = localStorage.getItem(RANDOM_THEME_HISTORY_KEY)
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+/** A uniform pick from every theme missing from the recent history, so
+ *  consecutive Random tabs stop repeating the same backdrop. */
+export function pickRandomThemeId(history: string[], random: () => number = Math.random): string {
+  const candidates = ZEN_THEMES.filter((theme) => !history.includes(theme.id))
+  const pool = candidates.length > 0 ? candidates : ZEN_THEMES
+  return pool[Math.floor(random() * pool.length)].id
+}
+
+/** Record a Random pick, keeping only the most recent few. */
+export function recordRandomTheme(id: string): void {
+  try {
+    const history = readRandomThemeHistory()
+    localStorage.setItem(RANDOM_THEME_HISTORY_KEY, JSON.stringify([id, ...history.filter((entry) => entry !== id)].slice(0, RANDOM_THEME_HISTORY_SIZE)))
+  } catch { /* Variety is a nicety, not a guarantee. */ }
+}
+
 export interface ZenTheme {
   id: string
   name: string

@@ -4,6 +4,8 @@ import { StorageAdapter } from './environment'
 
 export const LOCAL_RECORDS_KEY = 'wikinote-liked-records-v1'
 export const RECENT_RECORDS_KEY = 'wikinote-recent-articles-v1'
+/** How many recently seen items are remembered and filtered from the feed. */
+export const RECENT_LIMIT = 100
 export interface RecentEntry { item: DiscoveryItem; seenAt: number }
 let localChain: Promise<unknown> = Promise.resolve()
 
@@ -28,6 +30,25 @@ export function mergeLocalRecords(local: Map<string, LikeRecord>, incoming: Like
   return result
 }
 
+/** Ids of recently seen items, read synchronously from the localStorage
+ *  mirror. The feed layer uses this before async hydration completes, both
+ *  to filter a cached batch before first paint and to detect an exhausted
+ *  cache that should be refreshed instead of waiting out its TTL. */
+export function getRecentSeenIds(): Set<string> {
+  const ids = new Set<string>()
+  try {
+    const raw = localStorage.getItem(RECENT_RECORDS_KEY)
+    if (!raw) return ids
+    const parsed: unknown = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return ids
+    for (const record of parsed) {
+      const id = (record as Partial<RecentEntry>)?.item?.id
+      if (typeof id === 'string') ids.add(id)
+    }
+  } catch { /* A corrupt mirror is just a cache miss. */ }
+  return ids
+}
+
 export async function updateLocalFavorites(
   transform: (records: Map<string, LikeRecord>) => Map<string, LikeRecord>,
   legacy: Map<string, LikeRecord> = new Map(),
@@ -47,7 +68,7 @@ export async function updateLocalRecent(transform: (records: RecentEntry[]) => R
   return withCollectionLock(async () => {
     const stored = await StorageAdapter.get<RecentEntry[]>(RECENT_RECORDS_KEY)
     const records = Array.isArray(stored) ? stored.filter(record => Number.isFinite(record?.seenAt) && typeof record.item?.id === 'string' && typeof record.item?.source === 'string' && record.item.raw) : []
-    const next = transform(records).sort((a,b) => b.seenAt - a.seenAt).slice(0,30)
+    const next = transform(records).sort((a,b) => b.seenAt - a.seenAt).slice(0,RECENT_LIMIT)
     await StorageAdapter.set(RECENT_RECORDS_KEY, next)
     return next
   })

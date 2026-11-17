@@ -12,7 +12,7 @@ import {
   writeFavoriteSyncRecords,
 } from "../utils/favoriteSync"
 import type { FavoriteSyncStatus, LikeRecord } from "../utils/favoriteSync"
-import { LOCAL_RECORDS_KEY, RECENT_RECORDS_KEY, mergeLocalRecords, validRecords, updateLocalFavorites, updateLocalRecent } from '../utils/localCollection'
+import { LOCAL_RECORDS_KEY, RECENT_RECORDS_KEY, RECENT_LIMIT, mergeLocalRecords, validRecords, updateLocalFavorites, updateLocalRecent } from '../utils/localCollection'
 import "../assets/heartAnimation.css"
 
 // ─── Backward-compatible migration ───────────────────────────
@@ -74,7 +74,7 @@ export interface RecentArticle {
 const LikedArticlesContext = createContext<LikedArticlesContextType | undefined>(undefined)
 
 const SYNC_ENABLED_KEY = "wikinote-favorites-sync-enabled"
-const MAX_RECENT_ARTICLES = 30
+const MAX_RECENT_ARTICLES = RECENT_LIMIT
 
 function visibleItems(records: Map<string, LikeRecord>): DiscoveryItem[] {
   return [...records.values()]

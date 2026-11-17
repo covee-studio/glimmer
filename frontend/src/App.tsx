@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ZenMode } from "./components/ZenMode"
 import { useSources } from "./contexts/SourcesContext"
 import { useToast } from "./contexts/ToastContext"
@@ -9,7 +9,8 @@ import type { SourceAdapter } from "./sources/adapter"
 import type { DiscoveryItem } from "./types/DiscoveryItem"
 import type { SourceId } from "./types/DiscoveryItem"
 import { startExtensionSession } from "./analytics/client"
-import { feedCache, CACHE_TTL_MS } from "./utils/feedCache"
+import { feedCache, CACHE_TTL_MS, shouldUseCachedDataOnError } from "./utils/feedCache"
+import { getRecentSeenIds } from "./utils/localCollection"
 
 type ItemsBySource = Partial<Record<SourceId, DiscoveryItem[]>>
 
@@ -55,6 +56,7 @@ function App() {
   const [extraItemsBySource, setExtraItemsBySource] = useState<ItemsBySource>({})
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const loadMoreController = useRef<AbortController | null>(null)
+  const autoTopUpsRef = useRef(0)
   const extraItemsFeedKey = useRef('')
   const [zenIndex, setZenIndex] = useState(-1)
   // Incremented each time a replaceAnchorOnRefetch source gets fresh data.
@@ -90,6 +92,10 @@ function App() {
     .join("|")
   const currentFeedKey = useRef(activeSourceKey)
   currentFeedKey.current = activeSourceKey
+  // Seen history snapshot per feed identity: filters cached batches before
+  // first paint and detects an exhausted cache that must be refreshed.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- activeSourceKey re-snapshots per feed identity
+  const seenAtFeedAssembly = useMemo(() => getRecentSeenIds(), [activeSourceKey])
 
   useEffect(() => {
     loadMoreController.current?.abort()
@@ -99,6 +105,7 @@ function App() {
     extraItemsFeedKey.current = activeSourceKey
     setZenIndex(-1)
     zenRestorePendingRef.current = true
+    autoTopUpsRef.current = 0
     // Reset per-adapter dataUpdatedAt tracking when source config changes
     prevDataUpdatedAtRef.current = {}
   }, [activeSourceKey])
@@ -114,6 +121,11 @@ function App() {
         : "__unconfigured__"
       const cacheKey = feedCache.key(adapter.id, langId, configStr)
       const cached = feedCache.getSync(cacheKey)
+      // Only unseen cached items are worth showing instantly. A cached batch
+      // whose items were all seen is exhausted: skip it so the query refetches
+      // instead of waiting out the TTL on repeats.
+      const cachedUnseen = cached?.items?.filter((item) => !seenAtFeedAssembly.has(item.id))
+      const cachedExhausted = Boolean(cached?.items?.length) && !cachedUnseen?.length
 
       return {
         queryKey: ["articles", adapter.id, langId, configStr],
@@ -130,7 +142,9 @@ function App() {
           } catch (error) {
             signal.throwIfAborted()
             assertSourceCurrent(adapter.id, generation)
-            if (adapter.fallbackToCachedDataOnError && cached?.items?.length) {
+            // An exhausted cache may be used after a failed refresh only when
+            // the source explicitly permits cached-data fallback.
+            if (shouldUseCachedDataOnError(adapter.fallbackToCachedDataOnError, cached?.items) && cached?.items?.length) {
               return cached.items
             }
             throw error
@@ -139,7 +153,7 @@ function App() {
         enabled: ready && isFullyConfigured(adapter, config),
         refetchOnWindowFocus: false,
         retry: adapter.requiresConfig ? 0 : 1,
-        initialData: adapter.showCachedWhileRefetching === false ? undefined : cached?.items,
+        initialData: adapter.showCachedWhileRefetching === false || cachedExhausted ? undefined : cachedUnseen,
         initialDataUpdatedAt: cached?.timestamp ?? 0,
         // Per-adapter override: Memos sets cacheTtlMs=0 so every mount triggers
         // a refetch (advancing the window cursor). It opts out of initialData
@@ -150,7 +164,7 @@ function App() {
     }),
   })
 
-  const articles = dedup(
+  const allItems = dedup(
     interleaveN(
       activeAdapters.map((adapter, i) => queryResults[i]?.isError && adapter.id === 'weread' ? [] : [
         ...(Array.isArray(queryResults[i]?.data) ? (queryResults[i].data as DiscoveryItem[]) : []),
@@ -158,6 +172,12 @@ function App() {
       ])
     )
   )
+  // Filter against the feed-start snapshot: content seen before this feed
+  // session opened stays out, while items viewed within the session remain
+  // navigable back and forth. When every item has been seen, fall back to
+  // the full feed rather than leaving the reading screen empty.
+  const unseenItems = allItems.filter((item) => !seenAtFeedAssembly.has(item.id))
+  const articles = unseenItems.length > 0 ? unseenItems : allItems
 
   const hasQueryError = articles.length === 0 && queryResults.some((result) => result.isError)
   const sourceErrors = Object.fromEntries(activeAdapters.flatMap((adapter, i) => {
@@ -218,17 +238,20 @@ function App() {
     const requestFeedKey = activeSourceKey
     setIsLoadingMore(true)
     try {
+      // Top-up batches exclude everything seen up to now, including items
+      // viewed within this session, so appended pages never repeat.
+      const seenBeforeTopUp = getRecentSeenIds()
       const results = await Promise.allSettled(
         activeAdapters.map(async (adapter) => {
           assertSourceConfigured(adapter.id, settledConfigs[adapter.id]?.__cacheId)
           const generation = sourceGeneration(adapter.id)
           const signal = AbortSignal.any([controller.signal, sourceSignal(adapter.id)])
-          const items = await adapter.fetch({
+          const items = (await adapter.fetch({
             language: currentLanguage,
             sourceConfig: settledConfigs[adapter.id] ?? getSourceConfig(adapter.id),
             fetchMode: "more",
             signal,
-          })
+          })).filter((item) => !seenBeforeTopUp.has(item.id))
           signal.throwIfAborted()
           assertSourceCurrent(adapter.id, generation)
           return [adapter.id, items] as const
@@ -265,6 +288,17 @@ function App() {
       }
     }
   }
+
+  // Seen-filtering can leave the feed short on unseen items. Quietly top up
+  // so browsing never stalls on repeats; capped per feed, and user navigation
+  // near the end keeps loading through onNearEnd beyond the cap.
+  useEffect(() => {
+    if (!ready || isLoading || isLoadingMore || activeAdapters.length === 0) return
+    if (allItems.length === 0 || unseenItems.length > 5 || autoTopUpsRef.current >= 3) return
+    autoTopUpsRef.current += 1
+    void loadMore()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allItems.length, unseenItems.length, ready, isLoading, isLoadingMore, activeAdapters.length])
 
   return (
     <ZenMode

@@ -15,7 +15,7 @@ import { track } from '../analytics/client'
 let reportedContentInThisView = false
 import { Analytics, isExtension } from '../utils/environment'
 import { CHROME_WEB_STORE_URL } from '../utils/productLinks'
-import { ZEN_THEMES } from '../utils/zenThemes'
+import { ZEN_THEMES, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../utils/zenThemes'
 import { dissolveTheme } from '../utils/themeDissolve'
 import { useAutoTranslatedText } from '../utils/translation'
 import { AboutModal } from './AboutModal'
@@ -505,8 +505,12 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   })
   const resolvedThemeId = useMemo(() => {
     if (themeId !== 'random') return themeId
-    return ZEN_THEMES[Math.floor(Math.random() * ZEN_THEMES.length)].id
+    return pickRandomThemeId(readRandomThemeHistory())
   }, [themeId])
+  // Remember each Random pick so consecutive new tabs avoid the last few themes.
+  useEffect(() => {
+    if (themeId === 'random') recordRandomTheme(resolvedThemeId)
+  }, [themeId, resolvedThemeId])
   const [themeOpen, setThemeOpen] = useState(false)
   const selectTheme = useCallback((id: string) => {
     if (id !== themeId) void track('settings_changed', { setting: 'theme', theme_id: id })
