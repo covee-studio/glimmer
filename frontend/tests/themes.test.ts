@@ -112,7 +112,7 @@ it('keeps Mountains as its own theme, with geese in formation and a far range', 
   expect(RETIRED_THEME_MIGRATION).not.toHaveProperty('mountains')
   const html = renderToStaticMarkup(createElement(MountainsTheme))
   expect(html.match(/class="mountain-wing mountain-wing-left"/g)).toHaveLength(16)
-  expect(html).toContain('mountain-peaks')
+  expect(html).toContain('mountain-far')
   expect(html).toContain('mountain-flock-far')
 })
 

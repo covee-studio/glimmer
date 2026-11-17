@@ -21,7 +21,6 @@
 .mountain-mist { position: absolute; width: 125%; left: -12%; background: radial-gradient(ellipse, #f3f3e8b0, #edf0e45c 40%, transparent 72%); filter: blur(12px); }
 .mountain-mist-far { height: 12vh; bottom: 12vh; animation: mountain-mist 28s ease-in-out infinite alternate; }
 .mountain-mist-near { height: 8vh; bottom: 4vh; opacity: .55; animation: mountain-mist 22s -11s ease-in-out infinite alternate-reverse; }
-.mountain-peaks { filter: blur(1.8px); opacity: .88; }
 .mountain-flock { position: absolute; left: 0; width: 120px; height: 64px; color: #5a7368; }
 .mountain-flock svg { position: absolute; overflow: visible; }
 .mountain-flock-main { top: 11%; opacity: .74; animation: mountain-flight 84s -30s linear infinite; }

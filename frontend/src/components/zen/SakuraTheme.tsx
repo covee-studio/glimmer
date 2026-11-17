@@ -58,7 +58,7 @@ function makePetalTrajectory(near: boolean, random: () => number): FallTrajector
   const y = times.map((time) => {
     const verticalFlutter =
       Math.sin(phase + Math.PI * 2 * cycles * time) - initialWave
-    return `${-12 + 126 * time + bob * verticalFlutter}vh`
+    return `${-12 + 126 * time + bob * verticalFlutter}cqh`
   })
 
   const rotate = times.map(
@@ -210,7 +210,7 @@ export function SakuraTheme() {
               left: `${p.left}%`,
               animationDuration: `${p.dur}s`,
               animationDelay: `${p.delay}s`,
-              '--fall-still-y': `${12 + (i / all.length) * 82}vh`,
+              '--fall-still-y': `${12 + (i / all.length) * 82}cqh`,
               ...Object.fromEntries(p.trajectory.times.flatMap((_, step) => [
                 [`--fall-x${step}`, `${p.trajectory.x[step]}px`],
                 [`--fall-y${step}`, p.trajectory.y[step]],

@@ -28,6 +28,10 @@
 /* A soft, quiet center shared only by the three particle themes. */
 .reading-safe-particles {
   position: absolute; inset: 0;
+  /* Petal trajectories are written in cqh so they follow the scene's own
+     height, not the browser window's: in a small embedded stage a vh fall
+     lands almost entirely outside the frame and the theme looks frozen. */
+  container-type: size;
   mask-image: radial-gradient(ellipse 46% 36% at 50% 47%, transparent 0%, transparent 70%, #000 100%);
   -webkit-mask-image: radial-gradient(ellipse 46% 36% at 50% 47%, transparent 0%, transparent 70%, #000 100%);
 }
