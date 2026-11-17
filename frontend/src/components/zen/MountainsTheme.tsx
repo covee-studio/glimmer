@@ -1,9 +1,9 @@
 import { useId, type CSSProperties } from 'react'
 
-// Far peaks: a pale, angular range that gives the scene its distance. Haze
-// softens the points, so they read as remote rock and not as a drawn zigzag.
+// Far ridgeline: soft, rounded swells with no sharp points. Pale and low in
+// contrast, it reads as distant hills in haze and stays clear of the text.
 const PEAKS =
-  'M-40 300L40 262L98 236L142 190L176 212L214 168L262 226L318 252L388 232L436 196L470 150L508 192L544 214L610 262L690 244L742 204L790 124L824 176L860 160L902 214L960 250L1030 232L1090 196L1128 220L1240 276V460H-40Z'
+  'M-40 292C28 292 28 232 95 232C172 232 172 262 250 262C290 262 290 252 330 252C400 252 400 192 470 192C535 192 535 240 600 240C635 240 635 246 670 246C725 246 725 206 780 206C840 206 840 252 900 252C970 252 970 184 1040 184C1095 184 1095 236 1150 236C1195 236 1195 246 1240 246V460H-40Z'
 
 // Broad wooded shoulders, not rocky sawtooth peaks. Shared with the thumbnail.
 const RIDGES = [
@@ -20,7 +20,7 @@ function MountainLandscape() {
   return <svg viewBox="0 0 1200 460" preserveAspectRatio="none" className="mountain-landscape">
     <defs>
       <linearGradient id={`${id}-peaks`} x2="0" y2="1">
-        <stop stopColor="#bccbcb" /><stop offset=".62" stopColor="#dde4dd" /><stop offset="1" stopColor="#e9ebdf" />
+        <stop stopColor="#a9bcbc" /><stop offset=".62" stopColor="#d3ddd6" /><stop offset="1" stopColor="#e9ebdf" />
       </linearGradient>
       {RIDGE_COLORS.map(([top, bottom], i) => (
         <linearGradient key={top} id={`${id}-ridge-${i}`} x2="0" y2="1">
