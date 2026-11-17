@@ -142,7 +142,9 @@ function App() {
           } catch (error) {
             signal.throwIfAborted()
             assertSourceCurrent(adapter.id, generation)
-            if (adapter.fallbackToCachedDataOnError && cached?.items?.length) {
+            // An exhausted cache skipped at mount stays available as an error
+            // fallback, so a failed refresh never blanks a populated feed.
+            if ((adapter.fallbackToCachedDataOnError || cachedExhausted) && cached?.items?.length) {
               return cached.items
             }
             throw error
