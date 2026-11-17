@@ -1,7 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ZenMode } from "./components/ZenMode"
-import { useLikedArticles } from "./contexts/LikedArticlesContext"
 import { useSources } from "./contexts/SourcesContext"
 import { useToast } from "./contexts/ToastContext"
 import { useLocalization } from "./hooks/useLocalization"
@@ -66,7 +65,6 @@ function App() {
 
   const { currentLanguage, ready } = useLocalization()
   const { enabledSources, getSourceConfig } = useSources()
-  const { recentArticles } = useLikedArticles()
   const { showToast } = useToast()
 
   useEffect(() => {
@@ -98,8 +96,6 @@ function App() {
   // first paint and detects an exhausted cache that must be refreshed.
   // eslint-disable-next-line react-hooks/exhaustive-deps -- activeSourceKey re-snapshots per feed identity
   const seenAtFeedAssembly = useMemo(() => getRecentSeenIds(), [activeSourceKey])
-  // Live seen set: anything already shown drops out of the assembled feed.
-  const seenIds = useMemo(() => new Set(recentArticles.map((entry) => entry.item.id)), [recentArticles])
 
   useEffect(() => {
     loadMoreController.current?.abort()
@@ -166,14 +162,20 @@ function App() {
     }),
   })
 
-  const articles = dedup(
+  const allItems = dedup(
     interleaveN(
       activeAdapters.map((adapter, i) => queryResults[i]?.isError && adapter.id === 'weread' ? [] : [
         ...(Array.isArray(queryResults[i]?.data) ? (queryResults[i].data as DiscoveryItem[]) : []),
         ...(extraItemsFeedKey.current === activeSourceKey ? extraItemsBySource[adapter.id] ?? [] : []),
       ])
     )
-  ).filter((item) => !seenIds.has(item.id))
+  )
+  // Filter against the feed-start snapshot: content seen before this feed
+  // session opened stays out, while items viewed within the session remain
+  // navigable back and forth. When every item has been seen, fall back to
+  // the full feed rather than leaving the reading screen empty.
+  const unseenItems = allItems.filter((item) => !seenAtFeedAssembly.has(item.id))
+  const articles = unseenItems.length > 0 ? unseenItems : allItems
 
   const hasQueryError = articles.length === 0 && queryResults.some((result) => result.isError)
   const sourceErrors = Object.fromEntries(activeAdapters.flatMap((adapter, i) => {
@@ -234,17 +236,20 @@ function App() {
     const requestFeedKey = activeSourceKey
     setIsLoadingMore(true)
     try {
+      // Top-up batches exclude everything seen up to now, including items
+      // viewed within this session, so appended pages never repeat.
+      const seenBeforeTopUp = getRecentSeenIds()
       const results = await Promise.allSettled(
         activeAdapters.map(async (adapter) => {
           assertSourceConfigured(adapter.id, settledConfigs[adapter.id]?.__cacheId)
           const generation = sourceGeneration(adapter.id)
           const signal = AbortSignal.any([controller.signal, sourceSignal(adapter.id)])
-          const items = await adapter.fetch({
+          const items = (await adapter.fetch({
             language: currentLanguage,
             sourceConfig: settledConfigs[adapter.id] ?? getSourceConfig(adapter.id),
             fetchMode: "more",
             signal,
-          })
+          })).filter((item) => !seenBeforeTopUp.has(item.id))
           signal.throwIfAborted()
           assertSourceCurrent(adapter.id, generation)
           return [adapter.id, items] as const
@@ -282,16 +287,16 @@ function App() {
     }
   }
 
-  // Seen-filtering can leave the feed short. Quietly top up so browsing
-  // never stalls on an empty list; capped per feed, and user navigation near
-  // the end keeps loading through onNearEnd beyond the cap.
+  // Seen-filtering can leave the feed short on unseen items. Quietly top up
+  // so browsing never stalls on repeats; capped per feed, and user navigation
+  // near the end keeps loading through onNearEnd beyond the cap.
   useEffect(() => {
     if (!ready || isLoading || isLoadingMore || activeAdapters.length === 0) return
-    if (articles.length > 5 || autoTopUpsRef.current >= 3) return
+    if (allItems.length === 0 || unseenItems.length > 5 || autoTopUpsRef.current >= 3) return
     autoTopUpsRef.current += 1
     void loadMore()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [articles.length, ready, isLoading, isLoadingMore, activeAdapters.length])
+  }, [allItems.length, unseenItems.length, ready, isLoading, isLoadingMore, activeAdapters.length])
 
   return (
     <ZenMode
