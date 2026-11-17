@@ -120,11 +120,24 @@
   .reading-meta > span > span:first-child { flex-shrink:0; }
 }
 
-/* Window: plaster, warm and slightly uneven, lit from the upper right. */
-.window-scene { background: radial-gradient(ellipse 80% 70% at 82% 6%, #f7efe0 0%, transparent 70%), linear-gradient(172deg, #ece4d6 0%, #e4dac9 100%); }
-.window-light { position: absolute; inset: 0; width: 100%; height: 100%; }
-.window-leaves { transform-origin: 1440px 0; animation: window-sway 14s ease-in-out infinite alternate; }
-@keyframes window-sway { from { transform: rotate(-.9deg) translateX(-8px); } to { transform: rotate(1.1deg) translateX(10px); } }
+/* Dapple: a single canopy, one breeze, a neutral wall. */
+.window-scene { background: linear-gradient(145deg, #e8e7df 0%, #e2e1d8 100%); }
+.window-daylight { position:absolute; inset:0; background:radial-gradient(ellipse 80% 105% at 94% 10%, #fff9e6c4, transparent 78%); animation:window-daylight 12s -.5s ease-in-out infinite; }
+.window-light { position:absolute; inset:0; width:100%; height:100%; }
+.window-canopy { transform-origin:1440px 0; animation:window-breeze 12s -.5s ease-in-out infinite; }
+.window-canopy-distant { animation-name:window-breeze-far; }
+.window-twig { transform-origin:0 0; animation:window-twig 12s -.5s ease-in-out infinite; }
+.window-twig-1 { animation-delay:0s; }
+.window-twig-2 { animation-delay:-.9s; }
+.window-reading-light { position:absolute; inset:0; background:radial-gradient(ellipse 33% 36% at 46% 50%, #e7e6de99, transparent 100%); }
+@keyframes window-breeze { 0%,100% { transform:rotate(-1.2deg) translate(-5px,0); } 48% { transform:rotate(1.8deg) translate(9px,5px); } 76% { transform:rotate(.5deg) translate(3px,1px); } }
+@keyframes window-breeze-far { 0%,100% { transform:translate(90px,-140px) rotate(-.7deg); } 48% { transform:translate(105px,-134px) rotate(1.1deg); } 76% { transform:translate(96px,-138px) rotate(.3deg); } }
+@keyframes window-twig { 0%,100% { transform:rotate(-1deg); } 48% { transform:rotate(1.7deg); } 76% { transform:rotate(.2deg); } }
+@keyframes window-daylight { 0%,100% { opacity:.7; } 48% { opacity:1; } 76% { opacity:.86; } }
+@media(max-width:640px) {
+  .window-light { opacity:.9; mask-image:linear-gradient(#000 0%, #0006 24%, #0002 42%, #0005 65%, #000 82%); }
+  .window-reading-light { background:radial-gradient(ellipse 100% 35% at 40% 46%, #e7e6de66, transparent); }
+}
 
 /* Moon: ink-blue night with one still reflection. */
 .moon-scene { background: linear-gradient(180deg, #0b111d 0%, #131b2c 52%, #0e1523 66%); }

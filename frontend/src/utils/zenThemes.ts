@@ -95,7 +95,7 @@ export const ZEN_THEMES: ZenTheme[] = [
   {
     id: 'window',
     name: 'Dapple',
-    surface: 'linear-gradient(172deg, #ece4d6 0%, #e4dac9 100%)',
+    surface: 'linear-gradient(145deg, #e8e7df 0%, #e2e1d8 100%)',
     Preview: WindowPreview,
     Backdrop: WindowTheme,
   },
