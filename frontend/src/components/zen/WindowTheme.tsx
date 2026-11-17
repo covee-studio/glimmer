@@ -1,123 +1,118 @@
 import { useId } from 'react'
 import { sceneRandom } from './sceneGeometry'
 
-// Window light on a plaster wall: a pane grid of sun, softer the further it
-// travels, with foliage between the sun and the glass breaking part of the
-// light into dapples, the way late sun falls through leaves onto a grey wall.
-// Nothing is drawn but light and shadow, so the wall stays a quiet reading
-// surface and the page feels like a room, not an illustration.
-const PANE = { w: 214, h: 236, gap: 26 }
-const COLS = 2
-const ROWS = 3
-
-function PaneGrid({ fill }: { fill: string }) {
-  const rects = []
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-    rects.push(<rect key={`${r}-${c}`} x={c * (PANE.w + PANE.gap)} y={r * (PANE.h + PANE.gap)} width={PANE.w} height={PANE.h} rx="2" fill={fill} />)
-  }
-  return <>{rects}</>
-}
-
-// A leaf-bearing twig, laid out once from a fixed seed so every mount matches.
-const random = sceneRandom(2211)
-const LEAVES = Array.from({ length: 26 }, (_, i) => {
-  const t = i / 25
-  return {
-    x: -40 + t * 520 + (random() - .5) * 46,
-    y: 210 - Math.sin(t * 2.4) * 120 + (random() - .5) * 90,
-    rotate: -70 + random() * 140,
-    scale: .75 + random() * .7,
-  }
-})
+// Dappled light on a warm plaster wall. No window, no panes: only soft blobs
+// of sun where it passes between leaves, and blurred leaf shadows around them,
+// the way late sun lands on a wall from a tree you cannot see. The shadows
+// drift very slowly, as if a breeze moves the branch. Nothing else moves, and
+// everything thins out toward the reading column.
 const LEAF = 'M0 0C16 -22 46 -24 64 0C46 22 16 22 0 0Z'
 
-// Dappled sun: soft blobs where light passes between leaves, strung along the
-// same diagonal as the pane light, fading as it travels down the wall.
-const DAPPLES: Array<[number, number, number, number, number]> = [
-  [1185, 105, 150, 108, .6],
-  [950, 220, 118, 88, .56],
-  [700, 150, 96, 74, .5],
-  [1245, 345, 122, 92, .5],
-  [830, 400, 98, 76, .52],
-  [470, 330, 84, 64, .4],
-  [1060, 545, 104, 80, .42],
-  [610, 590, 82, 62, .34],
-]
-const DAPPLE_CORES: Array<[number, number, number, number, number]> = [
-  [1150, 125, 58, 43, .6],
-  [945, 230, 48, 36, .54],
-  [815, 405, 40, 30, .48],
+type Branch = { from: [number, number]; to: [number, number]; bend: number; leaves: number; size: [number, number]; seed: number }
+
+// Branches enter from the upper right and reach into the wall. Each is laid
+// out once from a fixed seed so every mount matches.
+const BRANCHES: Branch[] = [
+  { from: [1560, -40], to: [980, 250], bend: -90, leaves: 20, size: [1.3, 2.1], seed: 2211 },
+  { from: [1560, 330], to: [1110, 470], bend: 60, leaves: 14, size: [1.1, 1.8], seed: 5303 },
+  { from: [1230, -60], to: [820, 90], bend: 40, leaves: 11, size: [1, 1.6], seed: 8141 },
+  { from: [1560, 720], to: [690, 470], bend: -70, leaves: 8, size: [1, 1.5], seed: 3917 },
 ]
 
-// Foliage shadows: a few clusters of leaves seen only as shade on the wall,
-// densest near the light source, barely there by the reading column.
-const FOLIAGE_CLUSTERS = [
-  { cx: 1300, cy: 30, spread: 120, count: 9, opacity: .1 },
-  { cx: 1090, cy: 290, spread: 100, count: 7, opacity: .085 },
-  { cx: 700, cy: 480, spread: 90, count: 6, opacity: .075 },
-]
-const foliageRandom = sceneRandom(9377)
-const FOLIAGE = FOLIAGE_CLUSTERS.flatMap((cluster) =>
-  Array.from({ length: cluster.count }, () => ({
-    x: cluster.cx + (foliageRandom() - .5) * 2 * cluster.spread,
-    y: cluster.cy + (foliageRandom() - .5) * 2 * cluster.spread * .8,
-    rotate: foliageRandom() * 360,
-    scale: .8 + foliageRandom() * 1.1,
-    opacity: cluster.opacity,
-  })))
-
-function Shadows() {
-  return <g>
-    <g className="window-twig" style={{ transformOrigin: '0px 210px' }}>
-      <path d="M-60 240C90 190 190 120 330 150C400 165 440 110 520 70" stroke="#6f7662" strokeWidth="5" fill="none" strokeLinecap="round" />
-      {LEAVES.map((leaf, i) => <path key={i} d={LEAF} transform={`translate(${leaf.x} ${leaf.y}) rotate(${leaf.rotate}) scale(${leaf.scale})`} fill="#6f7662" />)}
-    </g>
-  </g>
+function layoutBranch(b: Branch) {
+  const random = sceneRandom(b.seed)
+  const [x0, y0] = b.from
+  const [x1, y1] = b.to
+  const cx = (x0 + x1) / 2 + b.bend * .4
+  const cy = (y0 + y1) / 2 + b.bend
+  const point = (t: number) => ({
+    x: (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * x1,
+    y: (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y1,
+  })
+  const leaves = Array.from({ length: b.leaves }, (_, i) => {
+    const t = .12 + (i / (b.leaves - 1)) * .88
+    const p = point(t)
+    return {
+      x: p.x + (random() - .5) * 150,
+      y: p.y + (random() - .5) * 170,
+      rotate: random() * 360,
+      scale: b.size[0] + random() * (b.size[1] - b.size[0]),
+    }
+  })
+  return { path: `M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}`, leaves }
 }
+const LAID = BRANCHES.map(layoutBranch)
+
+// Sun blobs: x, y, rx, ry, opacity. Wide and soft, overlapping into one
+// another so the light reads as a pool broken by shade, not as spots.
+const GLOW: Array<[number, number, number, number, number]> = [
+  [1240, 90, 330, 230, .62],
+  [880, 250, 250, 170, .5],
+  [1180, 470, 260, 170, .46],
+  [640, 150, 190, 130, .36],
+  [760, 520, 200, 130, .3],
+]
+const DAPPLE: Array<[number, number, number, number, number]> = [
+  [1190, 120, 118, 82, .85],
+  [960, 235, 96, 68, .78],
+  [1280, 330, 104, 72, .72],
+  [790, 170, 78, 56, .62],
+  [1075, 430, 92, 64, .66],
+  [640, 330, 66, 48, .46],
+  [900, 500, 70, 50, .44],
+  [1330, 560, 88, 60, .5],
+]
+const CORE: Array<[number, number, number, number, number]> = [
+  [1170, 125, 54, 38, .9],
+  [950, 240, 44, 32, .8],
+  [1270, 335, 46, 32, .76],
+  [1070, 435, 40, 28, .7],
+]
 
 function WindowScene() {
   const id = useId().replace(/:/g, '')
-  const lightTransform = 'translate(868 -70) skewX(-13) rotate(5)'
-  return <>
-    <svg className="window-light" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <filter id={`${id}-soft`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="46" /></filter>
-        <filter id={`${id}-edge`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" /></filter>
-        <filter id={`${id}-twig`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7" /></filter>
-        <filter id={`${id}-dapple`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="24" /></filter>
-        <filter id={`${id}-dapple-core`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="12" /></filter>
-        <filter id={`${id}-foliage`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="15" /></filter>
-        <linearGradient id={`${id}-fade`} x1="1" y1="0" x2="0" y2="1">
-          <stop stopColor="#fff" /><stop offset=".62" stopColor="#fff" stopOpacity=".75" /><stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <mask id={`${id}-fade-mask`}><rect width="1440" height="900" fill={`url(#${id}-fade)`} /></mask>
-        <mask id={`${id}-twig-mask`}>
-          <g transform={lightTransform}><PaneGrid fill="#fff" /></g>
-        </mask>
-      </defs>
-      <g mask={`url(#${id}-fade-mask)`}>
-        <g className="window-dapple" filter={`url(#${id}-dapple)`}>
-          {DAPPLES.map(([cx, cy, rx, ry, opacity], i) => <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill="#fff6e0" opacity={opacity} transform={`rotate(${-14 - (i % 4) * 7} ${cx} ${cy})`} />)}
-        </g>
-        <g filter={`url(#${id}-dapple-core)`}>
-          {DAPPLE_CORES.map(([cx, cy, rx, ry, opacity], i) => <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill="#fffaf0" opacity={opacity} transform={`rotate(-24 ${cx} ${cy})`} />)}
-        </g>
-        <g className="window-foliage" filter={`url(#${id}-foliage)`}>
-          {FOLIAGE.map((leaf, i) => <path key={i} d={LEAF} transform={`translate(${leaf.x} ${leaf.y}) rotate(${leaf.rotate}) scale(${leaf.scale})`} fill="#79806e" opacity={leaf.opacity} />)}
-        </g>
-        <g className="window-sun">
-          <g transform={lightTransform} filter={`url(#${id}-soft)`} opacity=".62"><PaneGrid fill="#fff3d6" /></g>
-          <g transform={lightTransform} filter={`url(#${id}-edge)`} opacity=".72"><PaneGrid fill="#fff8e8" /></g>
-        </g>
-        <g mask={`url(#${id}-twig-mask)`}><g transform="translate(940 -30)" filter={`url(#${id}-twig)`} opacity=".2"><Shadows /></g></g>
+  return <svg className="window-light" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70" /></filter>
+      <filter id={`${id}-dapple`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="34" /></filter>
+      <filter id={`${id}-core`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20" /></filter>
+      <filter id={`${id}-near`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="17" /></filter>
+      <filter id={`${id}-far`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8" /></filter>
+      <radialGradient id={`${id}-fade`} cx="1" cy=".05" r="1.2">
+        <stop stopColor="#fff" /><stop offset=".55" stopColor="#fff" stopOpacity=".8" /><stop offset="1" stopColor="#fff" stopOpacity="0" />
+      </radialGradient>
+      <mask id={`${id}-mask`}><rect width="1440" height="900" fill={`url(#${id}-fade)`} /></mask>
+    </defs>
+    <g mask={`url(#${id}-mask)`}>
+      <g filter={`url(#${id}-glow)`}>
+        {GLOW.map(([cx, cy, rx, ry, o], i) => <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill="#f2c987" opacity={o * .85} />)}
       </g>
-    </svg>
-  </>
+      <g filter={`url(#${id}-dapple)`}>
+        {DAPPLE.map(([cx, cy, rx, ry, o], i) => <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill="#fff1cf" opacity={o} transform={`rotate(${-20 - (i % 3) * 9} ${cx} ${cy})`} />)}
+      </g>
+      <g filter={`url(#${id}-core)`}>
+        {CORE.map(([cx, cy, rx, ry, o], i) => <ellipse key={i} cx={cx} cy={cy} rx={rx} ry={ry} fill="#fffaf0" opacity={o} transform={`rotate(-26 ${cx} ${cy})`} />)}
+      </g>
+      <g className="window-leaves">
+        <g filter={`url(#${id}-near)`} opacity=".25">
+          {LAID.map((b, bi) => <g key={bi}>
+            <path d={b.path} stroke="#5f6755" strokeWidth="9" fill="none" strokeLinecap="round" />
+            {b.leaves.map((l, i) => <path key={i} d={LEAF} transform={`translate(${l.x} ${l.y}) rotate(${l.rotate}) scale(${l.scale * 1.15})`} fill="#5f6755" />)}
+          </g>)}
+        </g>
+        <g filter={`url(#${id}-far)`} opacity=".11" transform="translate(-70 60) scale(.96)">
+          {LAID.map((b, bi) => <g key={bi}>
+            {b.leaves.map((l, i) => <path key={i} d={LEAF} transform={`translate(${l.x + 40} ${l.y - 30}) rotate(${l.rotate + 70}) scale(${l.scale * .7})`} fill="#5f6755" />)}
+          </g>)}
+        </g>
+      </g>
+    </g>
+  </svg>
 }
 
 export function WindowTheme() {
-  return <div aria-hidden className="theme-scene window-scene"><WindowScene /><div className="window-wall-light" /></div>
+  return <div aria-hidden className="theme-scene window-scene"><WindowScene /></div>
 }
 export function WindowPreview() {
-  return <div aria-hidden className="theme-scene theme-preview window-scene"><WindowScene /><div className="window-wall-light" /></div>
+  return <div aria-hidden className="theme-scene theme-preview window-scene"><WindowScene /></div>
 }
