@@ -9,7 +9,7 @@ import type { SourceAdapter } from "./sources/adapter"
 import type { DiscoveryItem } from "./types/DiscoveryItem"
 import type { SourceId } from "./types/DiscoveryItem"
 import { startExtensionSession } from "./analytics/client"
-import { feedCache, CACHE_TTL_MS } from "./utils/feedCache"
+import { feedCache, CACHE_TTL_MS, shouldUseCachedDataOnError } from "./utils/feedCache"
 import { getRecentSeenIds } from "./utils/localCollection"
 
 type ItemsBySource = Partial<Record<SourceId, DiscoveryItem[]>>
@@ -142,9 +142,9 @@ function App() {
           } catch (error) {
             signal.throwIfAborted()
             assertSourceCurrent(adapter.id, generation)
-            // An exhausted cache skipped at mount stays available as an error
-            // fallback, so a failed refresh never blanks a populated feed.
-            if ((adapter.fallbackToCachedDataOnError || cachedExhausted) && cached?.items?.length) {
+            // An exhausted cache may be used after a failed refresh only when
+            // the source explicitly permits cached-data fallback.
+            if (shouldUseCachedDataOnError(adapter.fallbackToCachedDataOnError, cached?.items) && cached?.items?.length) {
               return cached.items
             }
             throw error
