@@ -53,6 +53,10 @@ beforeEach(() => {
           callback()
           for (const listener of [...consentListeners]) listener(changes, 'local')
         },
+        remove: (keys: string[], callback: () => void) => {
+          keys.forEach(key => delete chromeLocal[key])
+          callback()
+        },
       },
       onChanged: {
         addListener: (listener: (changes: Record<string, { newValue?: unknown }>, area: string) => void) => {
@@ -166,6 +170,8 @@ it('drops the queue on opt-out and does not send a later event', async () => {
   expect(fetchMock).not.toHaveBeenCalled()
   expect(chromeLocal[analyticsStorageKeys.queue]).toEqual([])
   expect(chromeLocal[analyticsStorageKeys.consent]).toBe(false)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
+  expect(chromeLocal[analyticsStorageKeys.activeDay]).toBeUndefined()
   expect(alarmsCleared.length).toBeGreaterThan(0)
 })
 
@@ -308,4 +314,29 @@ it('enables statistics by default and preserves explicit opt-out', async () => {
   expect(await readConsent()).toBe(false)
   await track('entry_opened', { entry: 'newtab' })
   expect(fetchMock).not.toHaveBeenCalled()
+})
+
+it('keeps default-on analytics but rotates installation ID after opt-out', async () => {
+  const { analyticsStorageKeys, readConsent, setAnalyticsConsent, track, noteActiveDay } = await load()
+  expect(await readConsent()).toBe(true)
+
+  await track('entry_opened', { entry: 'newtab' })
+  await noteActiveDay()
+  const initialId = chromeLocal[analyticsStorageKeys.distinctId]
+  expect(initialId).toMatch(/^[0-9a-f-]{36}$/i)
+  expect(chromeLocal[analyticsStorageKeys.activeDay]).toBeDefined()
+
+  await setAnalyticsConsent(false)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toBeUndefined()
+  expect(chromeLocal[analyticsStorageKeys.activeDay]).toBeUndefined()
+  expect(await readConsent()).toBe(false)
+
+  fetchMock.mockClear()
+  await track('entry_opened', { entry: 'newtab' })
+  expect(fetchMock).not.toHaveBeenCalled()
+
+  await setAnalyticsConsent(true)
+  await track('entry_opened', { entry: 'newtab' })
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).toMatch(/^[0-9a-f-]{36}$/i)
+  expect(chromeLocal[analyticsStorageKeys.distinctId]).not.toEqual(initialId)
 })

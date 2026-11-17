@@ -44,11 +44,13 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
     syncEnabled,
     syncStatus,
     setSyncEnabled,
+    clearSyncedFavorites,
   } = useLikedArticles()
   const [activeTab, setActiveTab] = useState<"saved" | "recent">("saved")
   const [tabWasChosenByUser, setTabWasChosenByUser] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [syncOpen, setSyncOpen] = useState(false)
+  const [cloudDeleteState, setCloudDeleteState] = useState<'idle' | 'deleting' | 'deleted' | 'error'>('idle')
   const syncRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const listPositions = useRef({ saved: 0, recent: 0 })
@@ -218,6 +220,32 @@ export function LikesModal({ isOpen, onClose }: LikesModalProps) {
                       {syncStatus === "syncing" ? "Syncing with Chrome…" : syncStatus === "synced" ? "Synced with Chrome" : syncStatus === "error" ? "Sync unavailable. Check Chrome Sync." : "Saved on this device"}
                     </p>
                     <p className="mt-4 text-xs leading-relaxed text-[var(--ui-muted)]">Only favorite previews sync across Chrome devices. API keys and WeRead favorites stay on this device.</p>
+                    {!syncEnabled && (
+                      <div className="mt-3 border-t border-[var(--ui-line-soft)] pt-3">
+                        <button
+                          type="button"
+                          disabled={cloudDeleteState === 'deleting'}
+                          className="ui-text-button text-xs text-[var(--ui-muted)] disabled:opacity-50"
+                          onClick={() => {
+                            if (!window.confirm('Delete synced favorite previews from Chrome Sync? Your local favorites will remain. Other devices with sync enabled may upload them again.')) return
+                            setCloudDeleteState('deleting')
+                            void clearSyncedFavorites().then(() => {
+                              setCloudDeleteState('deleted')
+                            }).catch(() => {
+                              setCloudDeleteState('error')
+                            })
+                          }}
+                        >
+                          {cloudDeleteState === 'deleting' ? 'Removing cloud copy…' : 'Delete synced cloud copy'}
+                        </button>
+                        {cloudDeleteState === 'deleted' && (
+                          <p role="status" className="mt-2 text-xs text-[var(--ui-muted)]">Cloud copy deleted. Local favorites were not changed.</p>
+                        )}
+                        {cloudDeleteState === 'error' && (
+                          <p role="alert" className="mt-2 text-xs text-amber-800">Could not delete the cloud copy. Try again.</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

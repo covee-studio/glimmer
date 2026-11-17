@@ -50,7 +50,7 @@ Handled by `src/utils/environment.ts`:
 
 ## 🔒 CSP (Extension)
 
-`configs/extension/manifest.json` defines the `extension_pages` CSP. `connect-src` already allows `https:`, which covers the PostHog ingest host, `img-src` allows `https` and `data`, and `style-src` stays minimal. No PostHog host permission is declared.
+`configs/extension/manifest.json` defines the `extension_pages` CSP. `connect-src` already allows `https:`, which covers the PostHog ingest host, `img-src` allows `https` and `data`, and `style-src` stays minimal. No PostHog host permission is declared. User-configured source access is HTTPS-only; the extension no longer requests the unused `http://*/*` optional host pattern.
 
 ## 🖼️ Icons
 

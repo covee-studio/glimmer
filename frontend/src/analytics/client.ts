@@ -31,6 +31,7 @@ interface ChromeLike {
     local: {
       get: (keys: string[] | null, callback: (items: Record<string, unknown>) => void) => void
       set: (items: Record<string, unknown>, callback: () => void) => void
+      remove: (keys: string[], callback: () => void) => void
     }
     onChanged?: {
       addListener: (listener: (changes: Record<string, StorageChange>, areaName: string) => void) => void
@@ -96,6 +97,23 @@ async function storageSet(items: Record<string, unknown>): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     try {
       area.set(items, () => {
+        const error = chromeApi()?.runtime?.lastError
+        if (error) reject(new Error(error.message ?? 'Analytics storage failed'))
+        else resolve()
+      })
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+/** Only local analytics metadata is removed; this does not erase user content. */
+async function storageRemove(keys: string[]): Promise<void> {
+  const area = chromeApi()?.storage?.local
+  if (!area) throw new Error('Analytics storage unavailable')
+  await new Promise<void>((resolve, reject) => {
+    try {
+      area.remove(keys, () => {
         const error = chromeApi()?.runtime?.lastError
         if (error) reject(new Error(error.message ?? 'Analytics storage failed'))
         else resolve()
@@ -235,6 +253,9 @@ export async function setAnalyticsConsent(enabled: boolean): Promise<void> {
         [analyticsStorageKeys.consent]: false,
         [analyticsStorageKeys.queue]: [],
       })
+      // Revoked consent must not leave a persistent analytics identifier.
+      // Clear the daily marker as well, so re-enabling starts fresh.
+      await storageRemove([analyticsStorageKeys.distinctId, analyticsStorageKeys.activeDay])
       await clearAlarm()
     })
     mirrorConsent(false)
