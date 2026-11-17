@@ -1,18 +1,7 @@
 /* Preserve the reference trajectories while sharing pause/reduced-motion behavior. */
-.maple-leaf { animation: glimmer-maple-fall 16s linear infinite; }
 .sakura-petal { animation: glimmer-sakura-fall 12s linear infinite; }
 .sakura-branch { animation: glimmer-sakura-branch 9s ease-in-out infinite; }
 @keyframes glimmer-sakura-branch { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(.6deg); } }
-/* Constant descent and an independently eased pendulum avoid piecewise velocity changes. */
-.maple-leaf-sway { animation: glimmer-maple-sway var(--sway-duration) var(--sway-delay) cubic-bezier(.45,0,.55,1) infinite alternate; will-change: transform; }
-@keyframes glimmer-maple-fall {
-  from { transform: translate3d(0, -12vh, 0); }
-  to { transform: translate3d(0, 126vh, 0); }
-}
-@keyframes glimmer-maple-sway {
-  from { transform: translate3d(calc(-1 * var(--sway-distance)), 0, 0) rotate(calc(-1 * var(--sway-tilt))); }
-  to { transform: translate3d(var(--sway-distance), 0, 0) rotate(var(--sway-tilt)); }
-}
 @keyframes glimmer-sakura-fall {
   0.000000% { transform: translate(var(--fall-x0), var(--fall-y0)) rotate(var(--fall-r0)); }
   4.166667% { transform: translate(var(--fall-x1), var(--fall-y1)) rotate(var(--fall-r1)); }
@@ -41,9 +30,6 @@
   100.000000% { transform: translate(var(--fall-x24), var(--fall-y24)) rotate(var(--fall-r24)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .maple-scene *, .sakura-scene * { animation: none !important; }
-  .maple-leaf { transform: translateY(var(--fall-still-y)); }
-  .sakura-petal { transform: translate(var(--fall-x0), var(--fall-still-y)) rotate(var(--fall-r0)); }
+  .sakura-scene * { animation: none !important; }
+    .sakura-petal { transform: translate(var(--fall-x0), var(--fall-still-y)) rotate(var(--fall-r0)); }
 }
-.maple-branch { animation: glimmer-maple-branch 10s ease-in-out infinite; }
-@keyframes glimmer-maple-branch { 0%, 100% { transform: rotate(.5deg); } 50% { transform: rotate(-.5deg); } }

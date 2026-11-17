@@ -16,34 +16,29 @@
 .waves-canvas { position: absolute; left: 0; right: 0; bottom: 0; display: block; width: 100%; height: clamp(190px, 29vh, 260px); opacity: .9; }
 .waves-preview-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-/* Ridges inherited from the retired Mountains theme, re-graded into the fog:
-   cool blue-grey, softened, so the fog banks keep occluding them. */
-.mist-ridges { position: absolute; bottom: 0; width: 100%; height: clamp(190px, 36vh, 400px); opacity: .5; filter: blur(1.6px); }
-.mist-flock { position: absolute; top: 14%; left: 0; width: 120px; height: 64px; color: #6d8899; animation: mist-flight 46s linear infinite; }
-.mist-flock svg { position:absolute; overflow:visible; }
+.mountains-scene { background: radial-gradient(ellipse at 56% 20%, #fbf8ee 0%, transparent 68%), linear-gradient(#f1ede1, #e2e7db); }
+.mountain-landscape { position: absolute; bottom: 0; width: 100%; height: clamp(270px, 49vh, 560px); }
+.mountain-mist { position: absolute; width: 125%; left: -12%; background: radial-gradient(ellipse, #f3f3e8b0, #edf0e45c 40%, transparent 72%); filter: blur(12px); }
+.mountain-mist-far { height: 12vh; bottom: 12vh; animation: mountain-mist 28s ease-in-out infinite alternate; }
+.mountain-mist-near { height: 8vh; bottom: 4vh; opacity: .55; animation: mountain-mist 22s -11s ease-in-out infinite alternate-reverse; }
+.mountain-peaks { filter: blur(1.1px); opacity: .78; }
+.mountain-flock { position: absolute; left: 0; width: 120px; height: 64px; color: #5a7368; }
+.mountain-flock svg { position: absolute; overflow: visible; }
+.mountain-flock-main { top: 11%; opacity: .74; animation: mountain-flight 84s -30s linear infinite; }
+.mountain-flock-far { top: 7%; color: #7d9288; opacity: .42; animation: mountain-flight-far 120s -88s linear infinite; }
 .mountain-wing { transform-origin:16px 11px; animation:mountain-wing var(--wing-duration) var(--wing-delay) ease-in-out infinite; }
 .mountain-wing-right { animation-name:mountain-wing-right; }
-@keyframes mist-flight { 0% { transform: translate(-100px, 15px); opacity: 0; } 5% { opacity: .6; } 92% { opacity: .6; } 100% { transform: translate(calc(100vw + 100px), -22px); opacity: 0; } }
+@keyframes mountain-mist { from { transform: translateX(-7%) scaleY(.8); opacity: .45; } to { transform: translateX(7%) scaleY(1.2); opacity: .8; } }
+@keyframes mountain-flight { 0% { transform: translate(-190px, 26px); opacity: 0; } 6% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(calc(100vw + 40px), -46px); opacity: 0; } }
+@keyframes mountain-flight-far { 0% { transform: translate(-190px, 14px) scale(var(--flock-scale)); opacity: 0; } 6% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translate(calc(100vw + 40px), -22px) scale(var(--flock-scale)); opacity: 0; } }
 @keyframes mountain-wing { 0%, 36%, 100% { transform:rotate(0deg) scaleY(.78); } 9%, 27% { transform:rotate(-9deg) scaleY(-.45); } 18% { transform:rotate(3deg) scaleY(1); } }
 @keyframes mountain-wing-right { 0%, 36%, 100% { transform:rotate(0deg) scaleY(.78); } 9%, 27% { transform:rotate(7deg) scaleY(-.4); } 18% { transform:rotate(-2deg) scaleY(1); } }
-.theme-preview .mist-ridges { height: 100%; }
-.theme-preview .mist-flock { display: none; }
+.theme-preview .mountain-landscape { width: 100%; left: 0; height: 100%; }
 
 /* Light changes shape over the day, with a low concentrated dusk horizon. */
 .solar-sky-light { position:absolute; inset:0; opacity:var(--solar-sky-light); background:radial-gradient(ellipse 90% 70% at 70% -15%, #ffffff70, transparent 75%); }
 .solar-horizon { position:absolute; inset:0; opacity:var(--solar-glow-opacity); background:radial-gradient(ellipse 90% var(--solar-glow-height) at 50% 100%, var(--solar-horizon), transparent 82%); }
 
-/* Folded volumes, transmitted light and foreground occlusion distinguish fog
-   from paper and open sky. Motion is slow enough to keep reading stationary. */
-.mist-volume { position:absolute; width:138%; height:76%; left:-19%; filter:blur(9px); }
-.mist-volume-far { top:-9%; height:86%; animation:mist-far-flow 38s -12s ease-in-out infinite alternate; }
-.mist-volume-near { bottom:-12%; height:90%; filter:blur(7px); animation:mist-near-flow 29s -17s ease-in-out infinite alternate; }
-.mist-sunbeam { position:absolute; width:65%; height:160%; left:17%; top:-35%; transform:rotate(24deg); filter:blur(26px); opacity:.65; background:linear-gradient(90deg, transparent 16%, #ffffff55 38%, #ffffffaa 49%, #ffffff30 61%, transparent 77%); }
-.mist-reading-light { position:absolute; inset:0; background:radial-gradient(ellipse 48% 33% at 50% 47%, #ffffff38, transparent 85%); }
-@keyframes mist-far-flow { from { transform:translate(-3%, -1%) rotate(-2deg); } to { transform:translate(3%, 2%) rotate(1deg); } }
-@keyframes mist-near-flow { from { transform:translate(4%, 1%) rotate(1deg); } to { transform:translate(-4%, -2%) rotate(-2deg); } }
-.theme-preview .mist-volume { filter:blur(.7px); }
-.theme-preview .mist-sunbeam { filter:blur(2px); }
 
 .after-rain-clouds { position:absolute; inset:0; width:100%; height:100%; }
 .after-rain-cloud-far { animation:clearing-cloud-far 48s -14s ease-in-out infinite alternate; }
@@ -71,22 +66,12 @@
 .theme-preview .bamboo-grove-near { left: -9%; }
 .theme-preview .bamboo-grove-far { right: -12%; height: 80%; }
 
-.stars-scene { background: radial-gradient(ellipse at 52% 0%, #202c43, #101725 65%, #0b101c); }
-.stellar-haze { position: absolute; inset: 0; opacity: .45; background: radial-gradient(ellipse 30% 80% at 78% 14%, #74809619, transparent 70%), radial-gradient(ellipse at 14% 82%, #677ea018, transparent 55%); animation: stellar-haze 30s ease-in-out infinite alternate; }
-.scene-star { position: absolute; border-radius: 50%; background: #edf4ff; opacity: var(--star-opacity); box-shadow: 0 0 4px #dfeaff50; animation: star-twinkle 5s ease-in-out infinite; }
-.scene-star:nth-child(9n) { background: #fff4dd; box-shadow: 0 0 6px #fff2d755; }
-.meteor-track { position: absolute; width: 180px; height: 1px; transform: rotate(33deg); }
-.scene-meteor { display: block; height: 1px; width: 140px; background: linear-gradient(90deg, transparent, #d6e7ff70 65%, #fff); opacity: 0; animation: meteor-pass 14s linear infinite; }
-.scene-meteor::after { content: ''; position: absolute; right: 0; top: -1px; width: 3px; height: 3px; border-radius: 50%; background: white; box-shadow: 0 0 7px #d6e7ff; }
-@keyframes star-twinkle { 0%, 100% { opacity: calc(var(--star-opacity) * .5); } 50% { opacity: var(--star-opacity); } }
-@keyframes stellar-haze { from { opacity: .35; } to { opacity: .65; } }
-@keyframes meteor-pass { 0% { opacity: 0; transform: translateX(-160px); } 2% { opacity: .9; } 9% { opacity: 0; transform: translateX(260px); } 100% { opacity: 0; transform: translateX(260px); } }
 
 
 @media (max-width: 640px) {
   .waves-canvas { height: clamp(220px, 31svh, 280px); }
   .mountain-landscape { width: 170%; left: -35%; height: 36vh; }
-  .mountain-flock { top: 12%; }
+  .mountain-flock-main { top: 11%; }
   .bamboo-grove { width: 190px; }
   .bamboo-grove-near { left: -82px; opacity: .65; }
   .bamboo-grove-far { right: -90px; }
@@ -97,9 +82,9 @@
 @media (prefers-reduced-motion: reduce) {
   .theme-scene *, .ocean-vessel * { animation: none !important; }
   .snow-track { top: calc(var(--flake-opacity) * 90%); }
-  .mountain-flock { left: 12%; }
+  .mountain-flock-main { left: 18%; }
+  .mountain-flock-far { left: 52%; }
   .bamboo-rain { display: none; }
-  .scene-meteor { opacity: 0; }
 }
 
 /* Palette changes accompany the scene dissolve rather than snapping first. */
@@ -133,4 +118,47 @@
 @media(max-width:640px) {
   .reading-meta > span { row-gap:.5rem; }
   .reading-meta > span > span:first-child { flex-shrink:0; }
+}
+
+/* Window: plaster, warm and slightly uneven, lit from the upper right. */
+.window-scene { background: radial-gradient(ellipse 80% 70% at 82% 6%, #f7efe0 0%, transparent 70%), linear-gradient(172deg, #ece4d6 0%, #e4dac9 100%); }
+.window-light { position: absolute; inset: 0; width: 100%; height: 100%; }
+.window-sun { animation: window-breathe 16s ease-in-out infinite alternate; }
+.window-twig { animation: window-sway 11s ease-in-out infinite alternate; }
+.window-wall-light { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 36% at 46% 50%, #fff5e440, transparent 82%); }
+@keyframes window-breathe { from { opacity: .92; } to { opacity: 1; } }
+@keyframes window-sway { from { transform: rotate(-1.1deg) translateX(-5px); } to { transform: rotate(1.4deg) translateX(7px); } }
+
+/* Moon: ink-blue night with one still reflection. */
+.moon-scene { background: linear-gradient(180deg, #0b111d 0%, #131b2c 52%, #0e1523 66%); }
+.moon-stars i { position: absolute; border-radius: 50%; background: #e9eef7; animation: moon-twinkle ease-in-out infinite alternate; }
+.moon-halo { position: absolute; width: min(560px, 62vw); aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle closest-side, #e8e3cf33 0%, #c9cfdc14 45%, transparent 100%); }
+.moon-disc { position: absolute; width: clamp(64px, 9vmin, 112px); height: clamp(64px, 9vmin, 112px); transform: translate(-50%, -50%); filter: drop-shadow(0 0 22px #efe9d444); }
+.moon-cloud { position: absolute; left: -20%; top: 19%; width: 70%; height: 7%; border-radius: 50%; background: radial-gradient(ellipse, #b9c3d714, transparent 70%); filter: blur(16px); animation: moon-cloud 140s linear infinite alternate; }
+.moon-water { position: absolute; left: 0; right: 0; bottom: 0; height: 21%; background: linear-gradient(180deg, #0d1422 0%, #0a0f1a 100%); }
+.moon-horizon { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, transparent, #8a97b52e 30%, #aab4cf47 74%, transparent); }
+.moon-sheen { position: absolute; top: 0; width: min(300px, 34vw); height: 100%; transform: translateX(-50%); background: radial-gradient(ellipse 50% 90% at 50% 0%, #d8d6c926, transparent 82%); }
+.moon-glint { position: absolute; height: 1.5px; border-radius: 2px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #f1ecda 28%, #f1ecda 72%, transparent); animation: moon-glint ease-in-out infinite alternate; }
+@keyframes moon-twinkle { from { transform: scale(1); filter: brightness(.7); } to { transform: scale(1.25); filter: brightness(1.2); } }
+@keyframes moon-cloud { from { transform: translateX(-4%); } to { transform: translateX(46%); } }
+@keyframes moon-glint { from { transform: translateX(calc(-50% - var(--glint-drift))); } to { transform: translateX(calc(-50% + var(--glint-drift))); } }
+@media (prefers-reduced-motion: reduce) { .moon-scene * { animation: none !important; } }
+
+/* Contours: survey-map linework on cool paper, faded toward the reading column. */
+.contours-scene { background: radial-gradient(ellipse at 50% 0%, #fbfbf9 0%, transparent 70%), linear-gradient(180deg, #f4f4f1 0%, #ecedea 100%); }
+.contours-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  -webkit-mask-image: radial-gradient(ellipse 52% 44% at 50% 46%, transparent 0%, transparent 66%, #000 100%);
+  mask-image: radial-gradient(ellipse 52% 44% at 50% 46%, transparent 0%, transparent 66%, #000 100%); }
+@media (max-width: 640px) {
+  .contours-canvas { -webkit-mask-image: radial-gradient(ellipse 80% 40% at 50% 46%, transparent 0%, transparent 56%, #000 100%); mask-image: radial-gradient(ellipse 80% 40% at 50% 46%, transparent 0%, transparent 56%, #000 100%); }
+}
+
+.theme-preview .contours-canvas { -webkit-mask-image: none; mask-image: none; }
+.theme-preview .moon-disc { width: 17%; height: auto; aspect-ratio: 1; }
+.theme-preview .moon-halo { width: 60%; }
+@media (max-width: 640px) {
+  /* Keep the moon in the header band so it never sits behind the quote. */
+  .moon-halo, .moon-disc { left: 80% !important; top: 8.5% !important; }
+  .moon-disc { width: 46px; height: 46px; }
+  .moon-sheen, .moon-glint { left: 80% !important; }
 }

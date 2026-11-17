@@ -3,7 +3,7 @@ export const ANALYTICS_APP = 'glimmer'
 export const SOURCE_IDS = ['wikipedia', 'hackernews', 'memos', 'hypothesis', 'weread'] as const
 export type AnalyticsSource = (typeof SOURCE_IDS)[number]
 
-export const THEME_IDS = ['random', 'waves', 'paper', 'mist', 'solar', 'rainbow', 'ripples', 'ocean', 'mountains', 'bamboo', 'sakura', 'maple', 'snow', 'constellation', 'fireflies', 'campfire'] as const
+export const THEME_IDS = ['random', 'waves', 'paper', 'mist', 'solar', 'rainbow', 'ripples', 'ocean', 'mountains', 'bamboo', 'sakura', 'maple', 'snow', 'constellation', 'fireflies', 'campfire', 'window', 'contours', 'moon'] as const
 
 export const ENTRY_IDS = ['newtab', 'action'] as const
 export type AnalyticsEntry = (typeof ENTRY_IDS)[number]

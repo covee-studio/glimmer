@@ -4,13 +4,14 @@ import '../components/zen/theme-scenes.css'
 import '../components/zen/nature-scenes.css'
 import '../components/zen/seasonal-scenes.css'
 import { WavesTheme, WavesPreview } from '../components/zen/WavesTheme'
-import { MistTheme, MistPreview } from '../components/zen/MistTheme'
-import { ConstellationTheme, ConstellationPreview } from '../components/zen/ConstellationTheme'
+import { MountainsTheme, MountainsPreview } from '../components/zen/MountainsTheme'
+import { WindowTheme, WindowPreview } from '../components/zen/WindowTheme'
+import { ContoursTheme, ContoursPreview } from '../components/zen/ContoursTheme'
+import { MoonTheme, MoonPreview } from '../components/zen/MoonTheme'
 import { PaperTheme } from '../components/zen/PaperTheme'
 import { BambooTheme, BambooPreview } from '../components/zen/BambooTheme'
 import { SolarTheme, SolarPreview } from '../components/zen/SolarTheme'
 import { FirefliesTheme, FirefliesPreview } from '../components/zen/FirefliesTheme'
-import { MapleTheme, MaplePreview } from '../components/zen/MapleTheme'
 import { SakuraTheme, SakuraPreview } from '../components/zen/SakuraTheme'
 
 export const RANDOM_THEME_HISTORY_KEY = 'zen-random-theme-history'
@@ -57,19 +58,22 @@ export interface ZenTheme {
 /**
  * Retired theme ids mapped to the theme that inherited their identity, so a
  * saved or migrated selection keeps its spirit instead of falling back to the
- * first theme. Mountains dissolved into Mist, After rain into Solar, Ocean
- * into Waves; Ripples, Snow and Campfire were cut and point at their closest
- * reading companion.
+ * first theme. After rain went into Solar and Ocean into Waves. Mist folded
+ * into Mountains, which keeps its own fog; Maple points at Sakura, the other
+ * seasonal branch; Stars points at Moon, the one night sky. Ripples, Snow and
+ * Campfire were cut and point at their closest reading companion.
  */
 export const RETIRED_THEME_MIGRATION: Record<string, string> = {
   aurora: 'fireflies',
+  mist: 'mountains',
+  maple: 'sakura',
+  constellation: 'moon',
   dawn: 'solar',
   sunrise: 'solar',
   rainbow: 'solar',
-  mountains: 'mist',
   ocean: 'waves',
   ripples: 'waves',
-  snow: 'mist',
+  snow: 'mountains',
   campfire: 'fireflies',
 }
 
@@ -82,18 +86,40 @@ export const ZEN_THEMES: ZenTheme[] = [
     Backdrop: WavesTheme,
   },
   {
+    id: 'mountains',
+    name: 'Mountains',
+    surface: 'linear-gradient(180deg, #f3ede0 0%, #e9e1cf 100%)',
+    Preview: MountainsPreview,
+    Backdrop: MountainsTheme,
+  },
+  {
+    id: 'window',
+    name: 'Window',
+    surface: 'linear-gradient(172deg, #ece4d6 0%, #e4dac9 100%)',
+    Preview: WindowPreview,
+    Backdrop: WindowTheme,
+  },
+  {
+    id: 'contours',
+    name: 'Contours',
+    surface: 'linear-gradient(180deg, #f4f4f1 0%, #ecedea 100%)',
+    Preview: ContoursPreview,
+    Backdrop: ContoursTheme,
+  },
+  {
+    id: 'moon',
+    name: 'Moon',
+    surface: 'linear-gradient(180deg, #0b111d 0%, #131b2c 52%, #0e1523 66%)',
+    Preview: MoonPreview,
+    Backdrop: MoonTheme,
+    dark: true,
+  },
+  {
     id: 'paper',
     name: 'Paper',
     surface: '#faf8f3',
     swatch: '#f6f1e7',
     Backdrop: PaperTheme,
-  },
-  {
-    id: 'mist',
-    name: 'Mist',
-    surface: SCENE_SURFACES.mist,
-    Preview: MistPreview,
-    Backdrop: MistTheme,
   },
   {
     id: 'solar',
@@ -115,21 +141,6 @@ export const ZEN_THEMES: ZenTheme[] = [
     surface: SCENE_SURFACES.sakura,
     Preview: SakuraPreview,
     Backdrop: SakuraTheme,
-  },
-  {
-    id: 'maple',
-    name: 'Maple',
-    surface: SCENE_SURFACES.maple,
-    Preview: MaplePreview,
-    Backdrop: MapleTheme,
-  },
-  {
-    id: 'constellation',
-    name: 'Stars',
-    surface: 'linear-gradient(180deg, #0e1320 0%, #1b2236 50%, #161a28 100%)',
-    Preview: ConstellationPreview,
-    Backdrop: ConstellationTheme,
-    dark: true,
   },
   {
     id: 'fireflies',

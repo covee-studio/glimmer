@@ -38,3 +38,21 @@ export function waveY(layer: WaveParameters, xRatio: number, height: number, ela
 
   return layer.baseY * height + rise - (broadSwell + crossingSwell + crestDetail) * amplitude
 }
+
+function hash(ix: number, iy: number) {
+  let h = Math.imul(ix, 374761393) + Math.imul(iy, 668265263)
+  h = Math.imul(h ^ (h >>> 13), 1274126177)
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296
+}
+function smooth(t: number) { return t * t * (3 - 2 * t) }
+function noise(x: number, y: number) {
+  const ix = Math.floor(x), iy = Math.floor(y)
+  const fx = smooth(x - ix), fy = smooth(y - iy)
+  const a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1)
+  return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy
+}
+/** Two octaves, normalised to roughly 0..1. `t` slides the field through itself. */
+export function terrainHeight(x: number, y: number, t: number) {
+  return (noise(x * .0031 + t * .6, y * .0031 + 7.3 - t * .35) * .78 + noise(x * .0078 - t * .9 + 31, y * .0078 + t * .5 + 11) * .22)
+}
+
