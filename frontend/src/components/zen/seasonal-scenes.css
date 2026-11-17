@@ -45,3 +45,5 @@
   .maple-leaf { transform: translateY(var(--fall-still-y)); }
   .sakura-petal { transform: translate(var(--fall-x0), var(--fall-still-y)) rotate(var(--fall-r0)); }
 }
+.maple-branch { animation: glimmer-maple-branch 10s ease-in-out infinite; }
+@keyframes glimmer-maple-branch { 0%, 100% { transform: rotate(.5deg); } 50% { transform: rotate(-.5deg); } }

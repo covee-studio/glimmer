@@ -1,20 +1,16 @@
 import { createElement, Fragment } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, it, vi } from 'vitest'
-import { sceneRandom, snowParticles, starParticles, waveY } from '../src/components/zen/sceneGeometry'
-import { MountainsTheme, MountainsPreview } from '../src/components/zen/MountainsTheme'
-import { RainbowTheme, RainbowPreview } from '../src/components/zen/RainbowTheme'
-import { SnowTheme } from '../src/components/zen/SnowTheme'
-import { RipplesTheme, RipplesPreview } from '../src/components/zen/RipplesTheme'
+import { sceneRandom, starParticles, waveY } from '../src/components/zen/sceneGeometry'
 import { BambooTheme } from '../src/components/zen/BambooTheme'
 import { ConstellationTheme } from '../src/components/zen/ConstellationTheme'
 import { MistTheme, MistPreview } from '../src/components/zen/MistTheme'
-import { OceanTheme, OceanPreview } from '../src/components/zen/OceanTheme'
-import { WavesPreview } from '../src/components/zen/WavesTheme'
-import { ZEN_THEMES, RANDOM_THEME_HISTORY_SIZE, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../src/utils/zenThemes'
+import { PaperTheme } from '../src/components/zen/PaperTheme'
+import { SolarTheme } from '../src/components/zen/SolarTheme'
+import { WavesTheme, WavesPreview } from '../src/components/zen/WavesTheme'
+import { ZEN_THEMES, RETIRED_THEME_MIGRATION, RANDOM_THEME_HISTORY_SIZE, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../src/utils/zenThemes'
 import { FirefliesTheme } from '../src/components/zen/FirefliesTheme'
 import { MapleTheme, MaplePreview } from '../src/components/zen/MapleTheme'
-import { CampfireTheme, CampfirePreview } from '../src/components/zen/CampfireTheme'
 import { SakuraTheme } from '../src/components/zen/SakuraTheme'
 
 it('avoids recently used themes when picking at random', () => {
@@ -60,16 +56,6 @@ it('keeps scene randomness repeatable and bounded', () => {
   }
 })
 
-it('starts snow throughout its fall cycle instead of waiting offscreen', () => {
-  const flakes = snowParticles(76)
-  expect(flakes).toHaveLength(76)
-  expect(new Set(flakes.map(f => f.depth)).size).toBe(3)
-  expect(flakes.every(f => f.delay < 0 && f.delay > -f.duration)).toBe(true)
-  const bands = new Set(flakes.map(f => Math.floor(-f.delay / f.duration * 4)))
-  expect(bands.size).toBe(4)
-  expect(snowParticles(76)).toEqual(flakes)
-})
-
 it('places stars within the scene with varied sizes and brightness', () => {
   const stars = starParticles(96)
   expect(stars).toHaveLength(96)
@@ -80,8 +66,9 @@ it('places stars within the scene with varied sizes and brightness', () => {
 
 it('does not collide SVG gradient or mask IDs between thumbnails and full scenes', () => {
   const html = renderToStaticMarkup(createElement(Fragment, null,
-    createElement(MountainsTheme), createElement(MountainsPreview), createElement(RainbowTheme), createElement(RainbowPreview), createElement(OceanTheme), createElement(OceanPreview),
-    createElement(MistTheme), createElement(MistPreview), createElement(MistTheme), createElement(MapleTheme), createElement(MaplePreview), createElement(MapleTheme), createElement(CampfireTheme), createElement(CampfirePreview), createElement(CampfireTheme)))
+    createElement(MistTheme), createElement(MistPreview), createElement(MistTheme),
+    createElement(MapleTheme), createElement(MaplePreview), createElement(MapleTheme),
+    createElement(SakuraTheme), createElement(SolarTheme), createElement(SolarTheme)))
   const ids = Array.from(html.matchAll(/ id="([^"]+)"/g), match => match[1])
   expect(ids.length).toBeGreaterThan(10)
   expect(new Set(ids).size).toBe(ids.length)
@@ -89,7 +76,7 @@ it('does not collide SVG gradient or mask IDs between thumbnails and full scenes
 })
 
 it('renders decorative scenes without interactive or external content', () => {
-  for (const Component of [MountainsTheme, RainbowTheme, SnowTheme, RipplesTheme, BambooTheme, ConstellationTheme, MistTheme, OceanTheme, FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
+  for (const Component of [WavesTheme, PaperTheme, MistTheme, SolarTheme, BambooTheme, SakuraTheme, MapleTheme, ConstellationTheme, FirefliesTheme]) {
     const html = renderToStaticMarkup(createElement(Component))
     expect(html).toContain('aria-hidden="true"')
     expect(html).not.toMatch(/<(button|a|iframe|img)\b/)
@@ -99,32 +86,34 @@ it('renders decorative scenes without interactive or external content', () => {
 })
 
 it('keeps particle layouts stable across repeated mounts', () => {
-  for (const Component of [FirefliesTheme, MapleTheme, SakuraTheme, CampfireTheme]) {
+  for (const Component of [FirefliesTheme, MapleTheme, SakuraTheme]) {
     const first = renderToStaticMarkup(createElement(Component))
     expect(renderToStaticMarkup(createElement(Component))).toBe(first)
     expect(first).not.toMatch(/NaN|Infinity/)
   }
 })
 
-it('keeps the saved rainbow identity when presenting the After rain redesign', () => {
-  expect(ZEN_THEMES).toHaveLength(15)
-  expect(ZEN_THEMES.find(theme => theme.id === 'rainbow')?.name).toBe('After rain')
+it('keeps the roster at the consolidated set, with retired ids only in the migration map', () => {
+  expect(ZEN_THEMES).toHaveLength(9)
   expect(new Set(ZEN_THEMES.map(theme => theme.id)).size).toBe(ZEN_THEMES.length)
-  expect(ZEN_THEMES.some(theme => ['aurora', 'sunrise-sea', 'stream', 'zengarden'].includes(theme.id))).toBe(false)
+  expect(ZEN_THEMES.filter(theme => theme.dark)).toHaveLength(2)
+  const retired = ['aurora', 'sunrise-sea', 'stream', 'zengarden', 'rainbow', 'mountains', 'ocean', 'ripples', 'snow', 'campfire', 'dawn', 'sunrise']
+  expect(ZEN_THEMES.some(theme => retired.includes(theme.id))).toBe(false)
+  for (const target of Object.values(RETIRED_THEME_MIGRATION)) {
+    expect(ZEN_THEMES.some(theme => theme.id === target)).toBe(true)
+  }
 })
 
 it('starts the flock in flight and schedules the first meteor within one second', () => {
-  const mountains = renderToStaticMarkup(createElement(MountainsTheme))
+  const mist = renderToStaticMarkup(createElement(MistTheme))
   const stars = renderToStaticMarkup(createElement(ConstellationTheme))
-  expect(mountains).toContain('animation-delay:-7s')
+  expect(mist).toContain('animation-delay:-7s')
   const firstMeteor = stars.match(/class="scene-meteor" style="([^"]+)"/)?.[1]
   expect(firstMeteor).toContain('animation-delay:0.35s')
 })
 
-it('uses a bounded ripple pool and meteor set, with no runtime accumulation', () => {
-  const water = renderToStaticMarkup(createElement(RipplesTheme))
+it('uses a bounded meteor set, with no runtime accumulation', () => {
   const stars = renderToStaticMarkup(createElement(ConstellationTheme))
-  expect(water.match(/class="water-ring"/g)).toHaveLength(20)
   expect(stars.match(/class="scene-meteor"/g)).toHaveLength(3)
 })
 
@@ -142,20 +131,12 @@ it('scales wave relief with the canvas and keeps layers vertically alive', () =>
 
 it('uses artwork without a center marker for the waves preview', () => {
   const html = renderToStaticMarkup(createElement(WavesPreview))
-  expect(html.match(/<path/g)).toHaveLength(3)
+  expect(html.match(/<path/g)).toHaveLength(6)
   expect(html).not.toMatch(/<(circle|ellipse)\b/)
 })
 
-it('keeps the ripples preview free of decorative drop dots', () => {
-  const html = renderToStaticMarkup(createElement(RipplesPreview))
-  expect(html.match(/<circle/g)).toHaveLength(4)
-  expect(html).not.toContain('water-drop')
-  expect(html).not.toMatch(/<ellipse\b/)
-})
-
-
 it('uses the registered opaque surface for refined scenes and their thumbnails', () => {
-  for (const id of ['maple', 'sakura', 'campfire', 'rainbow', 'ripples', 'mist', 'bamboo', 'ocean']) {
+  for (const id of ['maple', 'sakura', 'mist', 'bamboo']) {
     const theme = ZEN_THEMES.find(candidate => candidate.id === id)!
     for (const Component of [theme.Backdrop, theme.Preview!]) {
       const html = renderToStaticMarkup(createElement(Component))

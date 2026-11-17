@@ -1,18 +1,16 @@
-import { motion } from 'motion/react'
-
+/** Paper stays still on purpose: its value is quiet. No breathing light, no
+ *  motion — only grain and two hairlines. */
 export function PaperTheme() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute inset-0" style={{ backgroundColor: '#faf8f3' }} />
-      <motion.div
+      <div
         className="absolute"
         style={{
           width: '70%', height: '70%',
           top: '15%', left: '15%',
-          background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, rgba(250,246,238,0) 65%)',
+          background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.72) 0%, rgba(250,246,238,0) 65%)',
         }}
-        animate={{ x: ['-8%', '8%', '-8%'], y: ['-4%', '4%', '-4%'], opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
       />
       <div
         className="absolute inset-0 opacity-[0.06] mix-blend-multiply"

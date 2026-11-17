@@ -7,19 +7,6 @@ export function sceneRandom(seed: number): () => number {
   }
 }
 
-export function snowParticles(count: number) {
-  const random = sceneRandom(2718)
-  return Array.from({ length: count }, (_, i) => {
-    const depth = i % 3
-    const duration = 12 + (2 - depth) * 9 + random() * 10
-    return {
-      x: random() * 100, size: 1.2 + depth * 1.1 + random() * 1.4,
-      duration, delay: -random() * duration, sway: 18 + random() * 42,
-      opacity: 0.28 + depth * 0.18 + random() * 0.15, depth,
-    }
-  })
-}
-
 export function starParticles(count: number) {
   const random = sceneRandom(173)
   return Array.from({ length: count }, (_, i) => ({

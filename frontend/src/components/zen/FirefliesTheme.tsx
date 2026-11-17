@@ -133,14 +133,14 @@ export function FirefliesTheme() {
       <div
         className="absolute"
         style={{
-          top: '8%',
-          right: '14%',
-          width: 42,
-          height: 42,
+          top: '9%',
+          right: '16%',
+          width: 30,
+          height: 30,
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(232,230,200,0.22) 0%, rgba(232,230,200,0.05) 45%, rgba(232,230,200,0) 70%)',
-          filter: 'blur(2px)',
+            'radial-gradient(circle, rgba(232,230,200,0.13) 0%, rgba(232,230,200,0.04) 45%, rgba(232,230,200,0) 70%)',
+          filter: 'blur(3px)',
         }}
       />
 

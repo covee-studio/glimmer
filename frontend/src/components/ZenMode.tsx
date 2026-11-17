@@ -15,7 +15,7 @@ import { track } from '../analytics/client'
 let reportedContentInThisView = false
 import { Analytics, isExtension } from '../utils/environment'
 import { CHROME_WEB_STORE_URL } from '../utils/productLinks'
-import { ZEN_THEMES, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../utils/zenThemes'
+import { ZEN_THEMES, RETIRED_THEME_MIGRATION, pickRandomThemeId, readRandomThemeHistory, recordRandomTheme } from '../utils/zenThemes'
 import { dissolveTheme } from '../utils/themeDissolve'
 import { useAutoTranslatedText } from '../utils/translation'
 import { AboutModal } from './AboutModal'
@@ -493,13 +493,10 @@ export function ZenMode({ isOpen, feedKey, anchorKey, items, initialIndex, onNea
   }, [index, items, feedKey])
   const [themeId, setThemeId] = useState(() => {
     const saved = localStorage.getItem('zen-theme-id')
-    if (saved === 'aurora') {
-      localStorage.setItem('zen-theme-id', 'campfire')
-      return 'campfire'
-    }
-    if (saved === 'dawn' || saved === 'sunrise') {
-      localStorage.setItem('zen-theme-id', 'solar')
-      return 'solar'
+    const migrated = saved ? RETIRED_THEME_MIGRATION[saved] : undefined
+    if (migrated) {
+      localStorage.setItem('zen-theme-id', migrated)
+      return migrated
     }
     return (saved && (saved === 'random' || ZEN_THEMES.some((t) => t.id === saved))) ? saved : ZEN_THEMES[0].id
   })

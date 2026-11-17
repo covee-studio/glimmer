@@ -17,7 +17,7 @@ Wikipedia and Hacker News use public APIs. Memos and Hypothesis connect directly
 - One article per new tab, refreshed each time
 - Five content sources: Wikipedia, Hacker News, self-hosted Memos, Hypothesis, and WeRead (微信读书)
 - 40 Wikipedia languages
-- 11 visual themes: Waves, Ripples, Mist, Solar, Stars, Paper, Mountains, Bamboo, Ocean, After rain (formerly Rainbow), and Snow
+- 9 visual themes: Waves, Paper, Mist, Solar, Bamboo, Sakura, Maple, Stars, and Fireflies
 - Time-aware Solar theme that shifts from morning to day, evening, and night
 - Likes saved locally, with export and optional Chrome Sync for compact favorite previews
 - Share articles or copy links
